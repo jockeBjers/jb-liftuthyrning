@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import StartPage from "./pages/StartPage";
 import EndPage from "./pages/EndPage";
+import ProductPage from "./pages/Products/ProductPage";
 
 
 interface Route {
@@ -11,7 +12,8 @@ interface Route {
 
 const routes: Route[] = [
     {element: <StartPage />, path: '', menuLabel: 'Start'},
-    {element: <EndPage />, path: '/endPage', menuLabel: 'END'}
+    {element: <ProductPage />, path: '/Products', menuLabel: 'Produkter'},
+    {element: <EndPage />, path: '/AboutUs', menuLabel: 'Om oss'}
 ];
 
 export default routes;
