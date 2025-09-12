@@ -4,15 +4,15 @@ $font-size-base: 1.1rem;
 $line-height-base: 1.4;
 $navbar-dark-color: rgba(white, .8) !default;
 $navbar-dark-hover-color: rgba(white, .9) !default;
-$primary: rgb(255, 252, 58);
-$secondary: rgb(255, 93, 52);
+$primary: rgb(201, 69, 36);
+$secondary: rgb(46, 46, 46);
 $success: rgb(14, 108, 21);
 $info: rgb(2, 117, 216);
 $warning: rgb(255, 193, 7);
 $danger: rgb(220, 53, 69);
 $light: rgb(248, 249, 250);
 $dark: rgb(52, 58, 64);
-$body-bg: rgb(255, 209, 179);
+$body-bg: rgb(221, 221, 221);
 $body-color: rgb(34, 34, 34);
 $headings-color: rgb(34, 34, 34);
 $enable-negative-margins: true;
@@ -22,16 +22,16 @@ $body-margin: 0;
 // Import bootstrap
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
 
-*{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Open-sans', sans-serif;
 }
 
 // Override some Bootstrap defaults
 .navbar-brand {
-  font-family: 'Chewy';
-  font-size: 30px;
+  font-family: 'Tomorrow', sans-serif;
 }
 
 .container {
@@ -39,5 +39,14 @@ $body-margin: 0;
 }
 
 nav {
-    margin-top: 0rem;
+  margin-top: 0rem;
+}
+
+.row {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+.btn {
+  border-radius: 2px !important;
 }
