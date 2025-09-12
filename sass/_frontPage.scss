@@ -1,0 +1,9 @@
+@use 'bootstrap';
+
+
+.start-page-bg {
+    min-height: 75vh;
+    background-image: url('/images/lift-front.jpg');
+    background-size: cover;
+    background-position: center;
+}

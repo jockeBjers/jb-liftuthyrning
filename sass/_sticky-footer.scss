@@ -1,10 +1,19 @@
-// Sticky footer
+@use 'bootstrap';
+
 #root {
   display: flex;
   min-height: 100vh;
+  min-height: 100svh;
   flex-direction: column;
 
   main {
     flex: 1;
   }
+}
+
+footer {
+  background-color: bootstrap.$dark;
+  color: bootstrap.$light;
+  padding: 1rem 0;
+  text-align: center;
 }
