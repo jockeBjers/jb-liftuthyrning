@@ -1,6 +1,7 @@
 import { Col, Row } from "react-bootstrap";
 import useLifts from "../../hooks/useLifts";
 import ProductCard from "./ProductCard";
+import type Lift from "../../interfaces/lifts";
 
 export default function StartPage() {
     const { lifts } = useLifts();
@@ -12,7 +13,7 @@ export default function StartPage() {
             <div className="container">
                 <Row>
                     {lifts && lifts.length > 0 ? (
-                        lifts.map((product: { id: number; name: string; description: string }) => (
+                        lifts.map((product: Lift) => (
                             <Col
                                 key={product.id}
                                 xs={12}
@@ -20,10 +21,8 @@ export default function StartPage() {
                                 lg={4}
                                 className="mb-4 d-flex align-items-stretch"
                             >
-
-                                <ProductCard product={product} />
+                                <ProductCard lift={product} />
                             </Col>
-
                         ))
                     ) : (
                         <Col xs={12}>
