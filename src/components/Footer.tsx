@@ -16,9 +16,9 @@ export default function Footer() {
                                 Kontakta oss för mer information!
                             </p>
                         </Col>
-                        <Col xs="12" md="6">
-                            <div>
-                                <strong>Öppettider:</strong><br />
+                        <Col xs="12" md="6" >
+                            <div >
+                                <h4 className="text-primary mb-3">Öppettider:</h4>
                                 Mån–Fre: 07:00–17:00<br />
                                 Lör–Sön: Stängt
                             </div>
@@ -36,7 +36,7 @@ export default function Footer() {
                                 <strong>Email:</strong> info@example.com
                             </p>
                         </Col>
-                      <Col xs="12" md="6" className="d-flex justify-content-center m-0 p-0 mb-0 mb-md-3">
+                        <Col xs="12" md="6" className="d-flex justify-content-center m-0 p-0 mb-0 mb-md-3">
                             <div className="w-100" style={{ width: "100%", padding: 0, margin: 0 }}>
                                 <iframe
                                     className="p-0"

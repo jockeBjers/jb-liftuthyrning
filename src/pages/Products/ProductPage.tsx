@@ -1,4 +1,4 @@
-import { Col, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import useLifts from "../../hooks/useLifts";
 import ProductCard from "./ProductCard";
 import type Lift from "../../interfaces/lifts";
@@ -10,7 +10,7 @@ export default function StartPage() {
         <>
             <h2>Vårat utbud</h2>
 
-            <div className="container">
+            <Container>
                 <Row>
                     {lifts && lifts.length > 0 ? (
                         lifts.map((product: Lift) => (
@@ -30,7 +30,7 @@ export default function StartPage() {
                         </Col>
                     )}
                 </Row>
-            </div>
+            </Container>
         </>
     );
 }
