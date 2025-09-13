@@ -1,7 +1,7 @@
 import { Col, Container, Row } from "react-bootstrap";
 import useLifts from "../../hooks/useLifts";
 import ProductCard from "./ProductCard";
-import type Lift from "../../interfaces/lifts";
+import type Lift from "../../interfaces/Lift";
 
 export default function StartPage() {
     const { lifts } = useLifts();

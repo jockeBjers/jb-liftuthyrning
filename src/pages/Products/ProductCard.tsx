@@ -1,6 +1,6 @@
 import { Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import type Lift  from '../../interfaces/lifts';
+import type Lift from "../../interfaces/Lift";
 
 export default function ProductCard({ lift }: { lift: Lift }) {
     const navigate = useNavigate();
