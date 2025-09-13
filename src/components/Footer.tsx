@@ -5,8 +5,8 @@ import Col from "react-bootstrap/Col";
 
 export default function Footer() {
     return (
-        <footer className="pb-0 pt-4 w-100">
-            <div className="bg-dark text-light w-100 py-4">
+        <footer className="pb-0 pt-0 w-100">
+            <div className=" text-secondary w-100 py-5 sticky-bottom">
                 <Container>
                     <Row className="align-items-start">
                         <Col xs="12" md="6" className="mb-4 mb-md-0">
@@ -26,14 +26,14 @@ export default function Footer() {
                     </Row>
                 </Container>
             </div>
-            <div className="bg-light text-dark w-100 pt-4 pb-0">
+            <div className="bg-body text-white w-100 pt-4 pb-0 sticky-bottom">
                 <Container>
                     <Row className="align-items-start">
                         <Col xs="12" md="6" className="mb-4 mb-md-0 px-2">
-                            <p className="m-3 text-start">
-                                <strong>Adress:</strong> Johannisborgs slottsruin, Norrköping<br />
-                                <strong>Telefon:</strong> 011 - 00 11 22<br />
-                                <strong>Email:</strong> info@example.com
+                            <p className="m-3 text-start text-white-50">
+                                <strong className="text-primary">Adress:</strong> Johannisborgs slottsruin, Norrköping<br />
+                                <strong className="text-primary">Telefon:</strong> 011 - 00 11 22<br />
+                                <strong className="text-primary">Email:</strong> info@example.com
                             </p>
                         </Col>
                         <Col xs="12" md="6" className="d-flex justify-content-center m-0 p-0 mb-0 mb-md-3">
@@ -55,8 +55,8 @@ export default function Footer() {
                     </Row>
                 </Container>
             </div>
-            <div className="bg-secondary text-light text-center py-2">
-                <small>© {new Date().getFullYear()} JB-Liftuthyrning. All rights reserved.</small>
+            <div className="bg-secondary text-light text-center py-2 sticky-bottom">
+                <small>© {new Date().getFullYear()} JB-Liftuthyrning </small>
             </div>
         </footer>
     );
