@@ -1,0 +1,36 @@
+@use 'bootstrap';
+
+.login-page {
+    background: linear-gradient(rgba(143, 143, 143, 0.6), rgba(0, 0, 0, 1)),
+                url('/images/vattenfall.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+.page-container {
+    background: rgba(0, 0, 0, 0.377);
+    backdrop-filter: blur(15px);
+}
+
+.modern-input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 0 !important;
+    color: white !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease;
+    
+    &:focus {
+        border-bottom-color: bootstrap.$primary !important;
+        background: transparent !important;
+        color: white !important;
+    }
+    
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.6) !important;
+        font-weight: 300;
+    }
+}

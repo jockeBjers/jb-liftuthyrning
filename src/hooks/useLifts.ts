@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import type Lift from '../interfaces/lifts';
+import type Lift from '../interfaces/Lift';
 
 export default function useLifts() {
     const [lifts, setLifts] = useState([]);
