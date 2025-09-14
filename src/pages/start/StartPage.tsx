@@ -31,14 +31,13 @@ export default function StartPage() {
           </Col>
         </Row>
       </Container>
-      <Row className="bg-primary text-secondary py-4 mb-5">
+      <Row className="bg-primary text-secondary py-4 mb-5 text-center p-2-xs">
         <Col className="text-cente container">
           <h4 className=' text-center' >Varför välja oss?</h4>
           <p className="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam reiciendis delectus amet consectetur adipisicing elit. Numquam reiciendis delectus amet consectetur adipisicing elit. Numquam reiciendis delectus assumenda totam.</p>
         </Col>
       </Row>
       <Container className="my-5 text-white-50">
-
         <Row>
           <Col md="4">
             <h5 className='text-decoration-underline text-primary'>Säkra liftar</h5>

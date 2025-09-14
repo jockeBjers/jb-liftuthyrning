@@ -6,13 +6,13 @@
   background-image: url('/images/lift-front.jpg');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
 }
 
 .about-page {
-    background: linear-gradient(rgba(143, 143, 143, 0.6), rgba(0, 0, 0, 1)),
-                url('/images/borg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgb(41, 41, 41) 95%),
+    url('/images/borg.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
 }

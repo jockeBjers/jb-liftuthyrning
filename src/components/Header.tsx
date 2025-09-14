@@ -7,9 +7,9 @@ export default function Header() {
 const [expanded, setExpanded] = useState(false);
 
     return (
-         <header className="bg-secondary sticky-top">
+         <header className="bg-secondary sticky-top ">
             <Navbar expanded={expanded} expand="lg" className="navbar p-0">
-                <Container fluid className="container px-0">
+                <Container fluid className="p-2">
                     <Navbar.Brand as={Link} to="/" className="ms-2 text-decoration-none">
                         <h1 className="fs-1 ">JB-Liftuthyrning</h1>
                     </Navbar.Brand>
