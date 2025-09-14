@@ -1,5 +1,6 @@
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import ReturnButton from '../../components/ReturnButton';
 
 export default function RegisterPage() {
     const navigate = useNavigate();
@@ -9,6 +10,9 @@ export default function RegisterPage() {
                 <Row className="g-0 min-vh-100">
                     <Col md="12" lg="6" className="d-flex align-items-stretch justify-content-center">
                         <div className="page-container shadow-lg rounded-1 p-5 w-100 d-flex flex-column justify-content-center" style={{ minHeight: '100vh' }}>
+                            <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 2 }}>
+                                <ReturnButton />
+                            </div>
                             <div className="text-center mb-4">
                                 <h2 className="login-title text-primary fw-bold mb-2">Välkommen</h2>
                                 <p className="login-subtitle text-white-50 mb-0">Registrera nytt konto</p>
@@ -78,24 +82,16 @@ export default function RegisterPage() {
                                 </Row>
                                 <Row>
                                     <Col xs="12" md="6">
-                                        <Button
+                                      
+                                    </Col>
+                                    <Col xs="12" md="6">
+                                           <Button
                                             type="submit"
                                             variant="primary"
                                             size="lg"
                                             className="btn btn-primary border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3 text-white"
                                         >
                                             Registrera
-                                        </Button>
-                                    </Col>
-                                    <Col xs="12" md="6">
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="lg"
-                                            className="btn btn-secondary border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3"
-                                            onClick={() => navigate('/')}
-                                        >
-                                            Avbryt
                                         </Button>
                                     </Col>
                                 </Row>
