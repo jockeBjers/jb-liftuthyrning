@@ -3,6 +3,7 @@ import useLifts from "../../hooks/useLifts";
 import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import ReturnButton from "../../components/ReturnButton";
 
 export default function ProductDetailsPage() {
     const { id } = useParams();
@@ -33,6 +34,7 @@ export default function ProductDetailsPage() {
 
     return (
         <div className="container my-5">
+            <ReturnButton />
             <div className="row justify-content-center">
                 <div className="col-lg-8">
                     <div className=" border-0">

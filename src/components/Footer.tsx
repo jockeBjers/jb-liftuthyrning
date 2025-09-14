@@ -35,6 +35,15 @@ export default function Footer() {
                                 <strong className="text-primary">Telefon:</strong> 011 - 00 11 22<br />
                                 <strong className="text-primary">Email:</strong> info@example.com
                             </p>
+                            <div className="text-start m-3">
+                                <button
+                                    type="button"
+                                    className="btn btn-link text-decoration-none bg-transparent text-primary"
+                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                >
+                                    <i className="bi bi-arrow-up-circle me-2  display-5"></i>
+                                </button>
+                            </div>
                         </Col>
                         <Col xs="12" md="6" className="d-flex justify-content-center m-0 p-0 mb-0 mb-md-3">
                             <div className="w-100" style={{ width: "100%", padding: 0, margin: 0 }}>
