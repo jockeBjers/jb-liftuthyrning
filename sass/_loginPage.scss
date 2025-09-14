@@ -2,7 +2,7 @@
 
 .login-page {
     background: linear-gradient(rgba(143, 143, 143, 0.6), rgba(0, 0, 0, 1)),
-                url('/images/vattenfall.jpg');
+        url('/images/vattenfall.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -22,15 +22,26 @@
     color: white !important;
     box-shadow: none !important;
     transition: all 0.3s ease;
-    
+
     &:focus {
         border-bottom-color: bootstrap.$primary !important;
         background: transparent !important;
         color: white !important;
     }
-    
+
     &::placeholder {
         color: rgba(255, 255, 255, 0.6) !important;
         font-weight: 300;
+    }
+
+    // Fix for select dropdowns
+    &.form-select {
+        background: transparent !important;
+        color: #fff !important;
+
+        option {
+            background: #222 !important;
+            color: #fff !important;
+        }
     }
 }
