@@ -2,7 +2,7 @@
 header {
 
     position: relative;
-    border-bottom: 1px solid rgb(232, 78, 40);
+    border-bottom: 1px solid bootstrap.$primary;
 
     h1 {
         margin: 0;
@@ -59,7 +59,7 @@ nav {
     right: 0;
 
     .nav-link {
-        border-bottom: 1px solid rgb(232, 78, 40);
+        border-bottom: 1px solid bootstrap.$primary;
 
        
     }
@@ -80,7 +80,7 @@ nav {
             transition: background-color 0.2s ease;
 
             &.active {
-                background: rgb(170, 58, 30);
+                background: bootstrap.$primary;
                 color: bootstrap.$secondary;    
             }
         }

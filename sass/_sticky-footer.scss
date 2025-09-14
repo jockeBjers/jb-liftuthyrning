@@ -17,3 +17,19 @@ footer {
   padding: 1rem 0;
   text-align: center;
 }
+
+.grayscale {
+  filter: grayscale(60%) contrast(90%) brightness(90%);
+}
+
+
+.sticky-md-bottom {
+  position: static;
+}
+
+@media (min-width: 768px) {
+  .sticky-md-bottom {
+    position: sticky;
+    bottom: 0;
+  }
+}
