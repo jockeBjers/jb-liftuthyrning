@@ -1,3 +1,4 @@
+import { Col, Row } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 
 export default function DateRangePicker({
@@ -9,33 +10,37 @@ export default function DateRangePicker({
     handleStartDateChange: (date: Date | null) => void;
     setEndDate: (date: Date | null) => void;
 }) {
-    return (<div className="row g-3 mb-4">
-        <div className="col-sm-6">
-            <label className="form-label text-white-50">Startdatum</label>
-            <DatePicker
-                dateFormat={"dd/MM/yyyy"}
-                selected={startDate}
-                onChange={handleStartDateChange}
-                selectsStart
-                startDate={startDate}
-                endDate={endDate}
-                className="modern-input form-control"
-                placeholderText="Välj startdatum"
-            />
-        </div>
-        <div className="col-sm-6">
-            <label className="form-label text-white-50">Slutdatum</label>
-            <DatePicker
-                dateFormat={"dd/MM/yyyy"}
-                selected={endDate}
-                onChange={date => setEndDate(date)}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate || undefined}
-                className="modern-input form-control"
-                placeholderText="Välj slutdatum"
-            />
-        </div>
-    </div>);
+    return (<Row className="g-3 mb-4">
+        <Col xs="12" lg="6">
+            <div className="d-flex flex-column">
+                <label className="form-label text-white-50 mb-2">Startdatum</label>
+                <DatePicker
+                    dateFormat={"dd/MM/yyyy"}
+                    selected={startDate}
+                    onChange={handleStartDateChange}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    className="modern-input form-control w-100"
+                    placeholderText="Välj startdatum"
+                />
+            </div>
+        </Col>
+        <Col xs="12" lg="6">
+            <div className="d-flex flex-column">
+                <label className="form-label text-white-50 mb-2">Slutdatum</label>
+                <DatePicker
+                    dateFormat={"dd/MM/yyyy"}
+                    selected={endDate}
+                    onChange={date => setEndDate(date)}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    minDate={startDate || undefined}
+                    className="modern-input form-control w-100"
+                    placeholderText="Välj slutdatum"
+                />
+            </div>
+        </Col>
+    </Row>);
 }

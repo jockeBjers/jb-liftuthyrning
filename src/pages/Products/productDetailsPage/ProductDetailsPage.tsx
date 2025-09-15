@@ -6,6 +6,7 @@ import ReturnButton from "../../../components/ReturnButton";
 import SpecificationRow from "./SpecificationRow";
 import PriceRow from "./PriceRow";
 import DateRangePicker from "./DateRangePicker";
+import { Container, Row, Col } from "react-bootstrap";
 
 export default function ProductDetailsPage() {
     const { id } = useParams();
@@ -32,33 +33,32 @@ export default function ProductDetailsPage() {
     else if (lift.category_id === 3) category = "Pelarlift";
 
     return (
-        <div className="container my-5">
+        <Container className="my-5">
             <ReturnButton />
-            <div className="row justify-content-center">
-                <div className="col-lg-8">
+            <Row className="justify-content-center">
+                <Col lg="8">
                     <div>
-                        <h1 className="h3 bg-primary text-secondary mb-0 display-1 p-2">{lift.name}</h1>
-
-                        <div className="card-body bg-body text-white p-4">
-                            <p className="text-white-50 mt-3 mb-4">{lift.description}</p>
+                        <h1 className="h3 bg-primary text-secondary mb-0 display-1 p-2 ">{lift.name}</h1>
+                        <div className="card-body bg-body text-white p-4 ">
+                            <p className="text-white-50 mt-3 mb-2 pb-2 border-bottom border-secondary">{lift.description}</p>
                             <div className=" pb-4 mb-0">
                                 <h5 className="text-white mb-3">Tekniska specifikationer</h5>
-                                <div className="row g-3">
+                                <Row className="g-3">
                                     <SpecificationRow label="Typ" value={category} />
                                     <SpecificationRow label="Märke" value={lift.brand} />
                                     <SpecificationRow label="Bränsletyp" value={fuelType} />
                                     <SpecificationRow label="Max höjd" value={lift.max_height} unit="m" />
                                     <SpecificationRow label="Max vikt" value={lift.max_weight} unit="kg" />
                                     <SpecificationRow label="Korgstorlek" value={lift.platform_size} />
-                                </div>
+                                </Row>
                             </div>
                             <div className="border-bottom border-secondary pb-2 mb-2">
                                 <h5 className="text-white mb-3">Prislista</h5>
-                                <div className="row g-3">
+                                <Row className="g-3">
                                     <PriceRow label="Per timme" value={lift.hourly_price} />
                                     <PriceRow label="Per dag" value={lift.daily_price} />
                                     <PriceRow label="Startavgift" value={lift.start_fee} />
-                                </div>
+                                </Row>
                             </div>
                             <div>
                                 <h5 className="text-white mb-3">Boka lift</h5>
@@ -76,7 +76,6 @@ export default function ProductDetailsPage() {
                                         <label className="btn btn-outline-primary" htmlFor="daily">
                                             Per dag ({lift.daily_price} kr/dag)
                                         </label>
-
                                         <input
                                             type="radio"
                                             className="btn-check"
@@ -90,7 +89,6 @@ export default function ProductDetailsPage() {
                                         </label>
                                     </div>
                                 </div>
-
                                 <DateRangePicker
                                     startDate={startDate}
                                     endDate={endDate}
@@ -109,17 +107,17 @@ export default function ProductDetailsPage() {
                                     </small>
                                 </div>
 
-
                                 <button className="btn btn-primary btn-lg w-100 fw-bold mb-5" >
                                     Skicka bokningsförfrågan
                                 </button>
-
-                                <div><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto similique corrupti natus deserunt mollitia doloremque harum neque omnis obcaecati hic ratione, voluptatibus debitis nihil, quam consectetur sapiente? Blanditiis, dicta autem.</p></div>
+                                <div>
+                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto similique corrupti natus deserunt mollitia doloremque harum neque omnis obcaecati hic ratione, voluptatibus debitis nihil, quam consectetur sapiente? Blanditiis, dicta autem.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                </Col>
+            </Row>
+        </Container>
     );
 }
