@@ -41,8 +41,8 @@ export default function ProductDetailsPage() {
                         <h1 className="h3 bg-primary text-secondary mb-0 display-1 p-2 ">{lift.name}</h1>
                         <div className="card-body bg-body text-white p-4 ">
                             <p className="text-white-50 mt-3 mb-2 pb-2 border-bottom border-secondary">{lift.description}</p>
-                            <div className=" pb-4 mb-0">
-                                <h5 className="text-white mb-3">Tekniska specifikationer</h5>
+                            <div className=" pb-4 mb-0 border-bottom border-secondary">
+                                <h5 className="text-white mb-3 ">Tekniska specifikationer</h5>
                                 <Row className="g-3">
                                     <SpecificationRow label="Typ" value={category} />
                                     <SpecificationRow label="Märke" value={lift.brand} />
