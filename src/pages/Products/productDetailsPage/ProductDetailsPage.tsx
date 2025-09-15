@@ -13,7 +13,6 @@ export default function ProductDetailsPage() {
     const { lift } = useLifts(id ? Number(id) : undefined);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-    const [pricingType, setPricingType] = useState<'hourly' | 'daily'>('daily');
 
     if (!lift) return <div>Loading...</div>;
 
@@ -34,14 +33,16 @@ export default function ProductDetailsPage() {
 
     return (
         <Container className="my-5">
-            <ReturnButton />
+            <div className="m-2">
+                <ReturnButton />
+            </div>
             <Row className="justify-content-center">
                 <Col lg="8">
                     <div>
                         <h1 className="h3 bg-primary text-secondary mb-0 display-1 p-2 ">{lift.name}</h1>
                         <div className="card-body bg-body text-white p-4 ">
                             <p className="text-white-50 mt-3 mb-2 pb-2 border-bottom border-secondary">{lift.description}</p>
-                            <div className=" pb-4 mb-0 border-bottom border-secondary">
+                            <div className=" pb-2 mb-2 border-bottom border-secondary">
                                 <h5 className="text-white mb-3 ">Tekniska specifikationer</h5>
                                 <Row className="g-3">
                                     <SpecificationRow label="Typ" value={category} />
@@ -52,43 +53,16 @@ export default function ProductDetailsPage() {
                                     <SpecificationRow label="Korgstorlek" value={lift.platform_size} />
                                 </Row>
                             </div>
-                            <div className="border-bottom border-secondary pb-2 mb-2">
+                            <div className="border-bottom border-secondary pb-2 mb-3">
                                 <h5 className="text-white mb-3">Prislista</h5>
                                 <Row className="g-3">
-                                    <PriceRow label="Per timme" value={lift.hourly_price} />
                                     <PriceRow label="Per dag" value={lift.daily_price} />
                                     <PriceRow label="Startavgift" value={lift.start_fee} />
                                 </Row>
                             </div>
                             <div>
                                 <h5 className="text-white mb-3">Boka lift</h5>
-                                <div className="mb-3">
-                                    <label className="form-label text-white-50">Pristyp</label>
-                                    <div className="btn-group w-100" role="group">
-                                        <input
-                                            type="radio"
-                                            className="btn-check"
-                                            name="pricingType"
-                                            id="daily"
-                                            checked={pricingType === 'daily'}
-                                            onChange={() => setPricingType('daily')}
-                                        />
-                                        <label className="btn btn-outline-primary" htmlFor="daily">
-                                            Per dag ({lift.daily_price} kr/dag)
-                                        </label>
-                                        <input
-                                            type="radio"
-                                            className="btn-check"
-                                            name="pricingType"
-                                            id="hourly"
-                                            checked={pricingType === 'hourly'}
-                                            onChange={() => setPricingType('hourly')}
-                                        />
-                                        <label className="btn btn-outline-primary" htmlFor="hourly">
-                                            Per timme ({lift.hourly_price} kr/h)
-                                        </label>
-                                    </div>
-                                </div>
+
                                 <DateRangePicker
                                     startDate={startDate}
                                     endDate={endDate}
