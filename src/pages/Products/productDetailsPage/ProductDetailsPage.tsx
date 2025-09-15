@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import useLifts from "../../../hooks/useLifts";
 import { useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ReturnButton from "../../../components/ReturnButton";
 import SpecificationRow from "./SpecificationRow";
 import PriceRow from "./PriceRow";
+import DateRangePicker from "./DateRangePicker";
 
 export default function ProductDetailsPage() {
     const { id } = useParams();
@@ -91,36 +91,12 @@ export default function ProductDetailsPage() {
                                     </div>
                                 </div>
 
+                                <DateRangePicker
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                    handleStartDateChange={handleStartDateChange}
+                                    setEndDate={setEndDate} />
 
-                                <div className="row g-3 mb-4">
-                                    <div className="col-sm-6">
-                                        <label className="form-label text-white-50">Startdatum</label>
-                                        <DatePicker
-                                            dateFormat={"dd/MM/yyyy"}
-                                            selected={startDate}
-                                            onChange={handleStartDateChange}
-                                            selectsStart
-                                            startDate={startDate}
-                                            endDate={endDate}
-                                            className="modern-input form-control"
-                                            placeholderText="Välj startdatum"
-                                        />
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <label className="form-label text-white-50">Slutdatum</label>
-                                        <DatePicker
-                                            dateFormat={"dd/MM/yyyy"}
-                                            selected={endDate}
-                                            onChange={date => setEndDate(date)}
-                                            selectsEnd
-                                            startDate={startDate}
-                                            endDate={endDate}
-                                            minDate={startDate || undefined}
-                                            className="modern-input form-control"
-                                            placeholderText="Välj slutdatum"
-                                        />
-                                    </div>
-                                </div>
                                 <div className="bg-dark p-3 rounded mb-3">
                                     <div className="d-flex justify-content-between">
                                         <span className="text-white-50">Total kostnad:</span>
