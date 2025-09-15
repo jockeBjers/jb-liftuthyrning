@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
-import useLifts from "../../hooks/useLifts";
+import useLifts from "../../../hooks/useLifts";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import ReturnButton from "../../components/ReturnButton";
+import ReturnButton from "../../../components/ReturnButton";
+import SpecificationRow from "./SpecificationRow";
 
 export default function ProductDetailsPage() {
     const { id } = useParams();
@@ -34,57 +35,23 @@ export default function ProductDetailsPage() {
             <ReturnButton />
             <div className="row justify-content-center">
                 <div className="col-lg-8">
-                    <div className=" border-0">
-                        <div className="position-relative">
-                            <img
-                                src={`/images/products/${lift.id}.jpg`}
-                                alt={lift.name}
-                                className="card-img-top"
-                                style={{ objectFit: 'cover', height: '400px' }}
-                            />
-                        </div>
+                    <div>
+                        <h1 className="h3 bg-primary text-secondary mb-0 display-1 p-2">{lift.name}</h1>
+
                         <div className="card-body bg-body text-white p-4">
-                            <div className="border-bottom border-secondary pb-3 mb-4">
-                                <h1 className="h3 text-primary mb-2">{lift.name}</h1>
-                                <div className="text-muted">{category}</div>
-                                <p className="text-white-50 mt-3 mb-0">{lift.description}</p>
-                            </div>
-                            <div className=" pb-4 mb-4">
+                            <p className="text-white-50 mt-3 mb-4">{lift.description}</p>
+                            <div className=" pb-4 mb-0">
                                 <h5 className="text-white mb-3">Tekniska specifikationer</h5>
                                 <div className="row g-3">
-                                    <div className="col-sm-6">
-                                        <div className="d-flex  py-2 border-bottom border-secondary">
-                                            <span className="text-white-50">Märke:&nbsp;</span>
-                                            <span className="text-white">{lift.brand}</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <div className="d-flex  py-2 border-bottom border-secondary">
-                                            <span className="text-white-50">Bränsletyp:&nbsp;</span>
-                                            <span className="text-white">{fuelType}</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <div className="d-flex  py-2 border-bottom border-secondary">
-                                            <span className="text-white-50">Max höjd:&nbsp;</span>
-                                            <span className="text-white">{lift.max_height} m</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <div className="d-flex  py-2 border-bottom border-secondary">
-                                            <span className="text-white-50">Max vikt:&nbsp; </span>
-                                            <span className="text-white">{lift.max_weight} kg</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <div className="d-flex  py-2 border-bottom border-secondary">
-                                            <span className="text-white-50">Korgstorlek:&nbsp;</span>
-                                            <span className="text-white">{lift.platform_size}</span>
-                                        </div>
-                                    </div>
+                                    <SpecificationRow label="Typ" value={category} />
+                                    <SpecificationRow label="Märke" value={lift.brand} />
+                                    <SpecificationRow label="Bränsletyp" value={fuelType} />
+                                    <SpecificationRow label="Max höjd" value={lift.max_height} unit="m" />
+                                    <SpecificationRow label="Max vikt" value={lift.max_weight} unit="kg" />
+                                    <SpecificationRow label="Korgstorlek" value={lift.platform_size} />
                                 </div>
                             </div>
-                            <div className="border-bottom border-secondary pb-4 mb-4">
+                            <div className="border-bottom border-secondary pb-2 mb-2">
                                 <h5 className="text-white mb-3">Prislista</h5>
                                 <div className="row g-3">
                                     <div className="col-sm-4">
