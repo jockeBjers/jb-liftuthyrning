@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ReturnButton from "../../../components/ReturnButton";
 import SpecificationRow from "./SpecificationRow";
+import PriceRow from "./PriceRow";
 
 export default function ProductDetailsPage() {
     const { id } = useParams();
@@ -54,24 +55,9 @@ export default function ProductDetailsPage() {
                             <div className="border-bottom border-secondary pb-2 mb-2">
                                 <h5 className="text-white mb-3">Prislista</h5>
                                 <div className="row g-3">
-                                    <div className="col-sm-4">
-                                        <div className="d-flex  py-2">
-                                            <span className="text-white-50">Per timme:&nbsp;</span>
-                                            <span className="text-primary fw-bold">{lift.hourly_price} kr</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-4">
-                                        <div className="d-flex  py-2">
-                                            <span className="text-white-50">Per dag:&nbsp;</span>
-                                            <span className="text-primary fw-bold">{lift.daily_price} kr</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-4">
-                                        <div className="d-flex  py-2">
-                                            <span className="text-white-50">Startavgift:&nbsp;</span>
-                                            <span className="text-primary fw-bold">{lift.start_fee} kr</span>
-                                        </div>
-                                    </div>
+                                    <PriceRow label="Per timme" value={lift.hourly_price} />
+                                    <PriceRow label="Per dag" value={lift.daily_price} />
+                                    <PriceRow label="Startavgift" value={lift.start_fee} />
                                 </div>
                             </div>
                             <div>
