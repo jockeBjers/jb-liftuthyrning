@@ -39,7 +39,11 @@ export default function ProductDetailsPage() {
             <Row className="justify-content-center">
                 <Col lg="8">
                     <div>
-                        <h1 className="h3 bg-primary text-secondary mb-0 display-1 p-2 ">{lift.name}</h1>
+                        <div className="product-header">
+                            <h1 className="text-secondary display-1 p-2">
+                                {lift.name}
+                            </h1>
+                        </div>
                         <div className="card-body bg-body text-white p-4 ">
                             <p className="text-white-50 mt-3 mb-2 pb-2 border-bottom border-secondary">{lift.description}</p>
                             <div className=" pb-2 mb-2 border-bottom border-secondary">
