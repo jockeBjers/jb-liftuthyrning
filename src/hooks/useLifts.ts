@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 
 import type Lift from '../interfaces/Lift';
-
-export default function useLifts() {
+export default function useLifts(id?: number) {
     const [lifts, setLifts] = useState([]);
     const [lift, setLift] = useState<Lift | null>(null);
+
+    /* get all lifts */
     const fetchLifts = async () => {
         try {
             const response = await fetch('http://localhost:5173/api/lifts');
@@ -14,6 +15,9 @@ export default function useLifts() {
             console.error('Error fetching lifts:', error);
         }
     }
+    useEffect(() => { fetchLifts(); }, []);
+
+    /* get single lift */
 
     const fetchLiftById = async (id: number) => {
         try {
@@ -23,8 +27,11 @@ export default function useLifts() {
             console.error('Error fetching lift:', error);
         }
     };
+    useEffect(() => {
+        if (id) {
+            fetchLiftById(id);
+        }
+    }, [id]);
 
-
-    useEffect(() => { fetchLifts(); }, []);
-    return { lifts: lifts, fetchLifts, lift, fetchLiftById };
+    return { lifts, fetchLifts, lift, fetchLiftById };
 }
