@@ -4,8 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 
-backend/databases/live.sqlite3
-
+backend/_db.sqlite3
+backend/obj
+backend/bin
 # Logs
 logs
 *.log
