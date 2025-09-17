@@ -4,7 +4,6 @@ export default interface Lift {
     brand: string;
     category_id: number;
     fuel_id: number;
-    hourly_price: number;
     daily_price: number;
     start_fee: number;
     max_height: number;
