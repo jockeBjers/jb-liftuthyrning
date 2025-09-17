@@ -1,10 +1,10 @@
 import { Col, Container, Row } from "react-bootstrap";
-import useLifts from "../../hooks/useLifts";
 import ProductCard from "./ProductCard";
 import type Lift from "../../interfaces/Lift";
+import { useLoaderData } from "react-router-dom";
 
-export default function StartPage() {
-    const { lifts } = useLifts();
+export default function ProductPage() {
+    const lifts = useLoaderData() as Lift[];
 
     return (
         <>
