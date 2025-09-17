@@ -57,7 +57,6 @@ export default function ProductCard({ lift }: { lift: Lift }) {
                     <Card.Text><strong>Korgstorlek:</strong> {lift.platform_size}</Card.Text>
                 </div>
                 <div className="bg-body text-white-50 p-3 rounded-0 mb-3 lh-1">
-                    <Card.Text><strong>Pris per timme:</strong> {lift.hourly_price} kr</Card.Text>
                     <Card.Text><strong>Pris per dag:</strong> {lift.daily_price} kr</Card.Text>
                     <Card.Text><strong>Startavgift:</strong> {lift.start_fee} kr</Card.Text>
                     <button

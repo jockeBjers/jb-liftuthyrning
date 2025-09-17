@@ -12,9 +12,13 @@ export default function App() {
     behavior: 'instant'
   });
 
-  return <>
-    <Header />
-    <Main />
-    <Footer />
-  </>;
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  return (
+    <>
+      {!isAdminRoute && <Header />}
+      <Main />
+      {!isAdminRoute && <Footer />}
+    </>
+  );
 }
