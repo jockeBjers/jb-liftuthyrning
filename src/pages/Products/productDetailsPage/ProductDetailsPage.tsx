@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import useLifts from "../../../hooks/useLifts";
+import type Lift from "../../../interfaces/Lift";
+import { useLoaderData } from "react-router-dom";
 import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import ReturnButton from "../../../components/ReturnButton";
@@ -9,10 +9,10 @@ import DateRangePicker from "./DateRangePicker";
 import { Container, Row, Col } from "react-bootstrap";
 
 export default function ProductDetailsPage() {
-    const { id } = useParams();
-    const { lift } = useLifts(id ? Number(id) : undefined);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+
+    const lift = useLoaderData() as Lift;
 
     if (!lift) return <div>Loading...</div>;
 
