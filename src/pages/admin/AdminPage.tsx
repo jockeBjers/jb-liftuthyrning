@@ -49,9 +49,9 @@ export default function AdminPage() {
             </Tab>
             <Tab eventKey="categories" title="Bränsle och Kategorier">
 
-                <Row className="m-0">
+                <Row className="m-0 g-4">
 
-                    <Col xs="12" md="4" className="p-0 me-3" >
+                    <Col xs="12" md="6" className="p-2 " >
                         <Table striped bordered hover className="table-dark">
                             <thead className="table-dark text-white">
                                 <tr>
@@ -69,7 +69,7 @@ export default function AdminPage() {
                             </tbody>
                         </Table>
                     </Col>
-                    <Col xs="12" md="4" className="p-0">
+                    <Col xs="12" md="6" className="p-2">
                         <Table striped bordered hover className="table-dark">
                             <thead className="table-dark text-white">
                                 <tr>
