@@ -23,7 +23,7 @@ const routes: Route[] = [
     { element: <LoginPage />, path: '/Login', menuLabel: 'Logga in' },
     { element: <UserPage />, path: '/profile', menuLabel: 'Min sida' },
     {
-        element: <AdminPage />, path: '/admin', menuLabel: 'Hemlig admin',
+        element: <AdminPage />, path: '/admin', menuLabel: 'Admin',
         loader: async () => {
             const lifts = await (await fetch('/api/lifts')).json();
             const fuels = await (await fetch('/api/fuels')).json();

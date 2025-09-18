@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Main from "./components/Main";
+import { AuthProvider } from "./context/AuthProvider";
 
 export default function App() {
 
@@ -16,9 +17,11 @@ export default function App() {
 
   return (
     <>
+      <AuthProvider>
       {!isAdminRoute && <Header />}
       <Main />
       {!isAdminRoute && <Footer />}
+      </AuthProvider>
     </>
   );
 }
