@@ -21,6 +21,7 @@ export default function DateRangePicker({
                     selectsStart
                     startDate={startDate}
                     endDate={endDate}
+                    minDate={new Date()}
                     className="modern-input form-control w-100"
                     placeholderText="Välj startdatum"
                 />
@@ -36,7 +37,7 @@ export default function DateRangePicker({
                     selectsEnd
                     startDate={startDate}
                     endDate={endDate}
-                    minDate={startDate || undefined}
+                    minDate={startDate || new Date()}
                     className="modern-input form-control w-100"
                     placeholderText="Välj slutdatum"
                 />

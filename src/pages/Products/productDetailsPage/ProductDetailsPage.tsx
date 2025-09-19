@@ -7,12 +7,16 @@ import SpecificationRow from "./SpecificationRow";
 import PriceRow from "./PriceRow";
 import DateRangePicker from "./DateRangePicker";
 import { Container, Row, Col } from "react-bootstrap";
+import { useAuth } from "../../../context/AuthProvider";
+import { useFetchApi } from "../../../hooks/useFetchApi";
 
 export default function ProductDetailsPage() {
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-
+    const [isBooking, setIsBooking] = useState(false);
+    const { user } = useAuth();
     const lift = useLoaderData() as Lift;
+    const { postFetch } = useFetchApi();
 
     if (!lift) return <div>Loading...</div>;
 
@@ -24,12 +28,59 @@ export default function ProductDetailsPage() {
         }
     };
 
+    const calculateTotalCost = () => {
+        if (!startDate || !endDate) return 0;
+
+        const days = Math.ceil(
+            (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 3600 * 24)
+        ) + 1;
+        return (days * lift.dailyPrice) + lift.startFee;
+    };
+
+    const handleBooking = async () => {
+        if (!user) {
+            alert("Du måste vara inloggad för att boka en lift.");
+            return;
+        }
+
+        if (!startDate || !endDate) {
+            alert("Vänligen välj start och slutdatum");
+            return;
+        }
+
+        setIsBooking(true);
+        try {
+            const totalPrice = calculateTotalCost();
+
+            const order = await postFetch("/api/orders", {
+                userId: user.id,
+                orderDate: startDate.toISOString().split("T")[0],
+                returnDate: endDate.toISOString().split("T")[0],
+                totalPrice: totalPrice
+            });
+
+            await postFetch("/api/orderItems", {
+                orderId: order.insertId,
+                liftId: lift.id,
+                pricePerDay: lift.dailyPrice,
+                startFee: lift.startFee
+            });
+
+            alert("Bokningsförfrågan skickad!");
+        } catch (err) {
+            console.error("Booking error:", err);
+            alert("Ett fel uppstod vid bokning.");
+        } finally {
+            setIsBooking(false);
+        }
+    };
+
     let fuelType = "Diesel";
-    if (lift.fuel_id === 1) fuelType = "Eldriven";
+    if (lift.fuelId === 1) fuelType = "Eldriven";
 
     let category = "Saxlift";
-    if (lift.category_id === 2) category = "Bomlift";
-    else if (lift.category_id === 3) category = "Pelarlift";
+    if (lift.categoryId === 2) category = "Bomlift";
+    else if (lift.categoryId === 3) category = "Pelarlift";
 
     return (
         <Container className="my-5">
@@ -52,16 +103,16 @@ export default function ProductDetailsPage() {
                                     <SpecificationRow label="Typ" value={category} />
                                     <SpecificationRow label="Märke" value={lift.brand} />
                                     <SpecificationRow label="Bränsletyp" value={fuelType} />
-                                    <SpecificationRow label="Max höjd" value={lift.max_height} unit="m" />
-                                    <SpecificationRow label="Max vikt" value={lift.max_weight} unit="kg" />
-                                    <SpecificationRow label="Korgstorlek" value={lift.platform_size} />
+                                    <SpecificationRow label="Max höjd" value={lift.maxHeight} unit="m" />
+                                    <SpecificationRow label="Max vikt" value={lift.maxWeight} unit="kg" />
+                                    <SpecificationRow label="Korgstorlek" value={lift.platformSize} />
                                 </Row>
                             </div>
                             <div className="border-bottom border-secondary pb-2 mb-3">
                                 <h5 className="text-white mb-3">Prislista</h5>
                                 <Row className="g-3">
-                                    <PriceRow label="Per dag" value={lift.daily_price} />
-                                    <PriceRow label="Startavgift" value={lift.start_fee} />
+                                    <PriceRow label="Per dag" value={lift.dailyPrice} />
+                                    <PriceRow label="Startavgift" value={lift.startFee} />
                                 </Row>
                             </div>
                             <div>
@@ -77,16 +128,20 @@ export default function ProductDetailsPage() {
                                     <div className="d-flex justify-content-between">
                                         <span className="text-white-50">Total kostnad:</span>
                                         <span className="text-primary fw-bold fs-5">
-                                            4200 kr
+                                            {calculateTotalCost()} kr
                                         </span>
                                     </div>
                                     <small className="text-white-50">
-                                        (Inkl. startavgift: {lift.start_fee} kr)
+                                        (Inkl. startavgift: {lift.startFee} kr)
                                     </small>
                                 </div>
 
-                                <button className="btn btn-primary btn-lg w-100 fw-bold mb-5" >
-                                    Skicka bokningsförfrågan
+                                <button
+                                    className="btn btn-primary btn-lg w-100 fw-bold mb-5"
+                                    onClick={handleBooking}
+                                    disabled={isBooking || !startDate || !endDate}
+                                >
+                                    {isBooking ? "Skickar..." : "Skicka bokningsförfrågan"}
                                 </button>
                                 <div>
                                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto similique corrupti natus deserunt mollitia doloremque harum neque omnis obcaecati hic ratione, voluptatibus debitis nihil, quam consectetur sapiente? Blanditiis, dicta autem.</p>
