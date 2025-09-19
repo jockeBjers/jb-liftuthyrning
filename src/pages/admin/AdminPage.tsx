@@ -7,6 +7,7 @@ import { Col, Row, Table } from "react-bootstrap";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import UserTab from "./UserTab";
+import type User from "../../interfaces/User";
 
 interface Fuel {
     id: number;
@@ -16,19 +17,13 @@ interface Category {
     id: number;
     name: string;
 }
-interface User {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone?: string;
-}
+
 
 export default function AdminPage() {
-    const { lifts, fuels, lift_categories, users, customerWithOrders } = useLoaderData() as {
+    const { lifts, fuels, liftCategories, users, customerWithOrders } = useLoaderData() as {
         lifts: Lift[];
         fuels: Fuel[];
-        lift_categories: Category[];
+        liftCategories: Category[];
         users: User[];
         customerWithOrders: any[];
     };
@@ -41,7 +36,7 @@ export default function AdminPage() {
             defaultActiveKey="lifts"
             id="uncontrolled-tab-example"
             className="mb-4 admin-tabs "
-            justify
+                        
         >
             <Tab eventKey="lifts" title="Liftar">
                 <ProductTab lifts={lifts} />
@@ -52,8 +47,8 @@ export default function AdminPage() {
                 <Row className="m-0 g-4">
 
                     <Col xs="12" md="6" className="p-2 " >
-                        <Table striped bordered hover className="table-dark">
-                            <thead className="table-dark text-white">
+                        <Table striped bordered hover>
+                            <thead >
                                 <tr>
                                     <th>#</th>
                                     <th>Typ</th>
@@ -70,15 +65,15 @@ export default function AdminPage() {
                         </Table>
                     </Col>
                     <Col xs="12" md="6" className="p-2">
-                        <Table striped bordered hover className="table-dark">
-                            <thead className="table-dark text-white">
+                        <Table striped bordered hover >
+                            <thead >
                                 <tr>
                                     <th>#</th>
                                     <th>Kategori</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {lift_categories.map((category) => (
+                                {liftCategories.map((category) => (
                                     <tr key={category.id}>
                                         <td>{category.id}</td>
                                         <td>{category.name}</td>

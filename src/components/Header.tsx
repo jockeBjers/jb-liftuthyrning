@@ -15,7 +15,6 @@ export default function Header() {
         navigate('/');
     };
 
-
     return (
         <header className="bg-secondary sticky-top">
             <Navbar expanded={expanded} expand="lg" className="navbar p-0">
@@ -34,11 +33,8 @@ export default function Header() {
                                 .filter(route => route.menuLabel)
                                 .filter(route => {
                                     const path = route.path.toLowerCase();
-
-                                    // hide login/profile/admin
                                     if (["/login", "/profile"].includes(path)) return false;
                                     if (path === "/admin" && (!user || user.role !== "admin")) return false;
-
                                     return true;
                                 })
                                 .map(({ menuLabel, path }, i) => (
@@ -54,7 +50,41 @@ export default function Header() {
                                 ))}
 
                             {user ? (
-                                <>
+                                expanded ? (
+                                    
+                                    <>
+                                        <Nav.Link
+                                            as={NavLink}
+                                            to="/profile"
+                                            className="nav-link px-lg-5"
+                                            onClick={() => setTimeout(() => setExpanded(false), 200)}
+                                        >
+                                            Profil
+                                        </Nav.Link>
+
+                                        {user.role === "admin" && (
+                                            <Nav.Link
+                                                as={NavLink}
+                                                to="/admin"
+                                                className="nav-link px-lg-5"
+                                                onClick={() => setTimeout(() => setExpanded(false), 200)}
+                                            >
+                                                Admin
+                                            </Nav.Link>
+                                        )}
+
+                                        <Nav.Link
+                                            onClick={() => {
+                                                handleLogout();
+                                                setExpanded(false);
+                                            }}
+                                            className="nav-link px-lg-5"
+                                        >
+                                            Logga ut
+                                        </Nav.Link>
+                                    </>
+                                ) : (
+
                                     <Dropdown as={ButtonGroup}>
                                         <Dropdown.Toggle
                                             variant="link"
@@ -68,7 +98,6 @@ export default function Header() {
                                                 Profil
                                             </Dropdown.Item>
 
-
                                             {user.role === "admin" && (
                                                 <Dropdown.Item as={NavLink} to="/admin" className="nav-link px-lg-5">
                                                     Admin
@@ -76,10 +105,11 @@ export default function Header() {
                                             )}
 
                                             <Dropdown.Item onClick={handleLogout} className="nav-link px-lg-5">
-                                                Logga ut</Dropdown.Item>
+                                                Logga ut
+                                            </Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                </>
+                                )
                             ) : (
                                 <Nav.Link
                                     as={NavLink}
@@ -91,6 +121,7 @@ export default function Header() {
                                 </Nav.Link>
                             )}
                         </Nav>
+
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

@@ -1,14 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import type User from "../interfaces/User";
 
-interface User {
-  id: number;
-  email: string;
-  role: string;
-  firstName: string;
-  lastName: string;
-  phone?: string | null;
-  created?: string;
-}
+
 
 interface AuthContextType {
   user: User | null;
@@ -28,8 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await fetch("/api/login");
       if (response.ok) {
-        const data = await response.json();
-        setUser(data);
+        const userData = await response.json();
+        setUser(userData);
       } else {
         setUser(null);
       }
@@ -39,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   };
-
   const loginUser = async (email: string, password: string) => {
     try {
       const response = await fetch("/api/login", {

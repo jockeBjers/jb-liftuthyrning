@@ -7,14 +7,14 @@ export default function ProductTab({ lifts = [] }: {
         id: number;
         name: string;
         brand: string;
-        max_height: number;
-        max_weight: number;
-        platform_size: string;
-        daily_price: number;
-        start_fee: number;
+        maxHeight: number;
+        maxWeight: number;
+        platformSize: string;
+        dailyPrice: number;
+        startFee: number;
         description: string;
-        category_id: number;
-        fuel_id: number;
+        categoryId: number;
+        fuelId: number;
     }[]
 
 }) {
@@ -35,8 +35,8 @@ export default function ProductTab({ lifts = [] }: {
                     onHide={() => setShowCreateModal(false)}
                 />
             </div>
-            <Table striped bordered hover className="table-dark">
-                <thead className="table-dark text-white">
+            <Table striped bordered hover className="">
+                <thead className="">
                     <tr>
                         <th>#</th>
                         <th>Namn</th>
@@ -54,18 +54,18 @@ export default function ProductTab({ lifts = [] }: {
                 <tbody>
                     {lifts.map((lift) => {
                         let fuelType = "";
-                        if (lift.fuel_id == 1) {
+                        if (lift.fuelId == 1) {
                             fuelType = "El";
-                        } else if (lift.fuel_id == 2) {
+                        } else if (lift.fuelId == 2) {
                             fuelType = "Diesel";
                         }
                         let category = "";
-                        if (lift.category_id == 1) {
+                        if (lift.categoryId == 1) {
                             category = "Saxlift";
-                        } else if (lift.category_id == 2) {
+                        } else if (lift.categoryId == 2) {
                             category = "Bomlift";
                         }
-                        else if (lift.category_id == 3) {
+                        else if (lift.categoryId == 3) {
                             category = "Pelarlift";
                         }
 
@@ -74,10 +74,10 @@ export default function ProductTab({ lifts = [] }: {
                                 <td>{lift.id}</td>
                                 <td>{lift.name}</td>
                                 <td className="d-none d-md-table-cell">{lift.brand}</td>
-                                <td className="d-none d-md-table-cell">{lift.max_height}</td>
-                                <td className="d-none d-md-table-cell">{lift.max_weight}</td>
-                                <td className="d-none d-md-table-cell">{lift.daily_price}</td>
-                                <td className="d-none d-md-table-cell">{lift.start_fee}</td>
+                                <td className="d-none d-md-table-cell">{lift.maxHeight}</td>
+                                <td className="d-none d-md-table-cell">{lift.maxWeight}</td>
+                                <td className="d-none d-md-table-cell">{lift.dailyPrice}</td>
+                                <td className="d-none d-md-table-cell">{lift.startFee}</td>
                                 <td className="d-none d-md-table-cell">{fuelType}</td>
                                 <td className="d-none d-md-table-cell">{category}</td>
                                 <td className="d-none d-lg-table-cell">{lift.description}</td>
