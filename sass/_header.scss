@@ -1,4 +1,5 @@
 @use 'bootstrap';
+
 header {
 
     position: relative;
@@ -35,6 +36,7 @@ nav {
 
 .navbar-nav {
 
+
     .nav-link {
         color: bootstrap.$primary;
         font-weight: 500;
@@ -45,6 +47,34 @@ nav {
         &.active {
             background: linear-gradient(90deg, rgba(209, 75, 41, 0) 0%, rgb(201, 69, 36) 100%);
             color: bootstrap.$secondary;
+        }
+    }
+
+    .dropdown-toggle {
+
+        &.show,
+        &:focus,
+        &:active {
+            color: bootstrap.$primary !important;
+            background: bootstrap.$secondary;
+        }
+    }
+
+    .dropdown-menu {
+        background: bootstrap.$secondary;
+
+        .dropdown-item {
+
+            &:hover,
+            &:focus {
+                background: bootstrap.$primary;
+                color: bootstrap.$secondary;
+            }
+
+            &.active {
+                background: bootstrap.$primary;
+                color: bootstrap.$secondary;
+            }
         }
     }
 }
@@ -61,7 +91,7 @@ nav {
     .nav-link {
         border-bottom: 1px solid bootstrap.$primary;
 
-       
+
     }
 }
 
@@ -81,7 +111,7 @@ nav {
 
             &.active {
                 background: bootstrap.$primary;
-                color: bootstrap.$secondary;    
+                color: bootstrap.$secondary;
             }
         }
     }

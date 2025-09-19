@@ -1,5 +1,5 @@
-import { Link, NavLink } from "react-router-dom";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Navbar, Nav, Container, Dropdown, ButtonGroup } from "react-bootstrap";
 import routes from "../routes";
 import { useState } from "react";
 import { useAuth } from "../context/AuthProvider";
@@ -7,6 +7,14 @@ import { useAuth } from "../context/AuthProvider";
 export default function Header() {
     const [expanded, setExpanded] = useState(false);
     const { user } = useAuth();
+    const { logoutUser } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logoutUser();
+        navigate('/');
+    };
+
 
     return (
         <header className="bg-secondary sticky-top">
@@ -47,14 +55,30 @@ export default function Header() {
 
                             {user ? (
                                 <>
-                                    <Nav.Link
-                                        as={NavLink}
-                                        to="/profile"
-                                        className="nav-link px-lg-5"
-                                        onClick={() => setTimeout(() => setExpanded(false), 200)}
-                                    >
-                                        Min sida
-                                    </Nav.Link>
+                                    <Dropdown as={ButtonGroup}>
+                                        <Dropdown.Toggle
+                                            variant="link"
+                                            className="nav-link px-lg-5 fw-bold text-decoration-none"
+                                        >
+                                            {user.firstName} {user.lastName.slice(0, 1)}
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item as={NavLink} to="/profile" className="nav-link px-lg-5">
+                                                Profil
+                                            </Dropdown.Item>
+
+
+                                            {user.role === "admin" && (
+                                                <Dropdown.Item as={NavLink} to="/admin" className="nav-link px-lg-5">
+                                                    Admin
+                                                </Dropdown.Item>
+                                            )}
+
+                                            <Dropdown.Item onClick={handleLogout} className="nav-link px-lg-5">
+                                                Logga ut</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </>
                             ) : (
                                 <Nav.Link
