@@ -8,6 +8,7 @@ import PriceRow from "./PriceRow";
 import DateRangePicker from "./DateRangePicker";
 import { Container, Row, Col } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
+import { useFetchApi } from "../../../hooks/useFetchApi";
 
 export default function ProductDetailsPage() {
     const [startDate, setStartDate] = useState<Date | null>(null);
@@ -15,6 +16,7 @@ export default function ProductDetailsPage() {
     const [isBooking, setIsBooking] = useState(false);
     const { user } = useAuth();
     const lift = useLoaderData() as Lift;
+    const { postFetch } = useFetchApi();
 
     if (!lift) return <div>Loading...</div>;
 
@@ -42,66 +44,36 @@ export default function ProductDetailsPage() {
         }
 
         if (!startDate || !endDate) {
-            alert("Vänligen välj både start- och slutdatum.");
+            alert("Vänligen välj start och slutdatum");
             return;
         }
 
         setIsBooking(true);
         try {
-            const orderPayload = {
+            const totalPrice = calculateTotalCost();
+
+            const order = await postFetch("/api/orders", {
                 userId: user.id,
-                orderDate: startDate.toISOString().split('T')[0],
-                returnDate: endDate.toISOString().split('T')[0],
-                totalPrice: calculateTotalCost()
-            };
-
-            console.log('Creating order with payload:', orderPayload);
-
-            const orderResponse = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderPayload)
+                orderDate: startDate.toISOString().split("T")[0],
+                returnDate: endDate.toISOString().split("T")[0],
+                totalPrice: totalPrice
             });
 
-            if (!orderResponse.ok) {
-                throw new Error('Failed to create order');
-            }
-
-            const order = await orderResponse.json();
-            console.log('Order created:', order);
-
-            const orderItemPayload = {
+            await postFetch("/api/orderItems", {
                 orderId: order.insertId,
                 liftId: lift.id,
                 pricePerDay: lift.dailyPrice,
-                startFee: lift.startFee,
-            };
-
-            console.log('Creating order item with payload:', orderItemPayload);
-
-            const orderItemResponse = await fetch('/api/orderItems', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderItemPayload)
+                startFee: lift.startFee
             });
 
-            if (!orderItemResponse.ok) {
-                const errorText = await orderItemResponse.text();
-                console.error('Order item creation failed:', errorText);
-                throw new Error('Failed to create order item');
-            }
-
             alert("Bokningsförfrågan skickad!");
-
-        } catch (error) {
-            console.error('Booking error:', error);
-            alert("Ett fel uppstod vid bokning. Försök igen.");
+        } catch (err) {
+            console.error("Booking error:", err);
+            alert("Ett fel uppstod vid bokning.");
         } finally {
             setIsBooking(false);
         }
     };
-
-
 
     let fuelType = "Diesel";
     if (lift.fuelId === 1) fuelType = "Eldriven";
