@@ -25,7 +25,7 @@ const routes: Route[] = [
         element: <UserPage />, path: '/profile', menuLabel: 'Min sida',
         loader: async () => {
             const orders = await (await fetch('/api/orders')).json();
-            const orderItems = await (await fetch('/api/order_items')).json();
+            const orderItems = await (await fetch('/api/orderItems')).json();
             const lifts = await (await fetch('/api/lifts')).json();
             return { lifts, orders, orderItems };
         }
@@ -35,12 +35,12 @@ const routes: Route[] = [
         loader: async () => {
             const lifts = await (await fetch('/api/lifts')).json();
             const fuels = await (await fetch('/api/fuels')).json();
-            const lift_categories = await (await fetch('/api/lift_categories')).json();
+            const liftCategories = await (await fetch('/api/liftCategories')).json();
             const orders = await (await fetch('/api/orders')).json();
-            const orderItems = await (await fetch('/api/order_items')).json();
+            const orderItems = await (await fetch('/api/orderItems')).json();
             const users = await (await fetch('/api/users')).json();
             const customerWithOrders = await (await fetch('/api/customerWithOrders')).json();
-            return { lifts, fuels, lift_categories, orders, orderItems, users, customerWithOrders };
+            return { lifts, fuels, liftCategories, orders, orderItems, users, customerWithOrders };
         }
     },
 

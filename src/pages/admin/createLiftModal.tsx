@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Row, Col, Form, Button, Modal } from 'react-bootstrap';
 import { useRevalidator } from 'react-router-dom';
+import { useFetchApi } from "../../hooks/useFetchApi";
 
 interface CreateLiftProps {
     show: boolean;
@@ -12,27 +13,25 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
     const [lift, setLift] = useState({
         name: '',
         brand: '',
-        max_height: 0,
-        max_weight: 0,
-        platform_size: '',
-        daily_price: 0,
-        start_fee: 0,
+        maxHeight: 0,
+        maxWeight: 0,
+        platformSize: '',
+        dailyPrice: 0,
+        startFee: 0,
         description: '',
-        category_id: 1,
-        fuel_id: 1
+        categoryId: 1,
+        fuelId: 1
     });
+    const { postFetch } = useFetchApi();
 
     const [isLoading, setIsLoading] = useState(false);
     const revalidator = useRevalidator();
 
-
-    // handle changes to all input elements in the form
     function setProperty(event: React.ChangeEvent) {
         let { name, value }: { name: string, value: string | number | null } =
             event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-        // data conversion for number fields
-        if (['max_height', 'max_weight', 'daily_price', 'start_fee', 'category_id', 'fuel_id'].includes(name)) {
+        if (['maxHeight', 'maxWeight', 'dailyPrice', 'startFee', 'categoryId', 'fuelId'].includes(name)) {
             value = isNaN(+value) ? 0 : +value;
         }
 
@@ -47,32 +46,25 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
 
         const payload: any = { ...lift };
 
-        const response = await fetch('/api/lifts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+        await postFetch("/api/lifts", payload);
+
+        setLift({
+            name: '',
+            brand: '',
+            maxHeight: 0,
+            maxWeight: 0,
+            platformSize: '',
+            dailyPrice: 0,
+            startFee: 0,
+            description: '',
+            categoryId: 1,
+            fuelId: 1
         });
+        onHide();
 
-        if (response.ok) {
-            setLift({
-                name: '',
-                brand: '',
-                max_height: 0,
-                max_weight: 0,
-                platform_size: '',
-                daily_price: 0,
-                start_fee: 0,
-                description: '',
-                category_id: 1,
-                fuel_id: 1
-            });
-            onHide();
+        revalidator.revalidate();
 
-            revalidator.revalidate();
-
-            if (onSuccess) onSuccess();
-        }
-
+        if (onSuccess) onSuccess();
     }
 
 
@@ -124,9 +116,9 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                                 className="modern-input"
                                                 onChange={setProperty}
                                                 type="number"
-                                                name="max_height"
+                                                name="maxHeight"
                                                 placeholder="10"
-                                                value={lift.max_height || ''}
+                                                value={lift.maxHeight || ''}
                                                 required
                                             />
                                         </Form.Label>
@@ -140,9 +132,9 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                                 className="modern-input"
                                                 onChange={setProperty}
                                                 type="number"
-                                                name="max_weight"
+                                                name="maxWeight"
                                                 placeholder="200"
-                                                value={lift.max_weight || ''}
+                                                value={lift.maxWeight || ''}
                                                 required
                                             />
                                         </Form.Label>
@@ -157,9 +149,9 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                         className="modern-input"
                                         onChange={setProperty}
                                         type="text"
-                                        name="platform_size"
+                                        name="platformSize"
                                         placeholder="2x2m"
-                                        value={lift.platform_size}
+                                        value={lift.platformSize}
                                     />
                                 </Form.Label>
                             </Form.Group>
@@ -173,9 +165,9 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                                 className="modern-input"
                                                 onChange={setProperty}
                                                 type="number"
-                                                name="daily_price"
+                                                name="dailyPrice"
                                                 placeholder="500"
-                                                value={lift.daily_price || ''}
+                                                value={lift.dailyPrice || ''}
                                                 required
                                             />
                                         </Form.Label>
@@ -190,9 +182,9 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                                 className="modern-input"
                                                 onChange={setProperty}
                                                 type="number"
-                                                name="start_fee"
+                                                name="startFee"
                                                 placeholder="200"
-                                                value={lift.start_fee || ''}
+                                                value={lift.startFee || ''}
                                                 required
                                             />
                                         </Form.Label>
@@ -207,9 +199,9 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <p className="mb-1">Bränsletyp</p>
                                             <Form.Select
                                                 className="modern-input"
-                                                name="fuel_id"
+                                                name="fuelId"
                                                 onChange={setProperty}
-                                                value={lift.fuel_id}
+                                                value={lift.fuelId}
                                             >
                                                 <option value={1}>El</option>
                                                 <option value={2}>Diesel</option>
@@ -223,9 +215,9 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <p className="mb-1">Kategori</p>
                                             <Form.Select
                                                 className="modern-input"
-                                                name="category_id"
+                                                name="categoryId"
                                                 onChange={setProperty}
-                                                value={lift.category_id}
+                                                value={lift.categoryId}
                                             >
                                                 <option value={1}>Saxlift</option>
                                                 <option value={2}>Bomlift</option>

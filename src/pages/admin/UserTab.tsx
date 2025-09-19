@@ -1,11 +1,6 @@
 import { Table } from "react-bootstrap";
-interface User {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone?: string;
-}
+import type User from "../../interfaces/User";
+
 
 export default function UserTab({
     users = [],
@@ -16,8 +11,8 @@ export default function UserTab({
 }) {
 
     return (
-        <Table striped bordered hover className="table-dark">
-            <thead className="table-dark text-white">
+        <Table striped bordered hover>
+            <thead >
                 <tr>
                     <th>#</th>
                     <th>Namn</th>
