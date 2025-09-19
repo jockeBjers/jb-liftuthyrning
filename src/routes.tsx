@@ -21,7 +21,15 @@ const routes: Route[] = [
     { element: <ProductPage />, path: '/Products', menuLabel: 'Produkter', loader: async () => { const response = await fetch('/api/lifts'); return response.json(); } },
     { element: <AboutPage />, path: '/AboutUs', menuLabel: 'Om oss' },
     { element: <LoginPage />, path: '/Login', menuLabel: 'Logga in' },
-    { element: <UserPage />, path: '/profile', menuLabel: 'Min sida' },
+    {
+        element: <UserPage />, path: '/profile', menuLabel: 'Min sida',
+        loader: async () => {
+            const orders = await (await fetch('/api/orders')).json();
+            const orderItems = await (await fetch('/api/order_items')).json();
+            const lifts = await (await fetch('/api/lifts')).json();
+            return { lifts, orders, orderItems };
+        }
+    },
     {
         element: <AdminPage />, path: '/admin',
         loader: async () => {
