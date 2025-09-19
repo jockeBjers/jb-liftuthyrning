@@ -17,7 +17,10 @@ $body-color: rgb(236, 236, 236);
 $headings-color: rgb(34, 34, 34);
 $enable-negative-margins: true;
 $body-margin: 0;
-
+$table-bg: $body-bg;
+$table-color: $body-color;
+$table-border-color: rgb(70, 70, 70);
+$table-striped-bg: $secondary;
 
 // Import bootstrap
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
