@@ -1,4 +1,4 @@
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Spinner, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ReturnButton from "../../components/ReturnButton";
@@ -6,7 +6,10 @@ import { useAuth } from "../../context/AuthProvider";
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
     const { loginUser } = useAuth();
+    const [loading, setLoading] = useState(false);
+    
     const [user, setUser] = useState({
         email: '',
         password: ''
@@ -18,17 +21,32 @@ export default function LoginPage() {
     }
 
     async function sendForm(event: React.FormEvent) {
-
         event.preventDefault();
-
-        const success = await loginUser(user.email, user.password);
-
-        if (success) {
-            navigate('/profile');
+        const message = 'Fel e-post eller lösenord';
+        const timeOut = 2000;
+        setErrorMessage('');
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            const success = await loginUser(user.email, user.password);
+            if (success) {
+                navigate('/profile');
+            } else {
+                setErrorMessage(message);
+                setTimeout(() => setErrorMessage(''), timeOut);
+            }
+        } catch (err) {
+            setErrorMessage(message);
+            setTimeout(() => setErrorMessage(''), timeOut);
+        } finally {
+            setLoading(false);
         }
     }
+
+
     return (
         <div className="login-page min-vh-100 d-flex align-items-center justify-content-center">
+
             <Container fluid className="p-0">
                 <Row className="g-0 min-vh-100">
                     <Col md="12" lg="4" className="d-flex align-items-stretch justify-content-center">
@@ -40,7 +58,7 @@ export default function LoginPage() {
                                 <h2 className="login-title text-primary fw-bold mb-2">Välkommen</h2>
                                 <p className="login-subtitle text-white-50 mb-0">Logga in på ditt konto</p>
                             </div>
-                           <Form onSubmit={sendForm}>
+                            <Form onSubmit={sendForm}>
                                 <div className="mb-4">
                                     <Form.Control
                                         type="email"
@@ -71,12 +89,15 @@ export default function LoginPage() {
                                 </div>
                                 <Button
                                     type="submit"
-                                    variant="primary"
+                                    variant={errorMessage ? 'danger' : 'primary'}
                                     size="lg"
-                                    className="btn btn-primary border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3"
+                                    className={`btn border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3 text-white`}
+                                    disabled={loading}
                                 >
-                                    Logga in
+                                    {loading && <Spinner animation="border" size="sm" className="me-2" />}
+                                    {errorMessage ? 'Misslyckades' : 'Logga in'}
                                 </Button>
+                                <div className="text-danger text-center mb-2">{errorMessage}</div>
                                 <div className="text-center">
                                     <span className="text-white-50">Har du inget konto? </span>
                                     <button

@@ -1,11 +1,15 @@
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Spinner, Toast } from 'react-bootstrap';
 import ReturnButton from '../../components/ReturnButton';
 import { useFetchApi } from '../../hooks/useFetchApi';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
-
+    const navigate = useNavigate();
     const { postFetch } = useFetchApi();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+
     const [user, setUser] = useState({
         firstName: '',
         lastName: '',
@@ -23,17 +27,33 @@ export default function RegisterPage() {
     }
 
     async function sendForm(event: React.FormEvent) {
-
         event.preventDefault();
-        const payload: any = { ...user };
-
-        await postFetch("/api/users", payload);
-
+        const message = 'Något gick fel';
+        const timeOut = 2000;
+        setErrorMessage('');
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            const success = await postFetch("/api/users", user);
+            if (success) {
+                navigate('/login');
+            } else {
+                setErrorMessage(message);
+                setTimeout(() => setErrorMessage(''), timeOut);
+            }
+        } catch (err: any) {
+            setErrorMessage(message);
+            setTimeout(() => setErrorMessage(''), timeOut);
+        } finally {
+            setLoading(false);
+        }
     }
+
 
 
     return (
         <div className="login-page min-vh-100 d-flex align-items-center justify-content-center">
+
             <Container fluid className="p-0">
                 <Row className="g-0 min-vh-100">
                     <Col md="12" lg="6" className="d-flex align-items-stretch justify-content-center">
@@ -128,20 +148,25 @@ export default function RegisterPage() {
                                             />
                                         </div>
                                     </Col>
-
+                                    <Col md="6">
+                                        {errorMessage && (
+                                            <div className="text-danger fw-semibold fs-5 py-3 text-center">{errorMessage}</div>
+                                        )}
+                                    </Col>
                                 </Row>
                                 <Row>
                                     <Col xs="12" md="6">
-
                                     </Col>
                                     <Col xs="12" md="6">
                                         <Button
                                             type="submit"
-                                            variant="primary"
+                                            variant={errorMessage ? 'danger' : 'primary'}
                                             size="lg"
-                                            className="btn btn-primary border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3 text-white"
+                                            className={`btn border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3 text-white`}
+                                            disabled={loading}
                                         >
-                                            Registrera
+                                            {loading && <Spinner animation="border" size="sm" className="me-2" />}
+                                            {errorMessage ? 'Misslyckades' : 'Registrera'}
                                         </Button>
                                     </Col>
                                 </Row>
@@ -151,6 +176,6 @@ export default function RegisterPage() {
                     <Col md="6" className="d-none d-md-block"></Col>
                 </Row>
             </Container>
-        </div>
+        </div >
     );
 }
