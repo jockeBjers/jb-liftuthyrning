@@ -1,9 +1,32 @@
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import ReturnButton from '../../components/ReturnButton';
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import ReturnButton from "../../components/ReturnButton";
+import { useAuth } from "../../context/AuthProvider";
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const { loginUser } = useAuth();
+    const [user, setUser] = useState({
+        email: '',
+        password: ''
+    });
+
+    function setProperty(event: React.ChangeEvent<HTMLInputElement>) {
+        let { name, value } = event.target;
+        setUser({ ...user, [name]: value });
+    }
+
+    async function handleSubmit(event: React.FormEvent) {
+
+        event.preventDefault();
+
+        const success = await loginUser(user.email, user.password);
+
+        if (success) {
+            navigate('/profile');
+        }
+    }
     return (
         <div className="login-page min-vh-100 d-flex align-items-center justify-content-center">
             <Container fluid className="p-0">
@@ -20,25 +43,32 @@ export default function LoginPage() {
                             <Form>
                                 <div className="mb-4">
                                     <Form.Control
-                                        type="email"
-                                        placeholder="E-post"
-                                        className="modern-input fs-5 py-3"
-                                        required
-                                    />
+                                                type="email"
+                                                name="email"
+                                                value={user.email}
+                                                onChange={setProperty}
+                                                placeholder="E-post"
+                                                className="modern-input fs-5 py-3"
+                                                required
+                                            />
                                 </div>
                                 <div className="mb-4">
                                     <Form.Control
-                                        type="password"
-                                        placeholder="Lösenord"
-                                        className="modern-input fs-5 py-3"
-                                        required
-                                    />
+                                                type="password"
+                                                name="password"
+                                                value={user.password}
+                                                onChange={setProperty}
+                                                placeholder="Lösenord"
+                                                className="modern-input fs-5 py-3"
+                                                required
+                                            />
                                 </div>
                                 <Button
                                     type="submit"
                                     variant="primary"
                                     size="lg"
                                     className="btn btn-primary border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3"
+                                    onClick={handleSubmit}
                                 >
                                     Logga in
                                 </Button>
