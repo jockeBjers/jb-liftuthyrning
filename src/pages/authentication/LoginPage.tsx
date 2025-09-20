@@ -17,7 +17,7 @@ export default function LoginPage() {
         setUser({ ...user, [name]: value });
     }
 
-    async function handleSubmit(event: React.FormEvent) {
+    async function sendForm(event: React.FormEvent) {
 
         event.preventDefault();
 
@@ -40,35 +40,40 @@ export default function LoginPage() {
                                 <h2 className="login-title text-primary fw-bold mb-2">Välkommen</h2>
                                 <p className="login-subtitle text-white-50 mb-0">Logga in på ditt konto</p>
                             </div>
-                            <Form>
+                           <Form onSubmit={sendForm}>
                                 <div className="mb-4">
                                     <Form.Control
-                                                type="email"
-                                                name="email"
-                                                value={user.email}
-                                                onChange={setProperty}
-                                                placeholder="E-post"
-                                                className="modern-input fs-5 py-3"
-                                                required
-                                            />
+                                        type="email"
+                                        name="email"
+                                        value={user.email}
+                                        onChange={setProperty}
+                                        placeholder="E-post"
+                                        className="modern-input fs-5 py-3"
+                                        maxLength={50}
+                                        inputMode='email'
+                                        autoComplete="off"
+                                        required
+                                    />
                                 </div>
                                 <div className="mb-4">
                                     <Form.Control
-                                                type="password"
-                                                name="password"
-                                                value={user.password}
-                                                onChange={setProperty}
-                                                placeholder="Lösenord"
-                                                className="modern-input fs-5 py-3"
-                                                required
-                                            />
+                                        type="password"
+                                        name="password"
+                                        value={user.password}
+                                        onChange={setProperty}
+                                        placeholder="Lösenord"
+                                        className="modern-input fs-5 py-3"
+                                        autoComplete="off"
+                                        minLength={4}
+                                        maxLength={40}
+                                        required
+                                    />
                                 </div>
                                 <Button
                                     type="submit"
                                     variant="primary"
                                     size="lg"
                                     className="btn btn-primary border-0 shadow w-100 mb-3 fw-semibold rounded-pill py-3"
-                                    onClick={handleSubmit}
                                 >
                                     Logga in
                                 </Button>

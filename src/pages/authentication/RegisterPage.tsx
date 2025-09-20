@@ -16,9 +16,8 @@ export default function RegisterPage() {
 
     function setProperty(event: React.ChangeEvent<HTMLInputElement>) {
         let { name, value } = event.target;
-    
-         if (name === 'phone') {
-            value = isNaN(+value) ? '' : value;
+        if (name === 'phone') {
+            value = value.replace(/[^0-9+\-\s]/g, '');
         }
         setUser({ ...user, [name]: value });
     }
@@ -46,7 +45,7 @@ export default function RegisterPage() {
                                 <h2 className="login-title text-primary fw-bold mb-2">Välkommen</h2>
                                 <p className="login-subtitle text-white-50 mb-0">Registrera nytt konto</p>
                             </div>
-                            <Form>
+                            <Form onSubmit={sendForm}>
                                 <Row>
                                     <Col md="6">
                                         <div className="mb-4">
@@ -57,6 +56,9 @@ export default function RegisterPage() {
                                                 onChange={setProperty}
                                                 placeholder="Förnamn"
                                                 className="modern-input fs-5 py-3"
+                                                autoComplete='off'
+                                                maxLength={50}
+                                                minLength={2}
                                                 required
                                             />
                                         </div>
@@ -70,6 +72,9 @@ export default function RegisterPage() {
                                                 onChange={setProperty}
                                                 placeholder="Efternamn"
                                                 className="modern-input fs-5 py-3"
+                                                autoComplete='off'
+                                                maxLength={50}
+                                                minLength={2}
                                                 required
                                             />
                                         </div>
@@ -83,6 +88,10 @@ export default function RegisterPage() {
                                                 onChange={setProperty}
                                                 placeholder="E-post"
                                                 className="modern-input fs-5 py-3"
+                                                inputMode='email'
+                                                autoComplete='off'
+                                                maxLength={50}
+                                                minLength={5}
                                                 required
                                             />
                                         </div>
@@ -96,7 +105,10 @@ export default function RegisterPage() {
                                                 onChange={setProperty}
                                                 placeholder="Telefonnummer"
                                                 className="modern-input fs-5 py-3"
-                                                required
+                                                autoComplete='off'
+                                                maxLength={14}
+                                                minLength={4}
+                                                inputMode='tel'
                                             />
                                         </div>
                                     </Col>
@@ -109,6 +121,9 @@ export default function RegisterPage() {
                                                 onChange={setProperty}
                                                 placeholder="Lösenord"
                                                 className="modern-input fs-5 py-3"
+                                                minLength={8}
+                                                maxLength={20}
+                                                autoComplete='off'
                                                 required
                                             />
                                         </div>
@@ -121,7 +136,6 @@ export default function RegisterPage() {
                                     </Col>
                                     <Col xs="12" md="6">
                                         <Button
-                                            onClick={sendForm}
                                             type="submit"
                                             variant="primary"
                                             size="lg"
