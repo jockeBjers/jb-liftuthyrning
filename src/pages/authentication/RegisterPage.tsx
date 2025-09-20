@@ -1,9 +1,38 @@
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import ReturnButton from '../../components/ReturnButton';
+import { useFetchApi } from '../../hooks/useFetchApi';
+import { useState } from 'react';
 
 export default function RegisterPage() {
-    const navigate = useNavigate();
+
+    const { postFetch } = useFetchApi();
+    const [user, setUser] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        password: ''
+    });
+
+    function setProperty(event: React.ChangeEvent<HTMLInputElement>) {
+        let { name, value } = event.target;
+    
+         if (name === 'phone') {
+            value = isNaN(+value) ? '' : value;
+        }
+        setUser({ ...user, [name]: value });
+    }
+
+    async function sendForm(event: React.FormEvent) {
+
+        event.preventDefault();
+        const payload: any = { ...user };
+
+        await postFetch("/api/users", payload);
+
+    }
+
+
     return (
         <div className="login-page min-vh-100 d-flex align-items-center justify-content-center">
             <Container fluid className="p-0">
@@ -23,6 +52,9 @@ export default function RegisterPage() {
                                         <div className="mb-4">
                                             <Form.Control
                                                 type="text"
+                                                name="firstName"
+                                                value={user.firstName}
+                                                onChange={setProperty}
                                                 placeholder="Förnamn"
                                                 className="modern-input fs-5 py-3"
                                                 required
@@ -33,6 +65,9 @@ export default function RegisterPage() {
                                         <div className="mb-4">
                                             <Form.Control
                                                 type="text"
+                                                name="lastName"
+                                                value={user.lastName}
+                                                onChange={setProperty}
                                                 placeholder="Efternamn"
                                                 className="modern-input fs-5 py-3"
                                                 required
@@ -43,6 +78,9 @@ export default function RegisterPage() {
                                         <div className="mb-4">
                                             <Form.Control
                                                 type="email"
+                                                name="email"
+                                                value={user.email}
+                                                onChange={setProperty}
                                                 placeholder="E-post"
                                                 className="modern-input fs-5 py-3"
                                                 required
@@ -53,6 +91,9 @@ export default function RegisterPage() {
                                         <div className="mb-4">
                                             <Form.Control
                                                 type="tel"
+                                                name="phone"
+                                                value={user.phone}
+                                                onChange={setProperty}
                                                 placeholder="Telefonnummer"
                                                 className="modern-input fs-5 py-3"
                                                 required
@@ -63,29 +104,24 @@ export default function RegisterPage() {
                                         <div className="mb-4">
                                             <Form.Control
                                                 type="password"
+                                                name="password"
+                                                value={user.password}
+                                                onChange={setProperty}
                                                 placeholder="Lösenord"
                                                 className="modern-input fs-5 py-3"
                                                 required
                                             />
                                         </div>
                                     </Col>
-                                    <Col md="6">
-                                        <div className="mb-4">
-                                            <Form.Control
-                                                type="password"
-                                                placeholder="Bekräfta lösenord"
-                                                className="modern-input fs-5 py-3"
-                                                required
-                                            />
-                                        </div>
-                                    </Col>
+
                                 </Row>
                                 <Row>
                                     <Col xs="12" md="6">
-                                      
+
                                     </Col>
                                     <Col xs="12" md="6">
-                                           <Button
+                                        <Button
+                                            onClick={sendForm}
                                             type="submit"
                                             variant="primary"
                                             size="lg"
