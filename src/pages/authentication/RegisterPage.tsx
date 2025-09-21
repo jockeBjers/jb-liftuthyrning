@@ -1,14 +1,13 @@
-import { Container, Row, Col, Form, Button, Spinner, Toast } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Spinner } from 'react-bootstrap';
 import ReturnButton from '../../components/ReturnButton';
 import { useFetchApi } from '../../hooks/useFetchApi';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSubmitForm } from '../../hooks/useSubmitForm';
 
 export default function RegisterPage() {
     const navigate = useNavigate();
     const { postFetch } = useFetchApi();
-    const [errorMessage, setErrorMessage] = useState('');
-    const [loading, setLoading] = useState(false);
 
     const [user, setUser] = useState({
         firstName: '',
@@ -26,30 +25,10 @@ export default function RegisterPage() {
         setUser({ ...user, [name]: value });
     }
 
-    async function sendForm(event: React.FormEvent) {
-        event.preventDefault();
-        const message = 'Något gick fel';
-        const timeOut = 2000;
-        setErrorMessage('');
-        setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        try {
-            const success = await postFetch("/api/users", user);
-            if (success) {
-                navigate('/login');
-            } else {
-                setErrorMessage(message);
-                setTimeout(() => setErrorMessage(''), timeOut);
-            }
-        } catch (err: any) {
-            setErrorMessage(message);
-            setTimeout(() => setErrorMessage(''), timeOut);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-
+    const { sendForm, loading, errorMessage } = useSubmitForm(
+        () => postFetch("/api/users", user),
+        "/login"
+    );
 
     return (
         <div className="login-page min-vh-100 d-flex align-items-center justify-content-center">
@@ -65,7 +44,7 @@ export default function RegisterPage() {
                                 <h2 className="login-title text-primary fw-bold mb-2">Välkommen</h2>
                                 <p className="login-subtitle text-white-50 mb-0">Registrera nytt konto</p>
                             </div>
-                            <Form onSubmit={sendForm}>
+                            <Form onSubmit={e => sendForm(e, navigate)}>
                                 <Row>
                                     <Col md="6">
                                         <div className="mb-4">

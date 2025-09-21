@@ -1,15 +1,14 @@
-import { Container, Row, Col, Form, Button, Spinner, Toast } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ReturnButton from "../../components/ReturnButton";
 import { useAuth } from "../../context/AuthProvider";
+import { useSubmitForm } from "../../hooks/useSubmitForm";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const [errorMessage, setErrorMessage] = useState('');
     const { loginUser } = useAuth();
-    const [loading, setLoading] = useState(false);
-    
+
     const [user, setUser] = useState({
         email: '',
         password: ''
@@ -20,29 +19,10 @@ export default function LoginPage() {
         setUser({ ...user, [name]: value });
     }
 
-    async function sendForm(event: React.FormEvent) {
-        event.preventDefault();
-        const message = 'Fel e-post eller lösenord';
-        const timeOut = 2000;
-        setErrorMessage('');
-        setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        try {
-            const success = await loginUser(user.email, user.password);
-            if (success) {
-                navigate('/profile');
-            } else {
-                setErrorMessage(message);
-                setTimeout(() => setErrorMessage(''), timeOut);
-            }
-        } catch (err) {
-            setErrorMessage(message);
-            setTimeout(() => setErrorMessage(''), timeOut);
-        } finally {
-            setLoading(false);
-        }
-    }
-
+    const { sendForm, loading, errorMessage } = useSubmitForm(
+        () => loginUser(user.email, user.password),
+        '/profile'
+    );
 
     return (
         <div className="login-page min-vh-100 d-flex align-items-center justify-content-center">
@@ -58,7 +38,7 @@ export default function LoginPage() {
                                 <h2 className="login-title text-primary fw-bold mb-2">Välkommen</h2>
                                 <p className="login-subtitle text-white-50 mb-0">Logga in på ditt konto</p>
                             </div>
-                            <Form onSubmit={sendForm}>
+                            <Form onSubmit={e => sendForm(e, navigate, 'Fel e-post eller lösenord')}>
                                 <div className="mb-4">
                                     <Form.Control
                                         type="email"
