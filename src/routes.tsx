@@ -7,7 +7,8 @@ import LoginPage from "./pages/authentication/LoginPage";
 import RegisterPage from "./pages/authentication/RegisterPage";
 import UserPage from "./pages/user/UserPage";
 import AdminPage from "./pages/admin/AdminPage";
-
+import NotFoundPage from "./pages/NotFoundPage";
+import ProtectedRoute from "./utils/ProtectedRoutes";
 
 interface Route {
     element: JSX.Element;
@@ -22,7 +23,10 @@ const routes: Route[] = [
     { element: <AboutPage />, path: '/AboutUs', menuLabel: 'Om oss' },
     { element: <LoginPage />, path: '/Login', menuLabel: 'Logga in' },
     {
-        element: <UserPage />, path: '/profile', menuLabel: 'Min sida',
+        element: <ProtectedRoute>
+            <UserPage />
+        </ProtectedRoute>,
+        path: '/profile', menuLabel: 'Min sida',
         loader: async () => {
             const orders = await (await fetch('/api/orders')).json();
             const orderItems = await (await fetch('/api/orderItems')).json();
@@ -31,7 +35,10 @@ const routes: Route[] = [
         }
     },
     {
-        element: <AdminPage />, path: '/admin',
+        element: <ProtectedRoute requiredRole="admin">
+            <AdminPage />
+        </ProtectedRoute>,
+        path: '/admin',
         loader: async () => {
             const lifts = await (await fetch('/api/lifts')).json();
             const fuels = await (await fetch('/api/fuels')).json();
@@ -49,7 +56,8 @@ const routes: Route[] = [
             const response = await fetch(`/api/lifts/${params.id}`); return response.json();
         }
     },
-    { element: <RegisterPage />, path: '/register' }
+    { element: <RegisterPage />, path: '/register' },
+    { element: <NotFoundPage />, path: '*' }
 ];
 
 export default routes;
