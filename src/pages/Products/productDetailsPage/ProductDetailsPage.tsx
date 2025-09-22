@@ -5,73 +5,42 @@ import "react-datepicker/dist/react-datepicker.css";
 import ReturnButton from "../../../components/ReturnButton";
 import SpecificationRow from "./SpecificationRow";
 import PriceRow from "./PriceRow";
-import DateRangePicker from "./DateRangePicker";
-import { Container, Row, Col } from "react-bootstrap";
-import { useAuth } from "../../../context/AuthProvider";
-import { useFetchApi } from "../../../hooks/useFetchApi";
+import DateRangePicker from "../../../components/DateRangePicker";
+import { Container, Row, Col, Spinner } from "react-bootstrap";
+import { useCart } from "../../../context/CartProvider";
 
 export default function ProductDetailsPage() {
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
     const [isBooking, setIsBooking] = useState(false);
-    const { user } = useAuth();
     const lift = useLoaderData() as Lift;
-    const { postFetch } = useFetchApi();
+    const [bookingSuccess, setBookingSuccess] = useState(false);
+    const { startDate, endDate, setStartDate, setEndDate, addToCart } = useCart();
 
     if (!lift) return <div>Loading...</div>;
 
-    const handleStartDateChange = (date: Date | null) => {
-        setStartDate(date);
-        // If start date is after end date, update end date to match start date
-        if (date && endDate && date > endDate) {
-            setEndDate(date);
-        }
-    };
-
     const calculateTotalCost = () => {
         if (!startDate || !endDate) return 0;
-
-        const days = Math.ceil(
-            (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 3600 * 24)
+        const fromDate = new Date(startDate).getTime();
+        const toDate = new Date(endDate).getTime();
+        const daysOfRental = Math.ceil(
+            (toDate - fromDate) / (1000 * 3600 * 24)
         ) + 1;
-        return (days * lift.dailyPrice) + lift.startFee;
+        return (daysOfRental * lift.dailyPrice) + lift.startFee;
     };
 
-    const handleBooking = async () => {
-        if (!user) {
-            alert("Du måste vara inloggad för att boka en lift.");
-            return;
-        }
 
-        if (!startDate || !endDate) {
-            alert("Vänligen välj start och slutdatum");
-            return;
-        }
-
+    const sendToCart = async () => {
+        if (!startDate || !endDate) return;
         setIsBooking(true);
         try {
-            const totalPrice = calculateTotalCost();
-
-            const order = await postFetch("/api/orders", {
-                userId: user.id,
-                orderDate: startDate.toISOString().split("T")[0],
-                returnDate: endDate.toISOString().split("T")[0],
-                totalPrice: totalPrice
-            });
-
-            await postFetch("/api/orderItems", {
-                orderId: order.insertId,
-                liftId: lift.id,
-                pricePerDay: lift.dailyPrice,
-                startFee: lift.startFee
-            });
-
-            alert("Bokningsförfrågan skickad!");
-        } catch (err) {
-            console.error("Booking error:", err);
-            alert("Ett fel uppstod vid bokning.");
+            addToCart(lift);
+            await new Promise(resolve => setTimeout(resolve, 500));
+            setBookingSuccess(true);
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            setBookingSuccess(false);
         } finally {
             setIsBooking(false);
+            setTimeout(() => setBookingSuccess(false), 3000);
         }
     };
 
@@ -121,8 +90,10 @@ export default function ProductDetailsPage() {
                                 <DateRangePicker
                                     startDate={startDate}
                                     endDate={endDate}
-                                    handleStartDateChange={handleStartDateChange}
-                                    setEndDate={setEndDate} />
+                                    handleStartDateChange={setStartDate}
+                                    setEndDate={setEndDate}
+                                />
+
 
                                 <div className="bg-dark p-3 rounded mb-3">
                                     <div className="d-flex justify-content-between">
@@ -138,11 +109,19 @@ export default function ProductDetailsPage() {
 
                                 <button
                                     className="btn btn-primary btn-lg w-100 fw-bold mb-5"
-                                    onClick={handleBooking}
-                                    disabled={isBooking || !startDate || !endDate}
+                                    onClick={() => {
+                                        sendToCart();
+                                    }}
+                                    disabled={!startDate || !endDate}
                                 >
-                                    {isBooking ? "Skickar..." : "Skicka bokningsförfrågan"}
+                                    {isBooking && !bookingSuccess && (
+                                        <Spinner as="span" animation="border" size="sm" role="status" className="me-2" />
+                                    )}
+                                    {bookingSuccess ? "Bokning tillagd!" : "Lägg i kundvagn"}
                                 </button>
+
+                            </div>
+                            <div className="mt-4">
                                 <div>
                                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto similique corrupti natus deserunt mollitia doloremque harum neque omnis obcaecati hic ratione, voluptatibus debitis nihil, quam consectetur sapiente? Blanditiis, dicta autem.</p>
                                 </div>
