@@ -1,5 +1,9 @@
-import { Container, Table } from "react-bootstrap";
+import { Button, Container, Modal, Table } from "react-bootstrap";
 import { useAuth } from "../../context/AuthProvider";
+import { useState, useEffect } from "react";
+import { useFetchApi } from "../../hooks/useFetchApi";
+import { useRevalidator } from "react-router-dom";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 export default function UserOrders({
     orders = [],
@@ -11,8 +15,37 @@ export default function UserOrders({
     lifts: any[]
 }) {
     const { user } = useAuth();
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
+    const [userOrders, setUserOrders] = useState<any[]>([]);
+    const { deleteFetch } = useFetchApi();
+    const revalidator = useRevalidator();
 
-    const userOrders = orders.filter(order => order.userId === user?.id);
+    useEffect(() => {
+        if (user) {
+            setUserOrders(orders.filter(order => order.userId === user.id));
+        }
+    }, [orders, user]);
+
+    const canCancelOrder = (orderDateStr: string): boolean => {
+        const today = new Date();
+        const orderDate = new Date(orderDateStr);
+        const daysUntilOrder = orderDate.getTime() - today.getTime() / (1000 * 60 * 60 * 24);
+        return daysUntilOrder > 3;
+    };
+
+    const handleRemoveOrder = async (orderId: number) => {
+        try {
+            await deleteFetch(`/api/orders/${orderId}`);
+            setShowCancelModal(false);
+            setOrderToCancel(null);
+            revalidator.revalidate();
+
+        } catch (error) {
+            console.error("Kunde inte ta bort order:", error);
+            alert("Något gick fel.");
+        }
+    };
 
     const getOrderItems = (orderId: number) =>
         orderItems.filter(item => item.orderId === orderId);
@@ -21,7 +54,7 @@ export default function UserOrders({
         const lift = lifts.find(l => l.id === liftId);
         return `${lift?.name} (${lift?.brand})`;
     };
-   
+
     return (
         <Container>
             <h2 className="text-primary mb-4">Ordrar</h2>
@@ -64,13 +97,37 @@ export default function UserOrders({
                                     )}
                                 </tbody>
                             </Table>
-                            <p>
-                                <strong>Totalt pris för order:</strong> {order.totalPrice} kr
-                            </p>
+                            <div className="width-100 d-flex justify-content-between">
+                                <p>
+                                    <strong>Totalt pris för order:</strong> {order.totalPrice} kr
+                                </p>
+                                {canCancelOrder(order.orderDate) && (
+                                    <Button
+                                        variant="danger"
+                                        size="sm"
+                                        onClick={() => {
+                                            setOrderToCancel(order.id);
+                                            setShowCancelModal(true);
+                                        }}
+                                        className="bg-transparent border-1 text-danger text-end"
+                                    >
+                                        Avbryt beställning
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     );
                 })
             )}
+
+            <DeleteConfirmationModal
+                showCancelModal={showCancelModal}
+                setShowCancelModal={setShowCancelModal}
+                orderToCancel={orderToCancel}
+                setOrderToCancel={setOrderToCancel}
+                handleRemoveOrder={handleRemoveOrder}
+                userOrders={userOrders}
+            />
         </Container>
     );
 }
