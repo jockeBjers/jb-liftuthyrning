@@ -3,12 +3,14 @@ import { Navbar, Nav, Container, Dropdown, ButtonGroup } from "react-bootstrap";
 import routes from "../routes";
 import { useState } from "react";
 import { useAuth } from "../context/AuthProvider";
+import CartCanvas from "../checkoutCart/CartCanvas";
 
 export default function Header() {
     const [expanded, setExpanded] = useState(false);
     const { user } = useAuth();
     const { logoutUser } = useAuth();
     const navigate = useNavigate();
+    const [showCart, setShowCart] = useState(false);
 
     const handleLogout = () => {
         logoutUser();
@@ -51,7 +53,6 @@ export default function Header() {
 
                             {user ? (
                                 expanded ? (
-                                    
                                     <>
                                         <Nav.Link
                                             as={NavLink}
@@ -82,6 +83,15 @@ export default function Header() {
                                         >
                                             Logga ut
                                         </Nav.Link>
+                                        <Nav.Link
+                                            onClick={() => {
+                                                setShowCart(true);
+                                                setExpanded(false);
+                                            }}
+                                            className="nav-link px-lg-5"
+                                        >
+                                            Kundvagn
+                                        </Nav.Link>
                                     </>
                                 ) : (
 
@@ -107,6 +117,10 @@ export default function Header() {
                                             <Dropdown.Item onClick={handleLogout} className="nav-link px-lg-5">
                                                 Logga ut
                                             </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setShowCart(true)} className="nav-link px-lg-5">
+                                                Kundvagn
+                                                <CartCanvas show={showCart} onHide={() => setShowCart(false)} />
+                                            </Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 )
@@ -120,8 +134,8 @@ export default function Header() {
                                     Logga in
                                 </Nav.Link>
                             )}
+                            <CartCanvas show={showCart} onHide={() => setShowCart(false)} />
                         </Nav>
-
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
