@@ -2,7 +2,6 @@
 import ProductTab from "./ProductTab";
 import type Lift from "../../interfaces/Lift";
 import { useLoaderData } from "react-router-dom";
-import {Col, Row, Table } from "react-bootstrap";
 
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
@@ -11,6 +10,7 @@ import type User from "../../interfaces/User";
 import OrderTab from "./OrderTab";
 import { useAuth } from "../../context/AuthProvider";
 import UserInfoCard from "../../components/userInfoCard";
+import CategoryTab from "./categories/CategoryTab";
 
 interface Fuel {
     id: number;
@@ -41,68 +41,31 @@ export default function AdminPage() {
     return <div className="text-white m-xs-1 m-md-5">
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 mx-3">
             <h1 className="text-primary mb-5">JB-Lift Admin </h1>
-                <UserInfoCard user={user} />
+            <UserInfoCard user={user} />
         </div>
 
         <Tabs
-            defaultActiveKey="lifts"
+            defaultActiveKey="dashboard"
             id="uncontrolled-tab-example"
-            className="mb-4 admin-tabs "
-
+            className="mb-2 admin-tabs "
         >
-            <Tab eventKey="lifts" title="Liftar">
-                <ProductTab liftDetails={liftDetails} />
-
+            <Tab eventKey="dashboard" title="Dashboard">
+                <h2 className="text-primary text-center my-5">Dashboard</h2>
+                <p className="text-center">Välkommen till adminpanelen. Välj en flik för att hantera ordrar, kunder, liftar eller kategorier.</p>
             </Tab>
-            <Tab eventKey="categories" title="Bränsle och Kategorier">
 
-                <Row className="m-0 g-4">
-
-                    <Col xs="12" md="6" className="p-2 " >
-                        <Table striped bordered hover>
-                            <thead >
-                                <tr>
-                                    <th>#</th>
-                                    <th>Typ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {fuels.map((fuel) => (
-                                    <tr key={fuel.id}>
-                                        <td>{fuel.id}</td>
-                                        <td>{fuel.name}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </Col>
-                    <Col xs="12" md="6" className="p-2">
-                        <Table striped bordered hover >
-                            <thead >
-                                <tr>
-                                    <th>#</th>
-                                    <th>Kategori</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {liftCategories.map((category) => (
-                                    <tr key={category.id}>
-                                        <td>{category.id}</td>
-                                        <td>{category.name}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
-            </Tab>
             <Tab eventKey="orders" title="Ordrar">
 
                 <OrderTab users={users} orders={orders} orderItems={orderItems} lifts={lifts} />
             </Tab>
             <Tab eventKey="customers" title="Kunder">
-
                 <UserTab customerWithOrders={customerWithOrders} users={users} />
+            </Tab>
+            <Tab eventKey="lifts" title="Liftar">
+                <ProductTab liftDetails={liftDetails} />
+            </Tab>
+            <Tab eventKey="categories" title="Bränsle och Kategorier">
+                <CategoryTab fuels={fuels} liftCategories={liftCategories} />
             </Tab>
         </Tabs>
 
