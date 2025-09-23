@@ -1,18 +1,24 @@
-import { Button, Container, Modal, Table } from "react-bootstrap";
+import { Button, Container, Table } from "react-bootstrap";
 import { useAuth } from "../../context/AuthProvider";
 import { useState, useEffect } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
 import { useRevalidator } from "react-router-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import FilterButtons from "../../components/FilterButtons";
+import TablePagination from "../../components/TablePagination";
+
 
 export default function UserOrders({
     orders = [],
     orderItems = [],
     lifts = []
+
+
 }: {
     orders: any[],
     orderItems: any[],
-    lifts: any[]
+    lifts: any[],
+
 }) {
     const { user } = useAuth();
     const [showCancelModal, setShowCancelModal] = useState(false);
@@ -21,16 +27,60 @@ export default function UserOrders({
     const { deleteFetch } = useFetchApi();
     const revalidator = useRevalidator();
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 5;
+
+
+
+
+
+    const [view, setView] = useState<"all" | "current" | "coming" | "closed">("all");
+
+    const categorizeOrders = (orders: any[]) => {
+        const today = new Date();
+
+        const all = orders;
+
+        const current = orders.filter(o => {
+            const start = new Date(o.orderDate);
+            const end = new Date(o.returnDate);
+            return start <= today && today <= end;
+        });
+
+        const coming = orders.filter(o => new Date(o.orderDate) > today);
+        const closed = orders.filter(o => new Date(o.returnDate) < today);
+
+        return { all, current, coming, closed };
+    };
+
+    const { all, current, coming, closed } = categorizeOrders(userOrders);
+
+    const ordersToDisplay =
+        view === "all"
+            ? all
+            : view === "current"
+                ? current
+                : view === "coming"
+                    ? coming
+                    : closed;
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [view]);
+
+
     useEffect(() => {
         if (user) {
             setUserOrders(orders.filter(order => order.userId === user.id));
         }
     }, [orders, user]);
 
+
+
+
     const canCancelOrder = (orderDateStr: string): boolean => {
         const today = new Date();
         const orderDate = new Date(orderDateStr);
-        const daysUntilOrder = orderDate.getTime() - today.getTime() / (1000 * 60 * 60 * 24);
+        const daysUntilOrder = (orderDate.getTime() / (1000 * 60 * 60 * 24)) - (today.getTime() / (1000 * 60 * 60 * 24));
         return daysUntilOrder > 3;
     };
 
@@ -55,13 +105,32 @@ export default function UserOrders({
         return `${lift?.name} (${lift?.brand})`;
     };
 
+    const totalPages = Math.ceil(ordersToDisplay.length / pageSize);
+
+    const paginatedOrders = ordersToDisplay.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+    );
+
+
     return (
-        <Container>
+        <Container className="mb-5">
+            <FilterButtons
+                options={[
+                    { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
+                    { label: "Pågående", value: "current", variant: "success", textColor: "text-white" },
+                    { label: "Kommande", value: "coming", variant: "warning", textColor: "text-black" },
+                    { label: "Avslutade", value: "closed", variant: "danger", textColor: "text-white" },
+                ]}
+                selected={view}
+                setSelected={setView}
+            />
+
             <h2 className="text-primary mb-4">Ordrar</h2>
             {userOrders.length === 0 ? (
                 <p>Du har inga ordrar.</p>
             ) : (
-                userOrders.map(order => {
+                paginatedOrders.map(order => {
                     const items = getOrderItems(order.id);
                     return (
                         <div key={order.id} className="mb-5 p-3 bg-secondary">
@@ -119,12 +188,20 @@ export default function UserOrders({
                     );
                 })
             )}
+            {totalPages > 1 && (
+                <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    setCurrentPage={setCurrentPage}
+                />
+
+            )}
 
             <DeleteConfirmationModal
                 showCancelModal={showCancelModal}
                 setShowCancelModal={setShowCancelModal}
                 orderToCancel={orderToCancel}
-                setOrderToCancel={setOrderToCancel}
+
                 handleRemoveOrder={handleRemoveOrder}
                 userOrders={userOrders}
             />
