@@ -5,13 +5,11 @@ export default function DeleteConfirmationModal(
     { showCancelModal,
         setShowCancelModal,
         orderToCancel,
-        setOrderToCancel,
         handleRemoveOrder,
         userOrders }: {
             showCancelModal: boolean,
             setShowCancelModal: (show: boolean) => void,
             orderToCancel: number | null,
-            setOrderToCancel: (orderId: number | null) => void,
             handleRemoveOrder: (orderId: number) => Promise<void>,
             userOrders: any[]
         }
