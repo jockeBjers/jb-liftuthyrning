@@ -7,6 +7,7 @@ import { useSubmitForm } from "../../hooks/useSubmitForm";
 
 export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] }) {
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [editingLiftId, setEditingLiftId] = useState<number | null>(null);
     const [lift, setLift] = useState({
         name: '',
         brand: '',
@@ -20,11 +21,15 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         fuelId: 1
     });
 
-    const { postFetch } = useFetchApi();
+    const { postFetch, putFetch } = useFetchApi();
     const revalidator = useRevalidator();
+
     const { sendForm, loading, errorMessage } = useSubmitForm(
-        () => postFetch("/api/lifts", lift)
+        () => editingLiftId
+            ? putFetch(`/api/lifts/${editingLiftId}`, lift)
+            : postFetch("/api/lifts", lift)
     );
+
 
     function setProperty(event: React.ChangeEvent) {
         let { name, value }: { name: string, value: string | number | null } =
@@ -37,25 +42,39 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         setLift({ ...lift, [name]: value });
     }
 
-    async function handleCreateLift(e: React.FormEvent) {
-        const success = await sendForm(e);
+    async function handleSubmitLift(e: React.FormEvent) {
+        const errorMsg = editingLiftId
+            ? "Kunde inte uppdatera lift"
+            : "Kunde inte skapa lift";
+
+        const success = await sendForm(e, undefined, errorMsg);
         if (success) {
-            setLift({
-                name: '',
-                brand: '',
-                maxHeight: 0,
-                maxWeight: 0,
-                platformSize: '',
-                dailyPrice: 0,
-                startFee: 0,
-                description: '',
-                categoryId: 1,
-                fuelId: 1
-            });
+            resetLift();
             setShowCreateModal(false);
             revalidator.revalidate();
         }
     }
+
+    function resetLift() {
+        setLift({
+            name: '',
+            brand: '',
+            maxHeight: 0,
+            maxWeight: 0,
+            platformSize: '',
+            dailyPrice: 0,
+            startFee: 0,
+            description: '',
+            categoryId: 1,
+            fuelId: 1
+        });
+        setEditingLiftId(null);
+    }
+    function handleCloseModal() {
+        resetLift();
+        setShowCreateModal(false);
+    }
+
 
     return (
         <>
@@ -68,12 +87,13 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
 
                 <CreateLift
                     show={showCreateModal}
-                    onHide={() => setShowCreateModal(false)}
+                    onHide={handleCloseModal}
                     lift={lift}
                     onInputChange={setProperty}
-                    onSubmit={handleCreateLift}
+                    onSubmit={handleSubmitLift}
                     loading={loading}
                     errorMessage={errorMessage}
+                    isEdit={editingLiftId !== null}
                 />
             </div>
 
@@ -85,6 +105,7 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                         <th className="d-none d-md-table-cell">Märke</th>
                         <th className="d-none d-md-table-cell">Maxhöjd</th>
                         <th className="d-none d-md-table-cell">Maxvikt</th>
+                        <th className="d-none d-md-table-cell">Korgstorlek</th>
                         <th className="d-none d-md-table-cell">Dagspris</th>
                         <th className="d-none d-md-table-cell">Startavgift</th>
                         <th className="d-none d-md-table-cell">Bränsletyp</th>
@@ -101,6 +122,7 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                             <td className="d-none d-md-table-cell">{lift.brand}</td>
                             <td className="d-none d-md-table-cell">{lift.maxHeight}</td>
                             <td className="d-none d-md-table-cell">{lift.maxWeight}</td>
+                            <td className="d-none d-md-table-cell">{lift.platformSize}</td>
                             <td className="d-none d-md-table-cell">{lift.dailyPrice}</td>
                             <td className="d-none d-md-table-cell">{lift.startFee}</td>
                             <td className="d-none d-md-table-cell">{lift.fuelName}</td>
@@ -109,7 +131,22 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                             <td>
                                 <button
                                     className="btn btn-sm w-100"
-                                    onClick={() => console.log("View lift details:", lift.id)}
+                                    onClick={() => {
+                                        setEditingLiftId(lift.id);
+                                        setLift({
+                                            name: lift.name,
+                                            brand: lift.brand,
+                                            maxHeight: lift.maxHeight,
+                                            maxWeight: lift.maxWeight,
+                                            platformSize: lift.platformSize,
+                                            dailyPrice: lift.dailyPrice,
+                                            startFee: lift.startFee,
+                                            description: lift.description,
+                                            categoryId: lift.categoryId,
+                                            fuelId: lift.fuelId
+                                        });
+                                        setShowCreateModal(true);
+                                    }}
                                 >
                                     Redigera
                                 </button>

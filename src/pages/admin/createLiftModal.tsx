@@ -4,6 +4,7 @@ interface CreateLiftProps {
     show: boolean;
     onHide: () => void;
     lift: {
+        id?: number;
         name: string;
         brand: string;
         maxHeight: number;
@@ -19,6 +20,7 @@ interface CreateLiftProps {
     onSubmit: (e: React.FormEvent) => void;
     loading: boolean;
     errorMessage: string | null;
+    isEdit?: boolean;
 }
 
 export default function CreateLift({
@@ -28,13 +30,16 @@ export default function CreateLift({
     onInputChange,
     onSubmit,
     loading,
-    errorMessage
+    errorMessage,
+    isEdit = false
 }: CreateLiftProps) {
 
     return (
         <Modal show={show} onHide={onHide} size="lg" className="text-white">
             <Modal.Header closeButton className="bg-body border-secondary">
-                <Modal.Title className='text-primary'>Lägg till ny lift</Modal.Title>
+                <Modal.Title className='text-primary'>
+                    {isEdit ? "Redigera lift" : "Lägg till ny lift"}
+                </Modal.Title>
             </Modal.Header>
             <Form onSubmit={onSubmit}>
                 <Modal.Body className="bg-secondary">
@@ -222,7 +227,7 @@ export default function CreateLift({
                                 Sparar...
                             </>
                         ) : (
-                            'Skapa lift'
+                            isEdit ? "Spara ändringar" : "Lägg till lift"
                         )}
 
                         {errorMessage && <div className="text-danger mt-1">{errorMessage}</div>}
