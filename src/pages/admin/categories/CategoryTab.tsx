@@ -3,17 +3,23 @@ import { Button, Col, Row, Table } from "react-bootstrap";
 import CreateCategoryModal from "./createCategoryModal";
 import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
-import { useRevalidator } from "react-router-dom";
+import { useLoaderData, useRevalidator } from "react-router-dom";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 
+interface Fuel {
+    id: number;
+    name: string;
+}
+interface Category {
+    id: number;
+    name: string;
+}
 
-export default function CategoryTab({
-    fuels = [],
-    liftCategories = []
-}: {
-    fuels: { id: number; name: string }[];
-    liftCategories: { id: number; name: string }[];
-}) {
+export default function CategoryTab() {
+    const { fuels, liftCategories, } = useLoaderData() as {
+        fuels: Fuel[];
+        liftCategories: Category[];
+    };
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [newType, setNewType] = useState<"fuel" | "category">("fuel");
     const [newName, setNewName] = useState("");
