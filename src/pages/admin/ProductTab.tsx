@@ -1,10 +1,11 @@
 import { Table } from "react-bootstrap";
 import CreateLift from "./createLiftModal";
-import { useState } from "react";
+import {  useState } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
 import { useRevalidator } from "react-router-dom";
 import { useSubmitForm } from "../../hooks/useSubmitForm";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import FilterButtons from "../../components/FilterButtons";
 
 export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] }) {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -26,7 +27,7 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
     const revalidator = useRevalidator();
     const [showDeleteLiftModal, setShowDeleteLiftModal] = useState(false);
     const [liftToDelete, setLiftToDelete] = useState<any | null>(null);
-
+    const [view, setView] = useState<"all" | "saxlift" | "bomlift" | "pelarlift" | "el" | "diesel">("all");
     const { sendForm, loading, errorMessage } = useSubmitForm(
         () => editingLiftId
             ? putFetch(`/api/lifts/${editingLiftId}`, lift)
@@ -89,10 +90,41 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         }
     };
 
+    const categorizeLifts = (lifts: any[]) => {
+        const all = lifts;
+        const saxlift = lifts.filter(l => l.categoryName === "Saxlift");
+        const bomlift = lifts.filter(l => l.categoryName === "Bomlift");
+        const pelarlift = lifts.filter(l => l.categoryName === "Pelarlift");
+        const el = lifts.filter(l => l.fuelName === "el");
+        const diesel = lifts.filter(l => l.fuelName === "diesel");
+
+        return { all, saxlift, bomlift, pelarlift, el, diesel };
+    };
+
+    const { all, saxlift, bomlift, pelarlift, el, diesel } = categorizeLifts(liftDetails);
+
+    const categories = { all, saxlift, bomlift, pelarlift, el, diesel };
+    const liftsToDisplay = categories[view];
+
+
+
     return (
         <>
-            <div>
-                <div className="mb-3">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-0">
+                <FilterButtons
+                    options={[
+                        { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
+                        { label: "Saxliftar", value: "saxlift", variant: "primary", textColor: "text-white" },
+                        { label: "Bomliftar", value: "bomlift", variant: "primary", textColor: "text-white" },
+                        { label: "Pelarliftar", value: "pelarlift", variant: "primary", textColor: "text-white" },
+                        { label: "El", value: "el", variant: "success", textColor: "text-white" },
+                        { label: "Diesel", value: "diesel", variant: "warning", textColor: "text-secondary" },
+                    ]}
+                    selected={view}
+                    setSelected={setView}
+                />
+                
+                <div className=" ">
                     <button onClick={() => setShowCreateModal(true)} className="me-3 btn btn-primary btn-lg">
                         Lägg till ny lift
                     </button>
@@ -108,6 +140,7 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                     errorMessage={errorMessage}
                     isEdit={editingLiftId !== null}
                 />
+
             </div>
 
             <Table striped bordered hover>
@@ -128,7 +161,7 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                     </tr>
                 </thead>
                 <tbody>
-                    {liftDetails.map((lift) => (
+                    {liftsToDisplay.map((lift) => (
                         <tr key={lift.id}>
                             <td>{lift.id}</td>
                             <td>{lift.name}</td>
@@ -141,9 +174,9 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                             <td className="d-none d-md-table-cell">{lift.fuelName}</td>
                             <td className="d-none d-md-table-cell">{lift.categoryName}</td>
                             <td className="d-none d-lg-table-cell">{lift.description}</td>
-                            <td className="d-flex gap-3">
+                            <td className="d-flex gap-3 justify-content-center">
                                 <button
-                                    className="btn btn-sm "
+                                    className="btn btn-sm border-1 border-white"
                                     onClick={() => {
                                         setEditingLiftId(lift.id);
                                         setLift({
@@ -164,14 +197,14 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                                     <i className="bi bi-pencil"></i>
                                 </button>
                                 <button
-                                    className="btn btn-sm btn-danger"
+                                    className="btn btn-sm btn-danger bg-transparent"
                                     title="Ta bort"
                                     onClick={() => {
                                         setLiftToDelete(lift);
                                         setShowDeleteLiftModal(true);
                                     }}
                                 >
-                                    <i className="bi bi-trash"></i>
+                                    <i className="bi bi-trash text-danger"></i>
                                 </button>
                             </td>
                         </tr>
