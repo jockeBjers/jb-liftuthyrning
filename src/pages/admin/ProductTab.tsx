@@ -1,13 +1,14 @@
-import { Table } from "react-bootstrap";
+import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import CreateLift from "./createLiftModal";
 import { useState } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
-import { useRevalidator } from "react-router-dom";
+import { useLoaderData, useRevalidator } from "react-router-dom";
 import { useSubmitForm } from "../../hooks/useSubmitForm";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import FilterButtons from "../../components/FilterButtons";
 
-export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] }) {
+export default function ProductTab() {
+    const { liftDetails } = useLoaderData() as { liftDetails: any[] };
     const [lift, setLift] = useState({
         name: '',
         brand: '',
@@ -80,7 +81,7 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         resetLift();
         setShowCreateModal(false);
     }
-    
+
     const deleteLift = async (liftId: number) => {
         try {
             await deleteFetch(`/api/lifts/${liftId}`);
@@ -121,51 +122,48 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
 
     return (
         <>
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-0">
-                <div className="d-flex flex-row flex-md-row gap-3 mb-3 mb-md-0 align-items-center">
-                    <FilterButtons
-                        options={[
 
-                            { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
-                            { label: "Saxliftar", value: "saxlift", variant: "primary", textColor: "text-white" },
-                            { label: "Bomliftar", value: "bomlift", variant: "primary", textColor: "text-white" },
-                            { label: "Pelarliftar", value: "pelarlift", variant: "primary", textColor: "text-white" },
-                            { label: "El", value: "el", variant: "success", textColor: "text-white" },
-                            { label: "Diesel", value: "diesel", variant: "warning", textColor: "text-secondary" },
-                        ]}
-                        selected={view}
-                        setSelected={setView}
-                    />
-                    <div className="flex justify-content-center align-items-center">
+            <Container fluid className=" mb-3">
+                <Row className="align-items-center g-0">
+                    <Col xs="12" md="8">
+                        <Row className="align-items-center g-2">
+                            <Col xs="auto">
+                                <FilterButtons
+                                    options={[
+                                        { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
+                                        { label: "Saxliftar", value: "saxlift", variant: "primary", textColor: "text-white" },
+                                        { label: "Bomliftar", value: "bomlift", variant: "primary", textColor: "text-white" },
+                                        { label: "Pelarliftar", value: "pelarlift", variant: "primary", textColor: "text-white" },
+                                        { label: "El", value: "el", variant: "success", textColor: "text-white" },
+                                        { label: "Diesel", value: "diesel", variant: "warning", textColor: "text-secondary" },
+                                    ]}
+                                    selected={view}
+                                    setSelected={setView}
+                                />
+                            </Col>
+                            <Col xs="12" md="4">
+                                <input
+                                    type="text"
+                                    className="modern-input form-control p-2"
+                                    placeholder="Sök bland liftar..."
+                                    value={filter}
+                                    onChange={(e) => setFilter(e.target.value)} />
+                            </Col>
+                        </Row>
+                    </Col>
 
-                        <input
-                            type="text"
-                            className="modern-input form-control p-2"
-                            placeholder="Sök bland liftar..."
-                            value={filter}
-                            onChange={(e) => setFilter(e.target.value)}
-                        />
-                    </div>
-                </div>
+                    <Col xs="12" md="4" className="d-flex justify-content-md-end">
+                        <Button
+                            onClick={() => setShowCreateModal(true)}
+                            size="lg"
+                        >
+                            Lägg till ny lift
+                        </Button>
+                    </Col>
+                </Row>
 
-                <div className=" ">
-                    <button onClick={() => setShowCreateModal(true)} className="me-3 btn btn-primary btn-lg">
-                        Lägg till ny lift
-                    </button>
-                </div>
+            </Container>
 
-                <CreateLift
-                    show={showCreateModal}
-                    onHide={handleCloseModal}
-                    lift={lift}
-                    onInputChange={setProperty}
-                    onSubmit={handleSubmitLift}
-                    loading={loading}
-                    errorMessage={errorMessage}
-                    isEdit={editingLiftId !== null}
-                />
-
-            </div>
 
             <Table striped bordered hover>
                 <thead>
@@ -234,6 +232,16 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                         </tr>
                     ))}
                 </tbody>
+                <CreateLift
+                    show={showCreateModal}
+                    onHide={handleCloseModal}
+                    lift={lift}
+                    onInputChange={setProperty}
+                    onSubmit={handleSubmitLift}
+                    loading={loading}
+                    errorMessage={errorMessage}
+                    isEdit={editingLiftId !== null}
+                />
                 <ConfirmationModal
                     show={showDeleteLiftModal}
                     setShow={setShowDeleteLiftModal}
