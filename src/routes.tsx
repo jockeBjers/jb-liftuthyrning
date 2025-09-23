@@ -47,7 +47,8 @@ const routes: Route[] = [
             const orderItems = await (await fetch('/api/orderItems')).json();
             const users = await (await fetch('/api/users')).json();
             const customerWithOrders = await (await fetch('/api/customerWithOrders')).json();
-            return { lifts, fuels, liftCategories, orders, orderItems, users, customerWithOrders };
+            const liftDetails = await (await fetch('/api/liftDetails')).json();
+            return { lifts, fuels, liftCategories, orders, orderItems, users, customerWithOrders, liftDetails };
         }
     },
 

@@ -1,6 +1,6 @@
 import { Table } from "react-bootstrap";
 import CreateLift from "./createLiftModal";
-import {  useState } from "react";
+import { useState } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
 import { useRevalidator } from "react-router-dom";
 import { useSubmitForm } from "../../hooks/useSubmitForm";
@@ -8,8 +8,6 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import FilterButtons from "../../components/FilterButtons";
 
 export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] }) {
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [editingLiftId, setEditingLiftId] = useState<number | null>(null);
     const [lift, setLift] = useState({
         name: '',
         brand: '',
@@ -23,17 +21,20 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         fuelId: 1
     });
 
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [editingLiftId, setEditingLiftId] = useState<number | null>(null);
     const { postFetch, putFetch, deleteFetch } = useFetchApi();
     const revalidator = useRevalidator();
     const [showDeleteLiftModal, setShowDeleteLiftModal] = useState(false);
     const [liftToDelete, setLiftToDelete] = useState<any | null>(null);
     const [view, setView] = useState<"all" | "saxlift" | "bomlift" | "pelarlift" | "el" | "diesel">("all");
+    const [filter, setFilter] = useState("");
+
     const { sendForm, loading, errorMessage } = useSubmitForm(
         () => editingLiftId
             ? putFetch(`/api/lifts/${editingLiftId}`, lift)
             : postFetch("/api/lifts", lift)
     );
-
 
     function setProperty(event: React.ChangeEvent) {
         let { name, value }: { name: string, value: string | number | null } =
@@ -74,10 +75,12 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         });
         setEditingLiftId(null);
     }
+
     function handleCloseModal() {
         resetLift();
         setShowCreateModal(false);
     }
+    
     const deleteLift = async (liftId: number) => {
         try {
             await deleteFetch(`/api/lifts/${liftId}`);
@@ -90,40 +93,61 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         }
     };
 
-    const categorizeLifts = (lifts: any[]) => {
-        const all = lifts;
-        const saxlift = lifts.filter(l => l.categoryName === "Saxlift");
-        const bomlift = lifts.filter(l => l.categoryName === "Bomlift");
-        const pelarlift = lifts.filter(l => l.categoryName === "Pelarlift");
-        const el = lifts.filter(l => l.fuelName === "el");
-        const diesel = lifts.filter(l => l.fuelName === "diesel");
+    const liftsToDisplay = liftDetails.filter(l => {
 
-        return { all, saxlift, bomlift, pelarlift, el, diesel };
-    };
+        const matchesView =
+            view === "all" ||
+            (view === "saxlift" && l.categoryName === "Saxlift") ||
+            (view === "bomlift" && l.categoryName === "Bomlift") ||
+            (view === "pelarlift" && l.categoryName === "Pelarlift") ||
+            (view === "el" && l.fuelName === "el") ||
+            (view === "diesel" && l.fuelName === "diesel");
 
-    const { all, saxlift, bomlift, pelarlift, el, diesel } = categorizeLifts(liftDetails);
+        const matchesFilter =
+            !filter ||
+            l.name.toLowerCase().includes(filter.toLowerCase()) ||
+            l.brand.toLowerCase().includes(filter.toLowerCase()) ||
+            l.description.toLowerCase().includes(filter.toLowerCase()) ||
+            l.categoryName.toLowerCase().includes(filter.toLowerCase()) ||
+            l.fuelName.toLowerCase().includes(filter.toLowerCase()) ||
+            l.platformSize.toLowerCase().includes(filter.toLowerCase()) ||
+            l.maxHeight.toString().includes(filter) ||
+            l.maxWeight.toString().includes(filter) ||
+            l.dailyPrice.toString().includes(filter) ||
+            l.startFee.toString().includes(filter);
 
-    const categories = { all, saxlift, bomlift, pelarlift, el, diesel };
-    const liftsToDisplay = categories[view];
-
-
+        return matchesView && matchesFilter;
+    });
 
     return (
         <>
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-0">
-                <FilterButtons
-                    options={[
-                        { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
-                        { label: "Saxliftar", value: "saxlift", variant: "primary", textColor: "text-white" },
-                        { label: "Bomliftar", value: "bomlift", variant: "primary", textColor: "text-white" },
-                        { label: "Pelarliftar", value: "pelarlift", variant: "primary", textColor: "text-white" },
-                        { label: "El", value: "el", variant: "success", textColor: "text-white" },
-                        { label: "Diesel", value: "diesel", variant: "warning", textColor: "text-secondary" },
-                    ]}
-                    selected={view}
-                    setSelected={setView}
-                />
-                
+                <div className="d-flex flex-row flex-md-row gap-3 mb-3 mb-md-0 align-items-center">
+                    <FilterButtons
+                        options={[
+
+                            { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
+                            { label: "Saxliftar", value: "saxlift", variant: "primary", textColor: "text-white" },
+                            { label: "Bomliftar", value: "bomlift", variant: "primary", textColor: "text-white" },
+                            { label: "Pelarliftar", value: "pelarlift", variant: "primary", textColor: "text-white" },
+                            { label: "El", value: "el", variant: "success", textColor: "text-white" },
+                            { label: "Diesel", value: "diesel", variant: "warning", textColor: "text-secondary" },
+                        ]}
+                        selected={view}
+                        setSelected={setView}
+                    />
+                    <div className="flex justify-content-center align-items-center">
+
+                        <input
+                            type="text"
+                            className="modern-input form-control p-2"
+                            placeholder="Sök bland liftar..."
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)}
+                        />
+                    </div>
+                </div>
+
                 <div className=" ">
                     <button onClick={() => setShowCreateModal(true)} className="me-3 btn btn-primary btn-lg">
                         Lägg till ny lift
