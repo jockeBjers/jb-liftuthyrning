@@ -2,12 +2,15 @@
 import ProductTab from "./ProductTab";
 import type Lift from "../../interfaces/Lift";
 import { useLoaderData } from "react-router-dom";
-import { Col, Row, Table } from "react-bootstrap";
+import {Col, Row, Table } from "react-bootstrap";
 
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import UserTab from "./UserTab";
 import type User from "../../interfaces/User";
+import OrderTab from "./OrderTab";
+import { useAuth } from "../../context/AuthProvider";
+import UserInfoCard from "../../components/userInfoCard";
 
 interface Fuel {
     id: number;
@@ -20,26 +23,35 @@ interface Category {
 
 
 export default function AdminPage() {
-    const { lifts, fuels, liftCategories, users, customerWithOrders } = useLoaderData() as {
+    const { user } = useAuth();
+    const { lifts, fuels, liftCategories, users, customerWithOrders, orders, orderItems, liftDetails } = useLoaderData() as {
         lifts: Lift[];
         fuels: Fuel[];
         liftCategories: Category[];
         users: User[];
         customerWithOrders: any[];
+        orders: any[],
+        orderItems: any[]
+        liftDetails: any[]
     };
+    if (!user) {
+        return <div>Loading...</div>;
+    }
 
     return <div className="text-white m-xs-1 m-md-5">
-
-        <h1 className="text-primary mb-5">JB-Lift Admin </h1>
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 mx-3">
+            <h1 className="text-primary mb-5">JB-Lift Admin </h1>
+                <UserInfoCard user={user} />
+        </div>
 
         <Tabs
             defaultActiveKey="lifts"
             id="uncontrolled-tab-example"
             className="mb-4 admin-tabs "
-                        
+
         >
             <Tab eventKey="lifts" title="Liftar">
-                <ProductTab lifts={lifts} />
+                <ProductTab liftDetails={liftDetails} />
 
             </Tab>
             <Tab eventKey="categories" title="Bränsle och Kategorier">
@@ -84,9 +96,13 @@ export default function AdminPage() {
                     </Col>
                 </Row>
             </Tab>
+            <Tab eventKey="orders" title="Ordrar">
+
+                <OrderTab users={users} orders={orders} orderItems={orderItems} lifts={lifts} />
+            </Tab>
             <Tab eventKey="customers" title="Kunder">
-               
-               <UserTab customerWithOrders={customerWithOrders} users={users} />
+
+                <UserTab customerWithOrders={customerWithOrders} users={users} />
             </Tab>
         </Tabs>
 
