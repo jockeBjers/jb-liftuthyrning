@@ -1,25 +1,61 @@
 import { Table } from "react-bootstrap";
 import CreateLift from "./createLiftModal";
 import { useState } from "react";
+import { useFetchApi } from "../../hooks/useFetchApi";
+import { useRevalidator } from "react-router-dom";
+import { useSubmitForm } from "../../hooks/useSubmitForm";
 
-export default function ProductTab({ lifts = [] }: {
-    lifts: {
-        id: number;
-        name: string;
-        brand: string;
-        maxHeight: number;
-        maxWeight: number;
-        platformSize: string;
-        dailyPrice: number;
-        startFee: number;
-        description: string;
-        categoryId: number;
-        fuelId: number;
-    }[]
-
-}) {
-
+export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] }) {
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [lift, setLift] = useState({
+        name: '',
+        brand: '',
+        maxHeight: 0,
+        maxWeight: 0,
+        platformSize: '',
+        dailyPrice: 0,
+        startFee: 0,
+        description: '',
+        categoryId: 1,
+        fuelId: 1
+    });
+
+    const { postFetch } = useFetchApi();
+    const revalidator = useRevalidator();
+    const { sendForm, loading, errorMessage } = useSubmitForm(
+        () => postFetch("/api/lifts", lift)
+    );
+
+    function setProperty(event: React.ChangeEvent) {
+        let { name, value }: { name: string, value: string | number | null } =
+            event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+        if (['maxHeight', 'maxWeight', 'dailyPrice', 'startFee', 'categoryId', 'fuelId'].includes(name)) {
+            value = isNaN(+value) ? 0 : +value;
+        }
+
+        setLift({ ...lift, [name]: value });
+    }
+
+    async function handleCreateLift(e: React.FormEvent) {
+        const success = await sendForm(e);
+        if (success) {
+            setLift({
+                name: '',
+                brand: '',
+                maxHeight: 0,
+                maxWeight: 0,
+                platformSize: '',
+                dailyPrice: 0,
+                startFee: 0,
+                description: '',
+                categoryId: 1,
+                fuelId: 1
+            });
+            setShowCreateModal(false);
+            revalidator.revalidate();
+        }
+    }
 
     return (
         <>
@@ -33,10 +69,16 @@ export default function ProductTab({ lifts = [] }: {
                 <CreateLift
                     show={showCreateModal}
                     onHide={() => setShowCreateModal(false)}
+                    lift={lift}
+                    onInputChange={setProperty}
+                    onSubmit={handleCreateLift}
+                    loading={loading}
+                    errorMessage={errorMessage}
                 />
             </div>
-            <Table striped bordered hover className="">
-                <thead className="">
+
+            <Table striped bordered hover>
+                <thead>
                     <tr>
                         <th>#</th>
                         <th>Namn</th>
@@ -52,47 +94,30 @@ export default function ProductTab({ lifts = [] }: {
                     </tr>
                 </thead>
                 <tbody>
-                    {lifts.map((lift) => {
-                        let fuelType = "";
-                        if (lift.fuelId == 1) {
-                            fuelType = "El";
-                        } else if (lift.fuelId == 2) {
-                            fuelType = "Diesel";
-                        }
-                        let category = "";
-                        if (lift.categoryId == 1) {
-                            category = "Saxlift";
-                        } else if (lift.categoryId == 2) {
-                            category = "Bomlift";
-                        }
-                        else if (lift.categoryId == 3) {
-                            category = "Pelarlift";
-                        }
-
-                        return (
-                            <tr key={lift.id}>
-                                <td>{lift.id}</td>
-                                <td>{lift.name}</td>
-                                <td className="d-none d-md-table-cell">{lift.brand}</td>
-                                <td className="d-none d-md-table-cell">{lift.maxHeight}</td>
-                                <td className="d-none d-md-table-cell">{lift.maxWeight}</td>
-                                <td className="d-none d-md-table-cell">{lift.dailyPrice}</td>
-                                <td className="d-none d-md-table-cell">{lift.startFee}</td>
-                                <td className="d-none d-md-table-cell">{fuelType}</td>
-                                <td className="d-none d-md-table-cell">{category}</td>
-                                <td className="d-none d-lg-table-cell">{lift.description}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-sm w-100"
-                                        onClick={() => console.log('View lift details:', lift.id)}
-                                    >
-                                        Visa detaljer
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
+                    {liftDetails.map((lift) => (
+                        <tr key={lift.id}>
+                            <td>{lift.id}</td>
+                            <td>{lift.name}</td>
+                            <td className="d-none d-md-table-cell">{lift.brand}</td>
+                            <td className="d-none d-md-table-cell">{lift.maxHeight}</td>
+                            <td className="d-none d-md-table-cell">{lift.maxWeight}</td>
+                            <td className="d-none d-md-table-cell">{lift.dailyPrice}</td>
+                            <td className="d-none d-md-table-cell">{lift.startFee}</td>
+                            <td className="d-none d-md-table-cell">{lift.fuelName}</td>
+                            <td className="d-none d-md-table-cell">{lift.categoryName}</td>
+                            <td className="d-none d-lg-table-cell">{lift.description}</td>
+                            <td>
+                                <button
+                                    className="btn btn-sm w-100"
+                                    onClick={() => console.log("View lift details:", lift.id)}
+                                >
+                                    Redigera
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
-            </Table></>
+            </Table>
+        </>
     );
 }
