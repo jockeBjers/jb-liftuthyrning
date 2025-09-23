@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
 import { useRevalidator } from "react-router-dom";
 import { useSubmitForm } from "../../hooks/useSubmitForm";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] }) {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -21,8 +22,10 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         fuelId: 1
     });
 
-    const { postFetch, putFetch } = useFetchApi();
+    const { postFetch, putFetch, deleteFetch } = useFetchApi();
     const revalidator = useRevalidator();
+    const [showDeleteLiftModal, setShowDeleteLiftModal] = useState(false);
+    const [liftToDelete, setLiftToDelete] = useState<any | null>(null);
 
     const { sendForm, loading, errorMessage } = useSubmitForm(
         () => editingLiftId
@@ -74,7 +77,17 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
         resetLift();
         setShowCreateModal(false);
     }
+    const deleteLift = async (liftId: number) => {
+        try {
+            await deleteFetch(`/api/lifts/${liftId}`);
+            setShowDeleteLiftModal(false);
+            revalidator.revalidate();
 
+        } catch (error) {
+            console.error("Kunde inte ta bort liften:", error);
+            alert("Något gick fel.");
+        }
+    };
 
     return (
         <>
@@ -128,9 +141,9 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                             <td className="d-none d-md-table-cell">{lift.fuelName}</td>
                             <td className="d-none d-md-table-cell">{lift.categoryName}</td>
                             <td className="d-none d-lg-table-cell">{lift.description}</td>
-                            <td>
+                            <td className="d-flex gap-3">
                                 <button
-                                    className="btn btn-sm w-100"
+                                    className="btn btn-sm "
                                     onClick={() => {
                                         setEditingLiftId(lift.id);
                                         setLift({
@@ -148,12 +161,34 @@ export default function ProductTab({ liftDetails = [] }: { liftDetails: any[] })
                                         setShowCreateModal(true);
                                     }}
                                 >
-                                    Redigera
+                                    <i className="bi bi-pencil"></i>
+                                </button>
+                                <button
+                                    className="btn btn-sm btn-danger"
+                                    title="Ta bort"
+                                    onClick={() => {
+                                        setLiftToDelete(lift);
+                                        setShowDeleteLiftModal(true);
+                                    }}
+                                >
+                                    <i className="bi bi-trash"></i>
                                 </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
+                <ConfirmationModal
+                    show={showDeleteLiftModal}
+                    setShow={setShowDeleteLiftModal}
+                    title="Ta bort lift"
+                    message={`Är du säker på att du vill ta bort liften "${liftToDelete?.name}"?`}
+                    onConfirm={async () => {
+                        if (liftToDelete) await deleteLift(liftToDelete.id);
+                        setLiftToDelete(null);
+                    }}
+                />
+
+
             </Table>
         </>
     );
