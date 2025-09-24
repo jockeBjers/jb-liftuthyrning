@@ -2,10 +2,14 @@ import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import type User from "../../../interfaces/User";
 import { useLoaderData } from "react-router-dom";
 import { useState } from "react";
+import TablePagination from "../../../components/TablePagination";
 
 export default function UserTab() {
     const { users } = useLoaderData() as { users: User[]; customerWithOrders: any[] };
     const [filter, setFilter] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
+
     const usersToDisplay = users.filter(l => {
 
         const matchesFilter =
@@ -17,6 +21,7 @@ export default function UserTab() {
         return matchesFilter;
     });
 
+    const totalPages = Math.ceil(usersToDisplay.length / pageSize);
 
     return (<>
 
@@ -33,8 +38,8 @@ export default function UserTab() {
                                 className="modern-input form-control p-2"
                                 placeholder="Sök bland Användare..."
                                 value={filter}
-                                onChange={(e) => setFilter(e.target.value)} 
-                              />
+                                onChange={(e) => setFilter(e.target.value)}
+                            />
                         </Col>
                     </Row>
                 </Col>
@@ -62,24 +67,33 @@ export default function UserTab() {
                 </tr>
             </thead>
             <tbody>
-                {usersToDisplay.map((user) => (
-                    <tr key={user.id}>
-                        <td>{user.id}</td>
-                        <td>{user.firstName} {user.lastName}</td>
-                        <td>{user.email}</td>
-                        <td>{user.phone || '—'}</td>
-                        <td>
-                            <button
-                                className="btn btn-sm w-100"
-                                onClick={() => console.log('View user details:', user.id)}
-                            >
-                                Visa detaljer
-                            </button>
-                        </td>
-                    </tr>
-                ))}
+                {usersToDisplay.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                    .map((user) => (
+                        <tr key={user.id}>
+                            <td>{user.id}</td>
+                            <td>{user.firstName} {user.lastName}</td>
+                            <td>{user.email}</td>
+                            <td>{user.phone || '—'}</td>
+                            <td>
+                                <button
+                                    className="btn btn-sm w-100"
+                                    onClick={() => console.log('View user details:', user.id)}
+                                >
+                                    Visa detaljer
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
             </tbody>
         </Table>
+
+        {totalPages > 1 && (
+            <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+            />
+        )}
     </>
     );
 }
