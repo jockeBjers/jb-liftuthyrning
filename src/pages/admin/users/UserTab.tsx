@@ -6,6 +6,7 @@ import TablePagination from "../../../components/TablePagination";
 import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import CreateUserModal from "./createUserModal";
+import ConfirmationModal from "../../../components/ConfirmationModal";
 
 export default function UserTab() {
     const { users } = useLoaderData() as { users: User[]; customerWithOrders: any[] };
@@ -15,6 +16,9 @@ export default function UserTab() {
     const revalidator = useRevalidator();
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingUserId, setEditingUserId] = useState<number | null>(null);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
     const pageSize = 10;
 
     const [user, setUser] = useState({
@@ -66,6 +70,15 @@ export default function UserTab() {
         setShowCreateModal(false);
     }
 
+    const deleteUser = async (userId: number) => {
+        try {
+            await deleteFetch(`/api/users/${userId}`);
+            setShowDeleteModal(false);
+            revalidator.revalidate();
+        } catch (error) {
+            console.error("Kunde inte ta bort användaren:", error);
+        }
+    };
 
     const usersToDisplay = users.filter(l => {
 
@@ -151,7 +164,10 @@ export default function UserTab() {
                                 <button
                                     className="btn btn-sm btn-danger bg-transparent"
                                     title="Ta bort"
-                                    onClick={() => { }}
+                                    onClick={() => {
+                                        setUserToDelete(user);
+                                        setShowDeleteModal(true);
+                                    }}
                                 >
                                     <i className="bi bi-trash text-danger"></i>
                                 </button>
@@ -160,7 +176,18 @@ export default function UserTab() {
                     ))}
             </tbody>
         </Table>
-
+        <ConfirmationModal
+            show={showDeleteModal}
+            setShow={setShowDeleteModal}
+            title="Ta bort användare"
+            message={`Är du säker på att du vill ta bort användaren ${userToDelete?.firstName} ${userToDelete?.lastName}? Detta går inte att ångra.`}
+            onConfirm={async () => {
+                if (userToDelete) await deleteUser(userToDelete.id!);
+                setUserToDelete(null);
+                setShowDeleteModal(false);
+            }
+            }
+        />
         <CreateUserModal
             show={showCreateModal}
             onHide={handleCloseModal}
