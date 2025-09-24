@@ -23,7 +23,7 @@ interface CreateLiftProps {
     isEdit?: boolean;
 }
 
-export default function CreateLift({
+export default function CreateLiftModal({
     show,
     onHide,
     lift,

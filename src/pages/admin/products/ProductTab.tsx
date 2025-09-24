@@ -1,11 +1,11 @@
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
-import CreateLift from "./createLiftModal";
+import CreateLiftModal from "./createLiftModal";
 import { useState } from "react";
-import { useFetchApi } from "../../hooks/useFetchApi";
+import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useLoaderData, useRevalidator } from "react-router-dom";
-import { useSubmitForm } from "../../hooks/useSubmitForm";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import FilterButtons from "../../components/FilterButtons";
+import { useSubmitForm } from "../../../hooks/useSubmitForm";
+import ConfirmationModal from "../../../components/ConfirmationModal";
+import FilterButtons from "../../../components/FilterButtons";
 
 export default function ProductTab() {
     const { liftDetails } = useLoaderData() as { liftDetails: any[] };
@@ -232,7 +232,7 @@ export default function ProductTab() {
                         </tr>
                     ))}
                 </tbody>
-                <CreateLift
+                <CreateLiftModal
                     show={showCreateModal}
                     onHide={handleCloseModal}
                     lift={lift}
