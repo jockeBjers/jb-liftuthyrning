@@ -1,18 +1,25 @@
-
 .products-page {
   background: url('/images/lift-bg.jpg');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   min-height: 30rem;
 }
 
 .product-header {
-  background-image: linear-gradient(to right,rgb(201, 69, 36) 50%, rgba(201, 69, 36, 0.849) 100%, transparent 100%),
+  background-image: linear-gradient(to right, rgb(201, 69, 36) 50%, rgba(201, 69, 36, 0.849) 100%, transparent 100%),
     url('/images/lift-hd.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
-.desc-div{
+
+.desc-div {
   min-height: 5rem;
+}
+
+@media (max-width: 768px) {
+  .products-page {
+    min-height: 15rem;
+  }
 }
