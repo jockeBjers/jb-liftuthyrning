@@ -9,7 +9,7 @@ import UserPage from "./pages/user/UserPage";
 import AdminPage from "./pages/admin/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./utils/ProtectedRoutes";
-import OrderTab from "./pages/admin/OrderTab";
+import OrderTab from "./pages/admin/orders/OrderTab";
 import UserTab from "./pages/admin/users/UserTab";
 import ProductTab from "./pages/admin/products/ProductTab";
 import CategoryTab from "./pages/admin/categories/CategoryTab";
