@@ -17,7 +17,7 @@ export default function FilterButtons<T>({
     setSelected: (value: T) => void;
 }) {
     return (
-        <Row className="g-2 my-5">
+        <Row className="g-2 mb-2">
             {options.map(option => (
                 <Col xs="auto" key={String(option.value)}>
                     <Button

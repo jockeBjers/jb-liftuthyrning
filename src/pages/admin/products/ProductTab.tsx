@@ -123,7 +123,7 @@ export default function ProductTab() {
     return (
         <>
 
-            <Container fluid className=" mb-3">
+            <Container fluid className=" my-5">
                 <Row className="align-items-center g-0">
                     <Col xs="12" md="8">
                         <Row className="align-items-center g-2">
@@ -232,6 +232,9 @@ export default function ProductTab() {
                         </tr>
                     ))}
                 </tbody>
+
+
+            </Table>
                 <CreateLiftModal
                     show={showCreateModal}
                     onHide={handleCloseModal}
@@ -252,9 +255,6 @@ export default function ProductTab() {
                         setLiftToDelete(null);
                     }}
                 />
-
-
-            </Table>
         </>
     );
 }

@@ -95,12 +95,11 @@ export default function UserTab() {
 
     return (<>
 
-        <Container fluid className=" my-5">
+        <Container fluid className="my-5">
             <Row className="align-items-center g-0">
                 <Col xs="12" md="8">
                     <Row className="align-items-center g-2">
                         <Col xs="auto">
-
                         </Col>
                         <Col xs="12" md="4">
                             <input
@@ -123,7 +122,6 @@ export default function UserTab() {
                     </Button>
                 </Col>
             </Row>
-
         </Container>
 
         <Table striped bordered hover>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Col, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import CreateCategoryModal from "./createCategoryModal";
 import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
@@ -96,17 +96,24 @@ export default function CategoryTab() {
 
     return (
         <>
-            <Row className="m-0 g-4 mb-3">
-                <div>
-                    <Button
-                        onClick={() => setShowCreateModal(true)}
-                        className="btn-lg"
-                    >
-                        Lägg till kategori eller bränsle
-                    </Button>
-                </div>
+            <Container fluid className="my-5">
+                <Row className="align-items-center g-0">
+                    <Col xs="12" md="8">
+                    </Col>
+                    <Col xs="12" md="4" className="d-flex justify-content-md-end">
+                        <Button
+                            onClick={() => setShowCreateModal(true)}
+                            size="lg"
+                        >
+                            Lägg till kategori eller bränsle
+                        </Button>
+                    </Col>
+                </Row>
+            </Container>
+            <Row className="m-0 g-4">
 
-                <Col xs="12" md="6" className="p-2">
+
+                <Col xs="12" md="6" className="px-2">
                     <h2 className="text-white">Bränsletyp</h2>
                     <Table striped bordered hover>
                         <thead>
@@ -147,7 +154,7 @@ export default function CategoryTab() {
                     </Table>
                 </Col>
 
-                <Col xs="12" md="6" className="p-2">
+                <Col xs="12" md="6" className="px-2">
                     <h2 className="text-white">Liftkategori</h2>
                     <Table striped bordered hover>
                         <thead>
