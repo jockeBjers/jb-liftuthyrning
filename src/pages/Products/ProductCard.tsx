@@ -6,11 +6,9 @@ export default function ProductCard({ lift }: { lift: Lift }) {
     const navigate = useNavigate();
 
     let fuelType = "Diesel";
-    let badgeClass = "bg-warning text-dark";
 
     if (lift.fuelId === 1) {
         fuelType = "EL";
-        badgeClass = "bg-success text-white";
     }
 
     let category = "Saxlift";
@@ -42,7 +40,6 @@ export default function ProductCard({ lift }: { lift: Lift }) {
                 <div className="bg-secondary text-white p-3 rounded-0 lh-1">
                     <Card.Text><strong>Märke:</strong> {lift.brand} </Card.Text>
                     <Card.Text><strong>Bränsletyp:</strong> {fuelType} </Card.Text>
-
                     <Card.Text><strong>Max höjd:</strong> {lift.maxHeight} m</Card.Text>
                     <Card.Text><strong>Max vikt:</strong> {lift.maxWeight} kg</Card.Text>
                     <Card.Text><strong>Korgstorlek:</strong> {lift.platformSize}</Card.Text>
