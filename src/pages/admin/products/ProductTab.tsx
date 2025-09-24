@@ -94,21 +94,21 @@ export default function ProductTab() {
         }
     };
 
-    const liftsToDisplay = liftDetails.filter(l => {
-
-        const matchesView =
-            view === "all" ||
+    function matchesView(l: any) {
+        return view === "all" ||
             (view === "saxlift" && l.categoryName === "Saxlift") ||
             (view === "bomlift" && l.categoryName === "Bomlift") ||
             (view === "pelarlift" && l.categoryName === "Pelarlift") ||
             (view === "el" && l.fuelName === "el") ||
             (view === "diesel" && l.fuelName === "diesel");
+    }
 
-        const matchesFilter =
-            !filter ||
-            l.name.toLowerCase().includes(filter.toLowerCase()) ||
-            l.brand.toLowerCase().includes(filter.toLowerCase()) ||
-            l.description.toLowerCase().includes(filter.toLowerCase()) ||
+    const matchesFilter = (l: any, filter: string) => {
+        if (!filter) return true;
+        const f = filter.toLowerCase();
+        return l.name.toLowerCase().includes(f) ||
+            l.brand.toLowerCase().includes(f) ||
+            l.description.toLowerCase().includes(f) ||
             l.categoryName.toLowerCase().includes(filter.toLowerCase()) ||
             l.fuelName.toLowerCase().includes(filter.toLowerCase()) ||
             l.platformSize.toLowerCase().includes(filter.toLowerCase()) ||
@@ -116,9 +116,9 @@ export default function ProductTab() {
             l.maxWeight.toString().includes(filter) ||
             l.dailyPrice.toString().includes(filter) ||
             l.startFee.toString().includes(filter);
+    };
 
-        return matchesView && matchesFilter;
-    });
+    const liftsToDisplay = liftDetails.filter(l => matchesView(l) && matchesFilter(l, filter));
 
     return (
         <>
@@ -235,26 +235,26 @@ export default function ProductTab() {
 
 
             </Table>
-                <CreateLiftModal
-                    show={showCreateModal}
-                    onHide={handleCloseModal}
-                    lift={lift}
-                    onInputChange={setProperty}
-                    onSubmit={handleSubmitLift}
-                    loading={loading}
-                    errorMessage={errorMessage}
-                    isEdit={editingLiftId !== null}
-                />
-                <ConfirmationModal
-                    show={showDeleteLiftModal}
-                    setShow={setShowDeleteLiftModal}
-                    title="Ta bort lift"
-                    message={`Är du säker på att du vill ta bort liften "${liftToDelete?.name}"?`}
-                    onConfirm={async () => {
-                        if (liftToDelete) await deleteLift(liftToDelete.id);
-                        setLiftToDelete(null);
-                    }}
-                />
+            <CreateLiftModal
+                show={showCreateModal}
+                onHide={handleCloseModal}
+                lift={lift}
+                onInputChange={setProperty}
+                onSubmit={handleSubmitLift}
+                loading={loading}
+                errorMessage={errorMessage}
+                isEdit={editingLiftId !== null}
+            />
+            <ConfirmationModal
+                show={showDeleteLiftModal}
+                setShow={setShowDeleteLiftModal}
+                title="Ta bort lift"
+                message={`Är du säker på att du vill ta bort liften "${liftToDelete?.name}"?`}
+                onConfirm={async () => {
+                    if (liftToDelete) await deleteLift(liftToDelete.id);
+                    setLiftToDelete(null);
+                }}
+            />
         </>
     );
 }

@@ -1,81 +1,48 @@
 import { Button, Container, Table } from "react-bootstrap";
 import { useAuth } from "../../context/AuthProvider";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
 import { useRevalidator } from "react-router-dom";
 import FilterButtons from "../../components/FilterButtons";
 import TablePagination from "../../components/TablePagination";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
-
 export default function UserOrders({
     orders = [],
     orderItems = [],
     lifts = []
-
-
 }: {
     orders: any[],
     orderItems: any[],
     lifts: any[],
-
 }) {
     const { user } = useAuth();
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
-    const [userOrders, setUserOrders] = useState<any[]>([]);
     const { deleteFetch } = useFetchApi();
     const revalidator = useRevalidator();
-
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
-
-
-
-
-
     const [view, setView] = useState<"all" | "current" | "coming" | "closed">("all");
+    const userOrdersFiltered = orders.filter(order => order.userId === user?.id);
 
-    const categorizeOrders = (orders: any[]) => {
+    function matchesView(order: any, view: string) {
         const today = new Date();
-
-        const all = orders;
-
-        const current = orders.filter(o => {
-            const start = new Date(o.orderDate);
-            const end = new Date(o.returnDate);
-            return start <= today && today <= end;
-        });
-
-        const coming = orders.filter(o => new Date(o.orderDate) > today);
-        const closed = orders.filter(o => new Date(o.returnDate) < today);
-
-        return { all, current, coming, closed };
-    };
-
-    const { all, current, coming, closed } = categorizeOrders(userOrders);
-
-    const ordersToDisplay =
-        view === "all"
-            ? all
-            : view === "current"
-                ? current
-                : view === "coming"
-                    ? coming
-                    : closed;
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [view]);
-
-
-    useEffect(() => {
-        if (user) {
-            setUserOrders(orders.filter(order => order.userId === user.id));
+        const orderDate = new Date(order.orderDate);
+        const returnDate = new Date(order.returnDate);
+        switch (view) {
+            case "current":
+                return orderDate <= today && returnDate >= today;
+            case "coming":
+                return orderDate > today;
+            case "closed":
+                return returnDate < today;
+            default:
+                return true;
         }
-    }, [orders, user]);
+    }
 
-
-
+    const ordersToDisplay = userOrdersFiltered.filter(order => matchesView(order, view));
 
     const canCancelOrder = (orderDateStr: string): boolean => {
         const today = new Date();
@@ -119,7 +86,7 @@ export default function UserOrders({
                 options={[
                     { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
                     { label: "Pågående", value: "current", variant: "success", textColor: "text-white" },
-                    { label: "Kommande", value: "coming", variant: "warning", textColor: "text-black" },
+                    { label: "Kommande", value: "coming", variant: "info", textColor: "text-white" },
                     { label: "Avslutade", value: "closed", variant: "danger", textColor: "text-white" },
                 ]}
                 selected={view}
@@ -127,7 +94,7 @@ export default function UserOrders({
             />
 
             <h2 className="text-primary mb-4">Ordrar</h2>
-            {userOrders.length === 0 ? (
+            {userOrdersFiltered.length === 0 ? (
                 <p>Du har inga ordrar.</p>
             ) : (
                 paginatedOrders.map(order => {
