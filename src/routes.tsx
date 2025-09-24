@@ -9,12 +9,18 @@ import UserPage from "./pages/user/UserPage";
 import AdminPage from "./pages/admin/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedRoute from "./utils/ProtectedRoutes";
+import OrderTab from "./pages/admin/orders/OrderTab";
+import UserTab from "./pages/admin/users/UserTab";
+import ProductTab from "./pages/admin/products/ProductTab";
+import CategoryTab from "./pages/admin/categories/CategoryTab";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 interface Route {
     element: JSX.Element;
     path: string;
     menuLabel?: string;
     loader?: Function;
+    children?: Route[];
 }
 
 const routes: Route[] = [
@@ -35,22 +41,49 @@ const routes: Route[] = [
         }
     },
     {
-        element: <ProtectedRoute requiredRole="admin">
-            <AdminPage />
-        </ProtectedRoute>,
-        path: '/admin',
-        loader: async () => {
-            const lifts = await (await fetch('/api/lifts')).json();
-            const fuels = await (await fetch('/api/fuels')).json();
-            const liftCategories = await (await fetch('/api/liftCategories')).json();
-            const orders = await (await fetch('/api/orders')).json();
-            const orderItems = await (await fetch('/api/orderItems')).json();
-            const users = await (await fetch('/api/users')).json();
-            const customerWithOrders = await (await fetch('/api/customerWithOrders')).json();
-            return { lifts, fuels, liftCategories, orders, orderItems, users, customerWithOrders };
-        }
+        element: <ProtectedRoute requiredRole="admin"><AdminPage /></ProtectedRoute>,
+        path: "/admin",
+        children: [
+            {path: "", element: <AdminDashboard />},
+            {
+                path: "orders",
+                element: <OrderTab />,
+                loader: async () => {
+                    const orders = await (await fetch("/api/orders")).json();
+                    const orderItems = await (await fetch("/api/orderItems")).json();
+                    const lifts = await (await fetch("/api/lifts")).json();
+                    const users = await (await fetch("/api/users")).json();
+                    return { orders, orderItems, lifts, users };
+                }
+            },
+            {
+                path: "customers",
+                element: <UserTab />,
+                loader: async () => {
+                    const users = await (await fetch("/api/users")).json();
+                    const customerWithOrders = await (await fetch("/api/customerWithOrders")).json();
+                    return { users, customerWithOrders };
+                }
+            },
+            {
+                path: "lifts",
+                element: <ProductTab />,
+                loader: async () => {
+                    const liftDetails = await (await fetch("/api/liftDetails")).json();
+                    return { liftDetails };
+                }
+            },
+            {
+                path: "categories",
+                element: <CategoryTab />,
+                loader: async () => {
+                    const fuels = await (await fetch("/api/fuels")).json();
+                    const liftCategories = await (await fetch("/api/liftCategories")).json();
+                    return { fuels, liftCategories };
+                }
+            }
+        ]
     },
-
     {
         element: <ProductDetailsPage />, path: '/products/:id', loader: async ({ params }: { params: { id: string } }) => {
             const response = await fetch(`/api/lifts/${params.id}`); return response.json();

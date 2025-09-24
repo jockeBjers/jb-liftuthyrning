@@ -1,94 +1,77 @@
 
-import ProductTab from "./ProductTab";
-import type Lift from "../../interfaces/Lift";
-import { useLoaderData } from "react-router-dom";
-import { Col, Row, Table } from "react-bootstrap";
+import { NavLink, Outlet } from "react-router-dom";
 
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
-import UserTab from "./UserTab";
-import type User from "../../interfaces/User";
-
-interface Fuel {
-    id: number;
-    name: string;
-}
-interface Category {
-    id: number;
-    name: string;
-}
+import { useAuth } from "../../context/AuthProvider";
+import UserInfoCard from "../../components/userInfoCard";
+import { Container, Nav, Navbar } from "react-bootstrap";
+import { useState } from "react";
 
 
 export default function AdminPage() {
-    const { lifts, fuels, liftCategories, users, customerWithOrders } = useLoaderData() as {
-        lifts: Lift[];
-        fuels: Fuel[];
-        liftCategories: Category[];
-        users: User[];
-        customerWithOrders: any[];
-    };
 
-    return <div className="text-white m-xs-1 m-md-5">
+    const [expanded, setExpanded] = useState(false);
+    const { user } = useAuth();
+    if (!user) {
+        return <div>Loading...</div>;
+    }
 
-        <h1 className="text-primary mb-5">JB-Lift Admin </h1>
+    return (
+        <div className="text-white mx-xs-1 mx-md-0 mt-0">
 
-        <Tabs
-            defaultActiveKey="lifts"
-            id="uncontrolled-tab-example"
-            className="mb-4 admin-tabs "
-                        
-        >
-            <Tab eventKey="lifts" title="Liftar">
-                <ProductTab lifts={lifts} />
+            <header className="bg-body sticky-top pe-lg-5 pe-0">
 
-            </Tab>
-            <Tab eventKey="categories" title="Bränsle och Kategorier">
+                <Navbar expanded={expanded} expand="lg" className="navbar p-0">
+                    <Container fluid className="p-2">
 
-                <Row className="m-0 g-4">
+                        <UserInfoCard user={user} />
 
-                    <Col xs="12" md="6" className="p-2 " >
-                        <Table striped bordered hover>
-                            <thead >
-                                <tr>
-                                    <th>#</th>
-                                    <th>Typ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {fuels.map((fuel) => (
-                                    <tr key={fuel.id}>
-                                        <td>{fuel.id}</td>
-                                        <td>{fuel.name}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </Col>
-                    <Col xs="12" md="6" className="p-2">
-                        <Table striped bordered hover >
-                            <thead >
-                                <tr>
-                                    <th>#</th>
-                                    <th>Kategori</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {liftCategories.map((category) => (
-                                    <tr key={category.id}>
-                                        <td>{category.id}</td>
-                                        <td>{category.name}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
-            </Tab>
-            <Tab eventKey="customers" title="Kunder">
-               
-               <UserTab customerWithOrders={customerWithOrders} users={users} />
-            </Tab>
-        </Tabs>
+                        <Navbar.Toggle
+                            className="bg-primary border-0 m-2 rounded-0 p-1"
+                            onClick={() => setExpanded(!expanded)}
+                        />
+                        <Navbar.Collapse className="navbar-collapse">
+                            <Nav className="navbar-nav ms-auto">
+                                <Nav.Item>
+                                    <Nav.Link as={NavLink} to="/admin" end onClick={() => setExpanded(false)} className="px-lg-2 px-xl-4">
+                                        Dashboard
+                                    </Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link as={NavLink} to="/admin/orders" onClick={() => setExpanded(false)} className="px-lg-2 px-xl-4">
+                                        Ordrar
+                                    </Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link as={NavLink} to="/admin/customers" onClick={() => setExpanded(false)} className="px-lg-2 px-xl-4">
+                                        Kunder
+                                    </Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link as={NavLink} to="/admin/lifts" onClick={() => setExpanded(false)} className="px-lg-2 px-xl-4">
+                                        Liftar
+                                    </Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link as={NavLink} to="/admin/categories" onClick={() => setExpanded(false)} className="px-lg-2 px-xl-4">
+                                        Bränsle & Kategorier
+                                    </Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link as={NavLink} to="/" onClick={() => setExpanded(false)} className="px-lg-2 px-xl-4">
+                                        Hemsida
+                                    </Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
 
-    </div>;
+            </header>
+
+            <div className="mt-3 m-5">
+                <Outlet />
+            </div>
+        </div>
+    );
+
 }

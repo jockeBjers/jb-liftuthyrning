@@ -8,15 +8,14 @@ export default function UserInfoCard({ user }: {
         phone?: string | null
     }
 }) {
-    return (<Card className="px-4 py-2 border-0 mx-3 ">
+    return (<Card className="px-4 py-2 border-0 mx-3 text-nowrap">
+
         <div className="fw-bold text-white-50">
             <span className="text-primary">Namn:</span> {user.firstName} {user.lastName}
         </div>
         <div className="text-white-50">
             <span className="text-primary">E-post:</span> {user.email}
         </div>
-        <div className=" text-white-50">
-            <span className="text-primary">Telefon:</span> {user.phone || '—'}
-        </div>
+     
     </Card>);
 }

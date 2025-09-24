@@ -1,79 +1,47 @@
-import { useState } from 'react';
-import { Row, Col, Form, Button, Modal } from 'react-bootstrap';
-import { useRevalidator } from 'react-router-dom';
-import { useFetchApi } from "../../hooks/useFetchApi";
+import { Row, Col, Form, Button, Modal, Spinner } from 'react-bootstrap';
 
 interface CreateLiftProps {
     show: boolean;
     onHide: () => void;
-    onSuccess?: () => void;
+    lift: {
+        id?: number;
+        name: string;
+        brand: string;
+        maxHeight: number;
+        maxWeight: number;
+        platformSize: string;
+        dailyPrice: number;
+        startFee: number;
+        description: string;
+        categoryId: number;
+        fuelId: number;
+    };
+    onInputChange: (event: React.ChangeEvent) => void;
+    onSubmit: (e: React.FormEvent) => void;
+    loading: boolean;
+    errorMessage: string | null;
+    isEdit?: boolean;
 }
 
-export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps) {
-    const [lift, setLift] = useState({
-        name: '',
-        brand: '',
-        maxHeight: 0,
-        maxWeight: 0,
-        platformSize: '',
-        dailyPrice: 0,
-        startFee: 0,
-        description: '',
-        categoryId: 1,
-        fuelId: 1
-    });
-    const { postFetch } = useFetchApi();
-
-    const [isLoading, setIsLoading] = useState(false);
-    const revalidator = useRevalidator();
-
-    function setProperty(event: React.ChangeEvent) {
-        let { name, value }: { name: string, value: string | number | null } =
-            event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-
-        if (['maxHeight', 'maxWeight', 'dailyPrice', 'startFee', 'categoryId', 'fuelId'].includes(name)) {
-            value = isNaN(+value) ? 0 : +value;
-        }
-
-        setLift({ ...lift, [name]: value });
-    }
-
-    async function sendForm(event: React.FormEvent) {
-
-        event.preventDefault();
-        setIsLoading(true);
-
-
-        const payload: any = { ...lift };
-
-        await postFetch("/api/lifts", payload);
-
-        setLift({
-            name: '',
-            brand: '',
-            maxHeight: 0,
-            maxWeight: 0,
-            platformSize: '',
-            dailyPrice: 0,
-            startFee: 0,
-            description: '',
-            categoryId: 1,
-            fuelId: 1
-        });
-        onHide();
-
-        revalidator.revalidate();
-
-        if (onSuccess) onSuccess();
-    }
-
+export default function CreateLiftModal({
+    show,
+    onHide,
+    lift,
+    onInputChange,
+    onSubmit,
+    loading,
+    errorMessage,
+    isEdit = false
+}: CreateLiftProps) {
 
     return (
         <Modal show={show} onHide={onHide} size="lg" className="text-white">
             <Modal.Header closeButton className="bg-body border-secondary">
-                <Modal.Title className='text-primary'>Lägg till ny lift</Modal.Title>
+                <Modal.Title className='text-primary'>
+                    {isEdit ? "Redigera lift" : "Lägg till ny lift"}
+                </Modal.Title>
             </Modal.Header>
-            <Form onSubmit={sendForm}>
+            <Form onSubmit={onSubmit}>
                 <Modal.Body className="bg-secondary">
                     <Row>
                         <Col>
@@ -82,7 +50,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                     <p className="mb-1">Namn</p>
                                     <Form.Control
                                         className="modern-input"
-                                        onChange={setProperty}
+                                        onChange={onInputChange}
                                         type="text"
                                         name="name"
                                         placeholder="Lift namn"
@@ -97,7 +65,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                     <p className="mb-1">Märke</p>
                                     <Form.Control
                                         className="modern-input"
-                                        onChange={setProperty}
+                                        onChange={onInputChange}
                                         type="text"
                                         name="brand"
                                         placeholder="Märke"
@@ -114,7 +82,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <p className="mb-1">Max höjd (m)</p>
                                             <Form.Control
                                                 className="modern-input"
-                                                onChange={setProperty}
+                                                onChange={onInputChange}
                                                 type="number"
                                                 name="maxHeight"
                                                 placeholder="10"
@@ -130,7 +98,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <p className="mb-1">Max vikt (kg)</p>
                                             <Form.Control
                                                 className="modern-input"
-                                                onChange={setProperty}
+                                                onChange={onInputChange}
                                                 type="number"
                                                 name="maxWeight"
                                                 placeholder="200"
@@ -147,7 +115,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                     <p className="mb-1">Plattformsstorlek</p>
                                     <Form.Control
                                         className="modern-input"
-                                        onChange={setProperty}
+                                        onChange={onInputChange}
                                         type="text"
                                         name="platformSize"
                                         placeholder="2x2m"
@@ -163,7 +131,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <p className="mb-1">Dagspris (kr)</p>
                                             <Form.Control
                                                 className="modern-input"
-                                                onChange={setProperty}
+                                                onChange={onInputChange}
                                                 type="number"
                                                 name="dailyPrice"
                                                 placeholder="500"
@@ -180,7 +148,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <p className="mb-1">Startavgift (kr)</p>
                                             <Form.Control
                                                 className="modern-input"
-                                                onChange={setProperty}
+                                                onChange={onInputChange}
                                                 type="number"
                                                 name="startFee"
                                                 placeholder="200"
@@ -200,7 +168,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <Form.Select
                                                 className="modern-input"
                                                 name="fuelId"
-                                                onChange={setProperty}
+                                                onChange={onInputChange}
                                                 value={lift.fuelId}
                                             >
                                                 <option value={1}>El</option>
@@ -216,7 +184,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                             <Form.Select
                                                 className="modern-input"
                                                 name="categoryId"
-                                                onChange={setProperty}
+                                                onChange={onInputChange}
                                                 value={lift.categoryId}
                                             >
                                                 <option value={1}>Saxlift</option>
@@ -235,7 +203,7 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                                         className="modern-input"
                                         as="textarea"
                                         rows={3}
-                                        onChange={setProperty}
+                                        onChange={onInputChange}
                                         name="description"
                                         placeholder="Beskrivning av liften"
                                         value={lift.description}
@@ -246,11 +214,23 @@ export default function CreateLift({ show, onHide, onSuccess }: CreateLiftProps)
                     </Row>
                 </Modal.Body>
                 <Modal.Footer className="bg-body border-secondary">
-                    <Button variant="secondary" onClick={onHide} disabled={isLoading}>
+                    <Button variant="secondary" onClick={onHide} disabled={loading}>
                         Avbryt
                     </Button>
-                    <Button variant="primary" type="submit" disabled={isLoading}>
-                        {isLoading ? 'Sparar...' : 'Skapa lift'}
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        disabled={loading}>
+                        {loading ? (
+                            <>
+                                <Spinner animation="border" size="sm" className="me-2" />
+                                Sparar...
+                            </>
+                        ) : (
+                            isEdit ? "Spara ändringar" : "Lägg till lift"
+                        )}
+
+                        {errorMessage && <div className="text-danger mt-1">{errorMessage}</div>}
                     </Button>
                 </Modal.Footer>
             </Form>

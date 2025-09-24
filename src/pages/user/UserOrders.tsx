@@ -3,9 +3,9 @@ import { useAuth } from "../../context/AuthProvider";
 import { useState, useEffect } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
 import { useRevalidator } from "react-router-dom";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import FilterButtons from "../../components/FilterButtons";
 import TablePagination from "../../components/TablePagination";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 
 export default function UserOrders({
@@ -197,14 +197,18 @@ export default function UserOrders({
 
             )}
 
-            <DeleteConfirmationModal
-                showCancelModal={showCancelModal}
-                setShowCancelModal={setShowCancelModal}
-                orderToCancel={orderToCancel}
-
-                handleRemoveOrder={handleRemoveOrder}
-                userOrders={userOrders}
+            <ConfirmationModal
+                show={showCancelModal}
+                setShow={setShowCancelModal}
+                title="Ta bort order"
+                message={"Är du säker på att du vill ta bort denna order?"}
+                onConfirm={async () => {
+                    if (orderToCancel) {
+                        await handleRemoveOrder(orderToCancel);
+                    }
+                }}
             />
+
         </Container>
     );
 }
