@@ -1,14 +1,71 @@
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import type User from "../../../interfaces/User";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useRevalidator } from "react-router-dom";
 import { useState } from "react";
 import TablePagination from "../../../components/TablePagination";
+import { useFetchApi } from "../../../hooks/useFetchApi";
+import { useSubmitForm } from "../../../hooks/useSubmitForm";
+import CreateUserModal from "./createUserModal";
 
 export default function UserTab() {
     const { users } = useLoaderData() as { users: User[]; customerWithOrders: any[] };
     const [filter, setFilter] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const { postFetch, putFetch, deleteFetch } = useFetchApi();
+    const revalidator = useRevalidator();
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [editingUserId, setEditingUserId] = useState<number | null>(null);
     const pageSize = 10;
+
+    const [user, setUser] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        role: "user"
+    });
+
+    const { sendForm, loading, errorMessage } = useSubmitForm(
+        () => editingUserId
+            ? putFetch(`/api/users/${editingUserId}`, user)
+            : postFetch("/api/users", user)
+    );
+
+    function setProperty(event: React.ChangeEvent) {
+        let { name, value }: { name: string; value: string } = (event.target as HTMLInputElement);
+        if (name === 'phone') {
+            value = value.replace(/[^0-9+\-\s]/g, '');
+        }
+        setUser({ ...user, [name]: value });
+    }
+
+    async function handleSubmitUser(e: React.FormEvent) {
+        const errorMsg = editingUserId ? "kunde inte uppdatera användaren" : "kunde inte skapa användaren";
+
+        const success = await sendForm(e, undefined, errorMsg);
+        if (success) {
+            resetUser();
+            setShowCreateModal(false);
+            revalidator.revalidate();
+        }
+    };
+
+    const resetUser = () => {
+        setUser({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phone: "",
+            role: "user"
+        });
+        setEditingUserId(null);
+    }
+
+    function handleCloseModal() {
+        resetUser();
+        setShowCreateModal(false);
+    }
+
 
     const usersToDisplay = users.filter(l => {
 
@@ -46,10 +103,10 @@ export default function UserTab() {
 
                 <Col xs="12" md="4" className="d-flex justify-content-md-end">
                     <Button
-                        onClick={() => { }}
+                        onClick={() => setShowCreateModal(true)}
                         size="lg"
                     >
-                        Lägg till ny användare
+                        Lägg till användare
                     </Button>
                 </Col>
             </Row>
@@ -61,9 +118,9 @@ export default function UserTab() {
                 <tr>
                     <th>#</th>
                     <th>Namn</th>
-                    <th>E-post</th>
+                    <th >E-post</th>
                     <th>Telefon</th>
-                    <th>Hantera</th>
+                    <th style={{ width: "120px" }}>Hantera</th>
                 </tr>
             </thead>
             <tbody>
@@ -74,18 +131,46 @@ export default function UserTab() {
                             <td>{user.firstName} {user.lastName}</td>
                             <td>{user.email}</td>
                             <td>{user.phone || '—'}</td>
-                            <td>
+                            <td className="d-flex gap-3 justify-content-center w-100">
                                 <button
-                                    className="btn btn-sm w-100"
-                                    onClick={() => console.log('View user details:', user.id)}
+                                    className="btn btn-sm border-1 border-white"
+                                    onClick={() => {
+                                        setEditingUserId(user.id || null);
+                                        setUser({
+                                            firstName: user.firstName,
+                                            lastName: user.lastName,
+                                            email: user.email,
+                                            phone: user.phone || "",
+                                            role: user.role
+                                        });
+                                        setShowCreateModal(true);
+                                    }}
                                 >
-                                    Visa detaljer
+                                    <i className="bi bi-pencil"></i>
+                                </button>
+                                <button
+                                    className="btn btn-sm btn-danger bg-transparent"
+                                    title="Ta bort"
+                                    onClick={() => { }}
+                                >
+                                    <i className="bi bi-trash text-danger"></i>
                                 </button>
                             </td>
                         </tr>
                     ))}
             </tbody>
         </Table>
+
+        <CreateUserModal
+            show={showCreateModal}
+            onHide={handleCloseModal}
+            user={user}
+            onInputChange={setProperty}
+            onSubmit={handleSubmitUser}
+            loading={loading}
+            errorMessage={errorMessage}
+            isEdit={!!editingUserId}
+        />
 
         {totalPages > 1 && (
             <TablePagination
