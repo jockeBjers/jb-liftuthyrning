@@ -24,22 +24,30 @@ export default function CategoryTab() {
     const [newType, setNewType] = useState<"fuel" | "category">("fuel");
     const [newName, setNewName] = useState("");
     const [showDeleteItemModal, setShowDeleteItemModal] = useState(false);
+    const [editingItemId, setEditingItemId] = useState<number | null>(null);
 
     const [itemToDelete, setItemToDelete] = useState<any | null>(null);
     const revalidator = useRevalidator();
-    const { postFetch, deleteFetch } = useFetchApi();
+    const { postFetch, deleteFetch, putFetch } = useFetchApi();
 
-    const { sendForm, loading, errorMessage } = useSubmitForm(() =>
-        newType === "fuel"
-            ? postFetch("/api/fuels", { name: newName })
-            : postFetch("/api/liftCategories", { name: newName })
-    );
+    const { sendForm, loading, errorMessage } = useSubmitForm(() => {
+
+        if (editingItemId) {
+            return newType === "fuel"
+                ? putFetch(`/api/fuels/${editingItemId}`, { name: newName })
+                : putFetch(`/api/liftCategories/${editingItemId}`, { name: newName });
+        } else {
+            return newType === "fuel"
+                ? postFetch("/api/fuels", { name: newName })
+                : postFetch("/api/liftCategories", { name: newName });
+        }
+    });
+
 
     async function handleSubmit(e: React.FormEvent) {
-        const errorMsg =
-            newType === "fuel"
-                ? "Kunde inte skapa bränsle"
-                : "Kunde inte skapa kategori";
+        const errorMsg = editingItemId
+            ? (newType === "fuel" ? "Kunde inte uppdatera bränsle" : "Kunde inte uppdatera kategori")
+            : (newType === "fuel" ? "Kunde inte skapa bränsle" : "Kunde inte skapa kategori");
 
         const success = await sendForm(e, undefined, errorMsg);
         if (success) {
@@ -52,10 +60,19 @@ export default function CategoryTab() {
     function resetForm() {
         setNewType("fuel");
         setNewName("");
+        setEditingItemId(null);
     }
+
     function handleCloseModal() {
         resetForm();
         setShowCreateModal(false);
+    }
+
+    function handleEditClick(item: Fuel | Category, type: "fuel" | "category") {
+        setEditingItemId(item.id);
+        setNewType(type);
+        setNewName(item.name);
+        setShowCreateModal(true);
     }
 
     const handleDelete = async () => {
@@ -107,9 +124,7 @@ export default function CategoryTab() {
                                     <td className="d-flex gap-3 justify-content-center">
                                         <button
                                             className="btn btn-sm border-1 border-white"
-                                            onClick={() => {
-
-                                            }}
+                                            onClick={() => handleEditClick(fuel, "fuel")}
                                         >
                                             <i className="bi bi-pencil"></i>
                                         </button>
@@ -150,9 +165,7 @@ export default function CategoryTab() {
                                     <td className="d-flex gap-3 justify-content-center">
                                         <button
                                             className="btn btn-sm border-1 border-white"
-                                            onClick={() => {
-
-                                            }}
+                                            onClick={() => handleEditClick(category, "category")}
                                         >
                                             <i className="bi bi-pencil"></i>
                                         </button>
@@ -195,6 +208,7 @@ export default function CategoryTab() {
                 onSubmit={handleSubmit}
                 loading={loading}
                 errorMessage={errorMessage}
+                isEditing={editingItemId !== null}
             />
         </>
     );

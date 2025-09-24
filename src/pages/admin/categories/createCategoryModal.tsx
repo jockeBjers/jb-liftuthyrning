@@ -10,6 +10,7 @@ interface CreateCategoryModalProps {
     onSubmit: (e: React.FormEvent) => void;
     loading?: boolean;
     errorMessage?: string;
+    isEditing?: boolean;
 }
 
 export default function CreateCategoryModal({
@@ -21,19 +22,23 @@ export default function CreateCategoryModal({
     setNewName,
     onSubmit,
     loading,
-    errorMessage
+    errorMessage,
+    isEditing = false,
 }: CreateCategoryModalProps) {
     return (
         <Modal show={show} onHide={onHide} className="text-white">
 
             <Modal.Header closeButton className="bg-body border-secondary">
-                <Modal.Title className='text-primary'>Lägg till ny</Modal.Title>
+                <Modal.Title className='text-primary'>
+                    {isEditing ? "Redigera" : "Lägg till ny"}
+                </Modal.Title>
             </Modal.Header>
             <Form onSubmit={onSubmit}>
                 <Modal.Body className="bg-secondary">
                     <Form.Group className="mb-3">
                         <Form.Label className="d-block text-white">Typ</Form.Label>
                         <Form.Select
+                            disabled={isEditing}
                             className="modern-input"
                             value={newType}
                             onChange={(e) =>
@@ -75,7 +80,9 @@ export default function CreateCategoryModal({
                                 Sparar...
                             </>
                         ) : (
-                            "Lägg till " + (newType === "fuel" ? "bränsle" : "kategori")
+                            isEditing
+                                ? "Spara ändringar"
+                                : "Lägg till " + (newType === "fuel" ? "bränsle" : "kategori")
                         )}
 
                         {errorMessage && <div className="text-danger mt-1">{errorMessage}</div>}
