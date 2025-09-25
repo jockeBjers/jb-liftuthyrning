@@ -1,4 +1,4 @@
-import { Button, Container, Table } from "react-bootstrap";
+import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import { useAuth } from "../../context/AuthProvider";
 import { useState } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
@@ -133,24 +133,30 @@ export default function UserOrders({
                                     )}
                                 </tbody>
                             </Table>
-                            <div className="width-100 d-flex justify-content-between">
-                                <p>
-                                    <strong>Totalt pris för order:</strong> {order.totalPrice} kr
-                                </p>
+
+                            <Row className="align-items-center mt-3">
+                                <Col xs="12" md>
+                                    <p className="mb-2 mb-md-0">
+                                        <strong>Totalt pris för order:</strong> {order.totalPrice} kr
+                                    </p>
+                                </Col>
+                              
                                 {canCancelOrder(order.orderDate) && (
-                                    <Button
-                                        variant="danger"
-                                        size="sm"
-                                        onClick={() => {
-                                            setOrderToCancel(order.id);
-                                            setShowCancelModal(true);
-                                        }}
-                                        className="bg-transparent border-1 text-danger text-end"
-                                    >
-                                        Avbryt beställning
-                                    </Button>
+                                    <Col xs="12" md="auto" className="text-md-end">
+                                        <Button
+                                            variant="outline-danger"
+                                            size="sm"
+                                            onClick={() => {
+                                                setOrderToCancel(order.id);
+                                                setShowCancelModal(true);
+                                            }}
+                                            className="w-100 w-md-auto"
+                                        >
+                                            Avbryt beställning
+                                        </Button>
+                                    </Col>
                                 )}
-                            </div>
+                            </Row>
                         </div>
                     );
                 })
