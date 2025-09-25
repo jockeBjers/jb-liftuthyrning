@@ -4,23 +4,16 @@ import UserOrders from './UserOrders';
 import ReturnButton from '../../components/ReturnButton';
 import type Lift from '../../interfaces/Lift';
 import UserInfoCard from '../../components/userInfoCard';
+import { Col, Row } from 'react-bootstrap';
 
 export default function UserPage() {
-    const { user, logoutUser } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const { lifts, orders, orderItems } = useLoaderData() as {
         lifts: Lift[],
         orders: any[],
         orderItems: any[]
     };
-
-
-    const handleLogout = () => {
-        logoutUser();
-        navigate('/login');
-    };
-
-
 
     if (!user) {
         navigate('/login');
@@ -29,30 +22,16 @@ export default function UserPage() {
 
     return (
         <div className="page-container m-3 bg-body min-vh-100">
-            <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 mx-3">
-                <div>
+            <Row className="align-items-between mb-4">
+
+                <Col xs="2" md="auto" className="mb-3 mb-md-0">
                     <ReturnButton />
-                </div>
-               <UserInfoCard user={user} />
-                <div className="d-none d-md-block">
-                    <button
-                        className="btn btn-outline-primary border-1 shadow py-2 px-4 "
-                        onClick={handleLogout}
-                        type="button"
-                    >
-                        Logga ut
-                    </button>
-                </div>
-            </div>
-            <div className="d-block d-md-none mb-4">
-                <button
-                    className="btn btn-outline-primary border-1 shadow py-2 px-4 w-100"
-                    onClick={handleLogout}
-                    type="button"
-                >
-                    Logga ut
-                </button>
-            </div>
+                </Col>
+
+                <Col xs="10" md className="text-end mb-3 mb-md-0">
+                    <UserInfoCard user={user} />
+                </Col>
+            </Row>
             <UserOrders orders={orders} orderItems={orderItems} lifts={lifts} />
         </div>
     );

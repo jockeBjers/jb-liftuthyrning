@@ -17,11 +17,16 @@ export default function FilterButtons<T>({
     setSelected: (value: T) => void;
 }) {
     return (
-        <Row className="g-2 mb-2">
+        <Row className="g-2 mb-2 flex-wrap">
             {options.map(option => (
-                <Col xs="auto" key={String(option.value)}>
+                <Col
+                    key={String(option.value)}
+                    xs={12}  
+                    sm={4}  
+                    md="auto"
+                >
                     <Button
-                        className={selected === option.value ? option.textColor || "text-white" : ""}
+                        className={`w-100 ${selected === option.value ? option.textColor || "text-white" : ""}`}
                         variant={selected === option.value ? option.variant || "primary" : "outline-primary"}
                         onClick={() => setSelected(option.value)}
                     >
@@ -30,5 +35,6 @@ export default function FilterButtons<T>({
                 </Col>
             ))}
         </Row>
+
     );
 }

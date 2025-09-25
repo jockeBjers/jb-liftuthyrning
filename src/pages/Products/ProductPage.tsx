@@ -54,15 +54,16 @@ export default function ProductPage() {
 
     return (
         <>
+
             <Container>
                 <div className="products-page my-5 text-center"></div>
 
                 <div className="my-4">
                     <div className="w-100 bg-body pb-4 px-3 px-md-0">
                         <h2 className="text-primary pt-4 text-center">Våra produkter</h2>
-
-                        <div className="row mb-2 justify-content-center">
-                            <div className="col-12 mb-3">
+                
+                        <Row className="mb-2 justify-content-center">
+                            <Col xs="12" className="mb-3">
                                 <input
                                     type="text"
                                     className="modern-input form-control p-2"
@@ -70,11 +71,11 @@ export default function ProductPage() {
                                     value={filter}
                                     onChange={(e) => setFilter(e.target.value)}
                                 />
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
 
-                        <div className="row g-3">
-                            <div className="col-12 col-md-6 mb-2">
+                        <Row className="g-3">
+                            <Col xs="12" md="6">
                                 <select
                                     className="modern-input form-select cursor-pointer p-2"
                                     value={sortBy}
@@ -88,9 +89,9 @@ export default function ProductPage() {
                                     <option value="maxHeight">Minsta höjd först</option>
                                     <option value="-maxHeight">Högsta höjd först</option>
                                 </select>
-                            </div>
+                            </Col>
 
-                            <div className="col-12 col-md-6 mb-2">
+                            <Col xs="12" md="6">
                                 <select
                                     className="modern-input form-select cursor-pointer p-2"
                                     value={categoryId}
@@ -107,8 +108,8 @@ export default function ProductPage() {
                                         <option value="fuel-2">Diesel</option>
                                     </optgroup>
                                 </select>
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
                     </div>
                 </div>
             </Container>
