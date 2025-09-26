@@ -23,12 +23,14 @@ export default function FilterDropdown({
     const selectedOption = options.find(option => option.value === selected);
     const selectedLabel = selectedOption?.label || placeholder;
     const selectedVariant = selectedOption?.variant || "outline-primary";
+    const selectedTextColor = selectedOption?.textColor || "white";
 
     return (
         <Dropdown>
             <Dropdown.Toggle
                 variant={selectedVariant}
                 className="filter-toggle"
+                style={{ color: selectedTextColor }}
             >
                 {selectedLabel}
             </Dropdown.Toggle>

@@ -1,7 +1,7 @@
 @use 'bootstrap';
 
 .admin-tabs .nav-link.active {
-    color: #fff !important;
+  color: #fff !important;
 
 }
 
@@ -15,9 +15,55 @@
 
 .nav-tabs .nav-link.active {
   color: bootstrap.$primary;
-  border-color:rgba(255, 255, 255, 0.808) rgba(255, 255, 255, 0.808) transparent;
+  border-color: rgba(255, 255, 255, 0.808) rgba(255, 255, 255, 0.808) transparent;
 }
 
 .nav-tabs .nav-link:hover {
   color: bootstrap.$primary;
+}
+
+td {
+  white-space: nowrap;
+}
+
+
+.filter-toggle {
+  min-width: 160px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .filter-toggle {
+    width: 100% !important;
+  }
+}
+
+
+.filter-menu {
+  background: #222 !important;
+
+  .dropdown-item {
+    color: #fff !important;
+
+    &:hover,
+    &.active {
+      background: bootstrap.$primary !important;
+      color: #fff !important;
+    }
+  }
+
+  .filter-dropdown {
+    display: inline-block;
+
+    .dropdown-toggle {
+      text-align: left;
+    }
+
+    .dropdown-menu {
+      min-width: 100%;
+    }
+  }
 }

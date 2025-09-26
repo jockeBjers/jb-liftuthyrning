@@ -67,8 +67,7 @@ export default function AdminPage() {
                 </Navbar>
 
             </header>
-
-            <div className="mt-3 m-5">
+            <div className="m-lg-5 m-md-4 m-sm-3 m-xs-2">
                 <Outlet />
             </div>
         </div>

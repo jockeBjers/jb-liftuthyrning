@@ -5,7 +5,8 @@ import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import ConfirmationModal from "../../../components/ConfirmationModal";
-import FilterButtons from "../../../components/FilterButtons";
+import FilterDropdown from "../../../components/FilterDropdown";
+import SearchInput from "../../../components/SearchInput";
 
 export default function ProductTab() {
     const { liftDetails } = useLoaderData() as { liftDetails: any[] };
@@ -123,62 +124,63 @@ export default function ProductTab() {
     return (
         <>
 
-            <Container fluid className=" my-5">
-                <Row className="align-items-center g-0">
-                    <Col xs="12" md="8">
-                        <Row className="align-items-center g-2">
-                            <Col xs="auto">
-                                <FilterButtons
+            <Container fluid className="my-5">
+                <Row className="align-items-center justify-content-between">
+                    <Col xs={12} lg={8} className="mx-0 px-0">
+                        <Row className="g-3">
+                            <Col xs={12} md={6} lg="auto">
+                                <FilterDropdown
                                     options={[
-                                        { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
-                                        { label: "Saxliftar", value: "saxlift", variant: "primary", textColor: "text-white" },
-                                        { label: "Bomliftar", value: "bomlift", variant: "primary", textColor: "text-white" },
-                                        { label: "Pelarliftar", value: "pelarlift", variant: "primary", textColor: "text-white" },
-                                        { label: "El", value: "el", variant: "success", textColor: "text-white" },
-                                        { label: "Diesel", value: "diesel", variant: "warning", textColor: "text-secondary" },
+                                        { label: "Alla", value: "all", variant: "primary" },
+                                        { label: "Saxliftar", value: "saxlift", variant: "primary" },
+                                        { label: "Bomliftar", value: "bomlift", variant: "primary" },
+                                        { label: "Pelarliftar", value: "pelarlift", variant: "primary" },
+                                        { label: "El", value: "el", variant: "success" },
+                                        { label: "Diesel", value: "diesel", variant: "warning" },
                                     ]}
                                     selected={view}
                                     setSelected={setView}
+                                    placeholder="Kategori"
                                 />
                             </Col>
-                            <Col xs="12" md="4">
-                                <input
-                                    type="text"
-                                    className="modern-input form-control p-2"
-                                    placeholder="Sök bland liftar..."
+                            <Col xs={12} md={6} lg={4} className="my-3">
+                                <SearchInput
                                     value={filter}
-                                    onChange={(e) => setFilter(e.target.value)} />
+                                    onChange={setFilter}
+                                    placeholder="Sök bland liftar..."
+                                />
                             </Col>
                         </Row>
                     </Col>
 
-                    <Col xs="12" md="4" className="d-flex justify-content-md-end">
-                        <Button
-                            onClick={() => setShowCreateModal(true)}
-                            size="lg"
-                        >
+                    <Col
+                        xs={12}
+                        lg={2}
+                        className="d-flex justify-content-lg-end"
+                    >
+                        <Button onClick={() => setShowCreateModal(true)} size="lg" className="w-100 w-lg-auto">
                             Lägg till ny lift
                         </Button>
                     </Col>
                 </Row>
-
             </Container>
 
 
-            <Table striped bordered hover>
+
+            <Table striped bordered hover responsive>
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Namn</th>
-                        <th className="d-none d-md-table-cell">Märke</th>
-                        <th className="d-none d-md-table-cell">Maxhöjd</th>
-                        <th className="d-none d-md-table-cell">Maxvikt</th>
-                        <th className="d-none d-md-table-cell">Korgstorlek</th>
-                        <th className="d-none d-md-table-cell">Dagspris</th>
-                        <th className="d-none d-md-table-cell">Startavgift</th>
-                        <th className="d-none d-md-table-cell">Bränsletyp</th>
-                        <th className="d-none d-md-table-cell">Kategori</th>
-                        <th className="d-none d-lg-table-cell">Beskrivning</th>
+                        <th >Märke</th>
+                        <th >Maxhöjd</th>
+                        <th >Maxvikt</th>
+                        <th >Korgstorlek</th>
+                        <th >Dagspris</th>
+                        <th >Startavgift</th>
+                        <th >Bränsletyp</th>
+                        <th >Kategori</th>
+                        <th className="d-none d-md-table-cell">Beskrivning</th>
                         <th>Hantera</th>
                     </tr>
                 </thead>
@@ -187,15 +189,15 @@ export default function ProductTab() {
                         <tr key={lift.id}>
                             <td>{lift.id}</td>
                             <td>{lift.name}</td>
-                            <td className="d-none d-md-table-cell">{lift.brand}</td>
-                            <td className="d-none d-md-table-cell">{lift.maxHeight}</td>
-                            <td className="d-none d-md-table-cell">{lift.maxWeight}</td>
-                            <td className="d-none d-md-table-cell">{lift.platformSize}</td>
-                            <td className="d-none d-md-table-cell">{lift.dailyPrice}</td>
-                            <td className="d-none d-md-table-cell">{lift.startFee}</td>
-                            <td className="d-none d-md-table-cell">{lift.fuelName}</td>
-                            <td className="d-none d-md-table-cell">{lift.categoryName}</td>
-                            <td className="d-none d-lg-table-cell">{lift.description}</td>
+                            <td >{lift.brand}</td>
+                            <td >{lift.maxHeight}</td>
+                            <td >{lift.maxWeight}</td>
+                            <td >{lift.platformSize}</td>
+                            <td >{lift.dailyPrice}</td>
+                            <td >{lift.startFee}</td>
+                            <td >{lift.fuelName}</td>
+                            <td >{lift.categoryName}</td>
+                            <td className="d-none d-md-table-cell">{lift.description.length > 40 ? `${lift.description.substring(0, 40)}...` : lift.description}</td>
                             <td className="d-flex gap-3 justify-content-center">
                                 <button
                                     className="btn btn-sm border-1 border-white"

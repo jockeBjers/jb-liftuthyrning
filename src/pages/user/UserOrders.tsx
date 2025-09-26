@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthProvider";
 import { useState } from "react";
 import { useFetchApi } from "../../hooks/useFetchApi";
 import { useRevalidator } from "react-router-dom";
-import FilterButtons from "../../components/FilterButtons";
+import FilterDropdown from "../../components/FilterDropdown";
 import TablePagination from "../../components/TablePagination";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
@@ -82,18 +82,18 @@ export default function UserOrders({
 
     return (
         <Container className="mb-5">
-            <FilterButtons
+            <FilterDropdown
                 options={[
-                    { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
-                    { label: "Pågående", value: "current", variant: "success", textColor: "text-white" },
-                    { label: "Kommande", value: "coming", variant: "info", textColor: "text-white" },
-                    { label: "Avslutade", value: "closed", variant: "danger", textColor: "text-white" },
+                    { label: "Alla", value: "all", variant: "primary" },
+                    { label: "Pågående", value: "current", variant: "success"},
+                    { label: "Kommande", value: "coming", variant: "info" },
+                    { label: "Avslutade", value: "closed", variant: "danger" },
                 ]}
                 selected={view}
                 setSelected={setView}
             />
 
-            <h2 className="text-primary mb-4">Ordrar</h2>
+            <h2 className="text-primary my-4">Ordrar</h2>
             {userOrdersFiltered.length === 0 ? (
                 <p>Du har inga ordrar.</p>
             ) : (
@@ -120,7 +120,7 @@ export default function UserOrders({
                                             const lift = lifts.find(l => l.id === item.liftId);
                                             return (
                                                 <tr key={item.id}>
-                                                    <td>{getLiftName(item.liftId)}</td>
+                                                    <td className="text-wrap">{getLiftName(item.liftId)}</td>
                                                     <td>{lift?.dailyPrice} kr</td>
                                                     <td>{lift?.startFee} kr</td>
                                                 </tr>
