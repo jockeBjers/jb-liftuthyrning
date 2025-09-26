@@ -9,9 +9,10 @@ export default function OrderInfoModal(
         getOrderItems,
         lifts,
         getLiftName,
-        deleteOrderItem,
         setOrderToDelete,
-        setShowDeleteOrderModal
+        setShowDeleteOrderModal,
+        setOrderItemToDelete,
+        setShowDeleteOrderItemModal
     }: {
         showModal: boolean;
         handleCloseModal: () => void;
@@ -19,9 +20,10 @@ export default function OrderInfoModal(
         getOrderItems: (orderId: number) => any[];
         lifts: any[];
         getLiftName: (liftId: number) => string;
-        deleteOrderItem: (orderItemId: number) => void;
         setOrderToDelete: (order: any | null) => void;
         setShowDeleteOrderModal: (show: boolean) => void;
+        setOrderItemToDelete: (item: any | null) => void;
+        setShowDeleteOrderItemModal: (show: boolean) => void;
     }
 ) {
     return (
@@ -43,9 +45,9 @@ export default function OrderInfoModal(
                             <thead>
                                 <tr>
                                     <th>Produkt</th>
-                                    <th>Pris/dag</th>
-                                    <th>Startavgift</th>
-                                    <th>Hantera</th>
+                                    <th className="d-none d-md-table-cell">Pris/dag</th>
+                                    <th className="d-none d-md-table-cell">Startavgift</th>
+                                    <th className="text-center" style={{ width: "100px" }}>Hantera</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,14 +55,15 @@ export default function OrderInfoModal(
                                     const lift = lifts.find(l => l.id === item.liftId);
                                     return (
                                         <tr key={item.id}>
-                                            <td>{getLiftName(item.liftId)}</td>
-                                            <td>{lift?.dailyPrice} kr</td>
-                                            <td>{lift?.startFee} kr</td>
-                                            <td>
+                                            <td >{getLiftName(item.liftId)}</td>
+                                            <td className="d-none d-md-table-cell">{lift?.dailyPrice} kr</td>
+                                            <td className="d-none d-md-table-cell">{lift?.startFee} kr</td>
+                                            <td className="text-center" style={{ width: "70px" }}>
                                                 <Button
                                                     variant="link"
                                                     onClick={() => {
-                                                        deleteOrderItem(item.id);
+                                                        setOrderItemToDelete(item);
+                                                        setShowDeleteOrderItemModal(true);
                                                     }}
                                                 >
                                                     <i className="bi bi-trash text-danger"></i>
@@ -83,7 +86,6 @@ export default function OrderInfoModal(
                         onClick={() => {
                             setOrderToDelete(selectedOrder);
                             setShowDeleteOrderModal(true);
-                            handleCloseModal();
                         }}
                     >
                         Ta bort order

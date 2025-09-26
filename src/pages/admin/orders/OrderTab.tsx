@@ -24,6 +24,9 @@ export default function OrderTab() {
     const [showModal, setShowModal] = useState(false);
     const [showDeleteOrderModal, setShowDeleteOrderModal] = useState(false);
     const [orderToDelete, setOrderToDelete] = useState<any | null>(null);
+    const [orderItemToDelete, setOrderItemToDelete] = useState<any | null>(null);
+    const [showDeleteOrderItemModal, setShowDeleteOrderItemModal] = useState(false);
+
     const { deleteFetch, putFetch } = useFetchApi();
     const revalidator = useRevalidator();
 
@@ -42,6 +45,7 @@ export default function OrderTab() {
             await deleteFetch(`/api/orders/${orderId}`);
             setShowDeleteOrderModal(false);
             setOrderToDelete(null);
+            handleCloseModal();
             revalidator.revalidate();
         } catch (error) {
             console.error("Error deleting order:", error);
@@ -165,7 +169,7 @@ export default function OrderTab() {
                         lg={2}
                         className="d-flex justify-content-lg-end"
                     >
-                       
+
                     </Col>
                 </Row>
             </Container>
@@ -227,9 +231,22 @@ export default function OrderTab() {
                 getOrderItems={getOrderItems}
                 lifts={lifts}
                 getLiftName={getLiftName}
-                deleteOrderItem={deleteOrderItem}
                 setOrderToDelete={setOrderToDelete}
                 setShowDeleteOrderModal={setShowDeleteOrderModal}
+                setOrderItemToDelete={setOrderItemToDelete}
+                setShowDeleteOrderItemModal={setShowDeleteOrderItemModal}
+            />
+
+            <ConfirmationModal
+                show={showDeleteOrderItemModal}
+                setShow={setShowDeleteOrderItemModal}
+                title="Ta bort orderobjekt"
+                message={`Är du säker på att du vill ta bort ${getLiftName(orderItemToDelete?.liftId)} från order #${orderItemToDelete?.orderId}?`}
+                onConfirm={async () => {
+                    if (orderItemToDelete) await deleteOrderItem(orderItemToDelete.id);
+                    setOrderItemToDelete(null);
+                    setShowDeleteOrderItemModal(false);
+                }}
             />
 
             <ConfirmationModal
