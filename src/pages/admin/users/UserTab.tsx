@@ -7,6 +7,7 @@ import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import CreateUserModal from "./createUserModal";
 import ConfirmationModal from "../../../components/ConfirmationModal";
+import SearchInput from "../../../components/SearchInput";
 
 export default function UserTab() {
     const { users } = useLoaderData() as { users: User[]; customerWithOrders: any[] };
@@ -80,51 +81,58 @@ export default function UserTab() {
         }
     };
 
-    const usersToDisplay = users.filter(l => {
 
-        const matchesFilter =
-            !filter ||
-            l.firstName.toLowerCase().includes(filter.toLowerCase()) ||
-            l.lastName.toLowerCase().includes(filter.toLowerCase()) ||
-            l.email.toLowerCase().includes(filter.toLowerCase())
+    const matchesFilter = (l: any, filter: string) => {
+        if (!filter) return true;
+        const f = filter.toLowerCase();
+        return l.firstName.toLowerCase().includes(f) ||
+            l.lastName.toLowerCase().includes(f) ||
+            l.email.toLowerCase().includes(f);
+    };
 
-        return matchesFilter;
-    });
+    const usersToDisplay = users.filter((user) => matchesFilter(user, filter));
 
     const totalPages = Math.ceil(usersToDisplay.length / pageSize);
+
+    usersToDisplay.sort((a, b) => {
+        const nameA = `${a.firstName}`.toLowerCase();
+        const nameB = `${b.firstName}`.toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
 
     return (<>
 
         <Container fluid className="my-5">
-            <Row className="align-items-center g-0">
+            <Row className="align-items-center justify-content-between g-0">
                 <Col xs="12" md="8">
                     <Row className="align-items-center g-2">
                         <Col xs="auto">
                         </Col>
-                        <Col xs="12" md="4">
-                            <input
-                                type="text"
-                                className="modern-input form-control p-2"
-                                placeholder="Sök bland Användare..."
+                        <Col xs="12" md="6" lg="4" className="my-3">
+                            <SearchInput
                                 value={filter}
-                                onChange={(e) => setFilter(e.target.value)}
+                                onChange={setFilter}
+                                placeholder="Sök bland Användare..."
                             />
                         </Col>
                     </Row>
                 </Col>
 
-                <Col xs="12" md="4" className="d-flex justify-content-md-end">
+                <Col
+                    xs={12}
+                    lg={2}
+                    className="d-flex justify-content-lg-end"
+                >
                     <Button
                         onClick={() => setShowCreateModal(true)}
-                        size="lg"
-                    >
+                        size="lg" className="w-100 w-lg-auto">
                         Lägg till användare
                     </Button>
                 </Col>
             </Row>
         </Container>
 
-        <Table striped bordered hover>
+        <Table striped bordered hover responsive>
             <thead >
                 <tr>
                     <th>#</th>

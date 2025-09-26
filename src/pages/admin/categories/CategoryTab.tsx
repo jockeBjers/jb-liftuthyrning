@@ -97,13 +97,18 @@ export default function CategoryTab() {
     return (
         <>
             <Container fluid className="my-5">
-                <Row className="align-items-center g-0">
-                    <Col xs="12" md="8">
+                <Row className="align-items-center justify-content-between">
+                    <Col xs={12} lg={8}>
                     </Col>
-                    <Col xs="12" md="4" className="d-flex justify-content-md-end">
+                    <Col
+                        sm={12}
+                        md={6}
+                        lg={3}
+                        className="d-flex justify-content-lg-end"
+                    >
                         <Button
                             onClick={() => setShowCreateModal(true)}
-                            size="lg"
+                            size="lg" className="w-100"
                         >
                             Lägg till kategori eller bränsle
                         </Button>
@@ -115,7 +120,7 @@ export default function CategoryTab() {
 
                 <Col xs="12" md="6" className="px-2">
                     <h2 className="text-white">Bränsletyp</h2>
-                    <Table striped bordered hover>
+                    <Table striped bordered hover responsive>
                         <thead>
                             <tr>
                                 <th className="px-2">#</th>
@@ -156,7 +161,7 @@ export default function CategoryTab() {
 
                 <Col xs="12" md="6" className="px-2">
                     <h2 className="text-white">Liftkategori</h2>
-                    <Table striped bordered hover>
+                    <Table striped bordered hover responsive>
                         <thead>
                             <tr>
                                 <th className="px-2">#</th>

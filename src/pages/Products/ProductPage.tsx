@@ -3,6 +3,9 @@ import ProductCard from "./ProductCard";
 import type Lift from "../../interfaces/Lift";
 import { useLoaderData } from "react-router-dom";
 import { useState } from "react";
+import SearchInput from "../../components/SearchInput";
+import SortSelect from "../../components/SortSelect";
+import FilterSelect from "../../components/FilterSelect";
 export default function ProductPage() {
     const initialLifts = useLoaderData() as Lift[];
     const [lifts] = useState<Lift[]>(initialLifts);
@@ -47,7 +50,7 @@ export default function ProductPage() {
             default: return 0;
         }
     }
-
+ 
     const displayedLifts = [...lifts]
         .filter(l => matchesSearch(l, filter) && matchesCategoryFilter(l, categoryId))
         .sort((a, b) => sortLifts(a, b, sortBy));
@@ -61,53 +64,55 @@ export default function ProductPage() {
                 <div className="my-4">
                     <div className="w-100 bg-body pb-4 px-3 px-md-0">
                         <h2 className="text-primary pt-4 text-center">Våra produkter</h2>
-                
+
                         <Row className="mb-2 justify-content-center">
                             <Col xs="12" className="mb-3">
-                                <input
-                                    type="text"
-                                    className="modern-input form-control p-2"
-                                    placeholder="Sök produkter..."
+                                <SearchInput
                                     value={filter}
-                                    onChange={(e) => setFilter(e.target.value)}
+                                    onChange={setFilter}
+                                    placeholder="Sök produkter..."
                                 />
                             </Col>
                         </Row>
 
                         <Row className="g-3">
                             <Col xs="12" md="6">
-                                <select
-                                    className="modern-input form-select cursor-pointer p-2"
+                                <SortSelect
                                     value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                >
-                                    <option value="">Sortera</option>
-                                    <option value="name">A-Ö</option>
-                                    <option value="-name">Ö-A</option>
-                                    <option value="dailyPrice">Pris Lägst</option>
-                                    <option value="-dailyPrice">Pris Högst</option>
-                                    <option value="maxHeight">Minsta höjd först</option>
-                                    <option value="-maxHeight">Högsta höjd först</option>
-                                </select>
+                                    onChange={setSortBy}
+                                    options={[
+                                        { label: "A-Ö", value: "name" },
+                                        { label: "Ö-A", value: "-name" },
+                                        { label: "Pris Lägst", value: "dailyPrice" },
+                                        { label: "Pris Högst", value: "-dailyPrice" },
+                                        { label: "Minsta höjd först", value: "maxHeight" },
+                                        { label: "Högsta höjd först", value: "-maxHeight" }
+                                    ]}
+                                />
                             </Col>
-
                             <Col xs="12" md="6">
-                                <select
-                                    className="modern-input form-select cursor-pointer p-2"
+                                <FilterSelect
                                     value={categoryId}
-                                    onChange={(e) => setCategoryId(e.target.value)}
-                                >
-                                    <option value="">Filtrera</option>
-                                    <optgroup label="Kategorier" className="bg-secondary text-primary">
-                                        <option value="1">Saxlift</option>
-                                        <option value="2">Bomlift</option>
-                                        <option value="3">Pelarlift</option>
-                                    </optgroup>
-                                    <optgroup label="Bränsletyper" className="bg-secondary text-primary">
-                                        <option value="fuel-1">El</option>
-                                        <option value="fuel-2">Diesel</option>
-                                    </optgroup>
-                                </select>
+                                    onChange={setCategoryId}
+                                    options={[]}
+                                    groups={[
+                                        {
+                                            label: "Kategorier",
+                                            options: [
+                                                { label: "Saxlift", value: "1" },
+                                                { label: "Bomlift", value: "2" },
+                                                { label: "Pelarlift", value: "3" }
+                                            ]
+                                        },
+                                        {
+                                            label: "Bränsletyper",
+                                            options: [
+                                                { label: "El", value: "fuel-1" },
+                                                { label: "Diesel", value: "fuel-2" }
+                                            ]
+                                        }
+                                    ]}
+                                />
                             </Col>
                         </Row>
                     </div>
