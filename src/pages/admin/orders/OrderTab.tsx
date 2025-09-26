@@ -136,6 +136,14 @@ export default function OrderTab() {
     const getUserById = (id: number) =>
         users.find(u => u.id === id);
 
+    let deleteMessage = "";
+    if (orderItemToDelete) {
+        const isLastItem = getOrderItems(orderItemToDelete.orderId).length === 1;
+        deleteMessage = isLastItem
+            ? `Detta är det sista objektet i order #${orderItemToDelete.orderId}. Att ta bort det kommer också ta bort hela ordern. Är du säker?`
+            : `Är du säker på att du vill ta bort ${getLiftName(orderItemToDelete.liftId)} från order #${orderItemToDelete.orderId}?`;
+    }
+
     return (
         <>
             <Container fluid className="my-5">
@@ -241,13 +249,21 @@ export default function OrderTab() {
                 show={showDeleteOrderItemModal}
                 setShow={setShowDeleteOrderItemModal}
                 title="Ta bort orderobjekt"
-                message={`Är du säker på att du vill ta bort ${getLiftName(orderItemToDelete?.liftId)} från order #${orderItemToDelete?.orderId}?`}
+                message={deleteMessage}
                 onConfirm={async () => {
-                    if (orderItemToDelete) await deleteOrderItem(orderItemToDelete.id);
+                    if (!orderItemToDelete) return;
+
+                    if (getOrderItems(orderItemToDelete.orderId).length === 1) {
+                        await deleteOrder(orderItemToDelete.orderId);
+                    } else {
+                        await deleteOrderItem(orderItemToDelete.id);
+                    }
+
                     setOrderItemToDelete(null);
                     setShowDeleteOrderItemModal(false);
                 }}
             />
+
 
             <ConfirmationModal
                 show={showDeleteOrderModal}
