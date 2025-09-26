@@ -1,9 +1,14 @@
-import { Table, Modal, Button, Container, Row, Col } from "react-bootstrap";
+import { Table, Container, Row, Col } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import FilterButtons from "../../../components/FilterButtons";
+import FilterDropdown from "../../../components/FilterDropdown";
+import SearchInput from "../../../components/SearchInput";
 import OrderPagination from "../../../components/TablePagination";
 import type User from "../../../interfaces/User";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useRevalidator } from "react-router-dom";
+import ConfirmationModal from "../../../components/ConfirmationModal";
+import { useFetchApi } from "../../../hooks/useFetchApi";
+import { calculateRentalCost } from "../../../utils/calculateRentalCost";
+import OrderInfoModal from "./OrderInfoModal";
 
 export default function OrderTab() {
     const { lifts, users, orders, orderItems } = useLoaderData() as {
@@ -14,7 +19,75 @@ export default function OrderTab() {
     };
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
+    const [filter, setFilter] = useState('');
+    const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+    const [showModal, setShowModal] = useState(false);
+    const [showDeleteOrderModal, setShowDeleteOrderModal] = useState(false);
+    const [orderToDelete, setOrderToDelete] = useState<any | null>(null);
+    const { deleteFetch, putFetch } = useFetchApi();
+    const revalidator = useRevalidator();
 
+    const handleShowModal = (order: any) => {
+        setSelectedOrder(order);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedOrder(null);
+        setShowModal(false);
+    };
+
+    const deleteOrder = async (orderId: number) => {
+        try {
+            await deleteFetch(`/api/orders/${orderId}`);
+            setShowDeleteOrderModal(false);
+            setOrderToDelete(null);
+            revalidator.revalidate();
+        } catch (error) {
+            console.error("Error deleting order:", error);
+        }
+    };
+
+    const deleteOrderItem = async (orderItemId: number) => {
+        try {
+
+            const orderItem = orderItems.find(item => item.id === orderItemId);
+            if (!orderItem) {
+                console.error("Order item not found");
+                return;
+            }
+
+            const orderId = orderItem.orderId;
+            const order = orders.find(o => o.id === orderId);
+            if (!order) {
+                console.error("Order not found");
+                return;
+            }
+
+            const itemCost = calculateRentalCost(
+                order.orderDate,
+                order.returnDate,
+                orderItem.dailyPrice,
+                orderItem.startFee
+            );
+
+            await deleteFetch(`/api/orderItems/${orderItemId}`);
+            const newTotalPrice = order.totalPrice - itemCost;
+
+            await putFetch(`/api/orders/${orderId}`, {
+                totalPrice: newTotalPrice
+            });
+
+            if (selectedOrder && selectedOrder.id === orderId) {
+                setSelectedOrder({ ...selectedOrder, totalPrice: newTotalPrice });
+            }
+
+            revalidator.revalidate();
+        }
+        catch (error) {
+            console.error("Error deleting order item:", error);
+        }
+    };
 
     const [view, setView] = useState<"all" | "current" | "coming" | "closed">("all");
     const userOrdersFiltered = orders.filter(order => order.userId !== null);
@@ -34,9 +107,13 @@ export default function OrderTab() {
                 return true;
         }
     }
+    const matchesFilter = (order: any, filter: string) => {
+        if (!filter) return true;
+        const f = filter.toLowerCase();
+        return order.id.toString().includes(f);
+    };
 
-    const ordersToDisplay = userOrdersFiltered.filter(order => matchesView(order, view));
-
+    const ordersToDisplay = userOrdersFiltered.filter(order => matchesView(order, view) && matchesFilter(order, filter));
 
     useEffect(() => {
         setCurrentPage(1);
@@ -44,53 +121,60 @@ export default function OrderTab() {
 
     const totalPages = Math.ceil(ordersToDisplay.length / pageSize);
 
+    const getOrderItems = (orderId: number) =>
+        orderItems.filter(item => item.orderId === orderId);
+
+    const getLiftName = (liftId: number) => {
+        const lift = lifts.find(l => l.id === liftId);
+        return lift ? `${lift.name} (${lift.brand})` : "Okänd lift";
+    };
+
     const getUserById = (id: number) =>
         users.find(u => u.id === id);
 
-
     return (
         <>
-            <Container fluid className=" my-5">
-                <Row className="align-items-center g-0">
-                    <Col xs="12" md="8">
-                        <Row className="align-items-center g-2">
-                            <Col xs="auto">
-                                <FilterButtons
+            <Container fluid className="my-5">
+                <Row className="align-items-center justify-content-between">
+                    <Col xs={12} lg={8} className="mx-0 px-0">
+                        <Row className="g-3">
+                            <Col xs={12} md={6} lg="auto">
+                                <FilterDropdown
                                     options={[
-                                        { label: "Alla", value: "all", variant: "primary", textColor: "text-white" },
-                                        { label: "Pågående", value: "current", variant: "success", textColor: "text-white" },
-                                        { label: "Kommande", value: "coming", variant: "warning", textColor: "text-black" },
-                                        { label: "Avslutade", value: "closed", variant: "danger", textColor: "text-white" },
+                                        { label: "Alla", value: "all", variant: "primary" },
+                                        { label: "Pågående", value: "current", variant: "success" },
+                                        { label: "Kommande", value: "coming", variant: "info" },
+                                        { label: "Avslutade", value: "closed", variant: "danger" },
                                     ]}
                                     selected={view}
                                     setSelected={setView}
+                                    placeholder="Status"
                                 />
                             </Col>
-                            <Col xs="12" md="4">
-                                <input
-                                    type="text"
-                                    className="modern-input form-control p-2"
-                                    placeholder="Sök bland ordrar..."
-                                    value={''}
-                                    onChange={() => { }}
+                            <Col xs={12} md={6} lg={4} className="my-3">
+                                <SearchInput
+                                    value={filter}
+                                    onChange={setFilter}
+                                    placeholder="Sök Order ID..."
                                 />
                             </Col>
                         </Row>
                     </Col>
-                    <Col xs="12" md="4" className="d-flex justify-content-md-end">
-                        <Button
-                            onClick={() => { }}
-                            size="lg"
-                        >
-                            Lägg till ny order
-                        </Button>
+                    <Col
+                        xs={12}
+                        lg={2}
+                        className="d-flex justify-content-lg-end"
+                    >
+                       
                     </Col>
                 </Row>
             </Container>
-            <Table striped bordered hover>
+
+            <Table striped bordered hover responsive className="orders-table">
+
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Order ID</th>
                         <th>Kund</th>
                         <th>E-post</th>
                         <th>Telefon</th>
@@ -117,7 +201,7 @@ export default function OrderTab() {
                                     <td>
                                         <button
                                             className="btn btn-sm btn-secondary bg-transparent w-100 fw-bold"
-                                            onClick={() => { }}
+                                            onClick={() => handleShowModal(order)}
                                         >
                                             Visa detaljer
                                         </button>
@@ -135,7 +219,29 @@ export default function OrderTab() {
                     setCurrentPage={setCurrentPage}
                 />
             )}
-          
+
+            <OrderInfoModal
+                showModal={showModal}
+                handleCloseModal={handleCloseModal}
+                selectedOrder={selectedOrder}
+                getOrderItems={getOrderItems}
+                lifts={lifts}
+                getLiftName={getLiftName}
+                deleteOrderItem={deleteOrderItem}
+                setOrderToDelete={setOrderToDelete}
+                setShowDeleteOrderModal={setShowDeleteOrderModal}
+            />
+
+            <ConfirmationModal
+                show={showDeleteOrderModal}
+                setShow={setShowDeleteOrderModal}
+                title="Ta bort order"
+                message={`Är du säker på att du vill ta bort order #${orderToDelete?.id}?`}
+                onConfirm={async () => {
+                    if (orderToDelete) await deleteOrder(orderToDelete.id);
+                    setOrderToDelete(null);
+                }}
+            />
         </>
     );
 }
