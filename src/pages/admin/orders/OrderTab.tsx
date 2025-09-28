@@ -1,4 +1,4 @@
-import { Table, Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import FilterDropdown from "../../../components/FilterDropdown";
 import SearchInput from "../../../components/SearchInput";
@@ -9,6 +9,7 @@ import ConfirmationModal from "../../../components/ConfirmationModal";
 import { useFetchApi } from "../../../hooks/useFetchApi";
 import { calculateRentalCost } from "../../../utils/calculateRentalCost";
 import OrderInfoModal from "./OrderInfoModal";
+import OrderTable from "./OrderTable";
 
 export default function OrderTab() {
     const { lifts, users, orders, orderItems } = useLoaderData() as {
@@ -182,47 +183,14 @@ export default function OrderTab() {
                 </Row>
             </Container>
 
-            <Table striped bordered hover responsive className="orders-table">
+            <OrderTable
+                orders={ordersToDisplay}
+                getUserById={getUserById}
+                handleShowModal={handleShowModal}
+                currentPage={currentPage}
+                pageSize={pageSize}
+            />
 
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Kund</th>
-                        <th>E-post</th>
-                        <th>Telefon</th>
-                        <th>Orderdatum</th>
-                        <th>Returdatum</th>
-                        <th>Totalt pris</th>
-                        <th>Hantera</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {ordersToDisplay
-                        .slice((currentPage - 1) * pageSize, currentPage * pageSize)
-                        .map(order => {
-                            const user = getUserById(order.userId);
-                            return (
-                                <tr key={order.id}>
-                                    <td>{order.id}</td>
-                                    <td>{user ? `${user.firstName} ${user.lastName}` : "Okänd"}</td>
-                                    <td>{user?.email || "-"}</td>
-                                    <td>{user?.phone || "-"}</td>
-                                    <td>{order.orderDate}</td>
-                                    <td>{order.returnDate}</td>
-                                    <td>{order.totalPrice} kr</td>
-                                    <td>
-                                        <button
-                                            className="btn btn-sm btn-secondary bg-transparent w-100 fw-bold"
-                                            onClick={() => handleShowModal(order)}
-                                        >
-                                            Visa detaljer
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                </tbody>
-            </Table>
 
             {totalPages > 1 && (
                 <OrderPagination
@@ -263,7 +231,6 @@ export default function OrderTab() {
                     setShowDeleteOrderItemModal(false);
                 }}
             />
-
 
             <ConfirmationModal
                 show={showDeleteOrderModal}

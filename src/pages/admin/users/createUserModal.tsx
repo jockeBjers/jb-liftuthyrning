@@ -115,18 +115,15 @@ export default function CreateUserModal({
                                     <p className="mb-1">Roll</p>
                                     <Form.Select
                                         name="role"
-                                        value={user.role}
-                                        onChange={onInputChange}
+                                        value="user"
+                                        disabled
                                         className="modern-input"
-                                        required
                                     >
-                                        <option value="" disabled>Välj roll</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="user">Användare</option>
+                                        <option value="user">Användare (sätt roll i databasen)</option>
                                     </Form.Select>
                                 </Form.Label>
                             </Form.Group>
-                            {/* password */}
+
                             <Form.Group className="mt-3">
                                 <Form.Label className="d-block text-white">
                                     <p className="mb-1">Lösenord {isEdit ? "(lämna tomt för att behålla nuvarande)" : ""}</p>
