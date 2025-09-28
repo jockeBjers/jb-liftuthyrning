@@ -1,4 +1,6 @@
 import { Row, Col, Form, Button, Modal, Spinner } from 'react-bootstrap';
+import type Fuel from '../../../interfaces/Fuel';
+import type Category from '../../../interfaces/LiftCategory';
 
 interface CreateLiftProps {
     show: boolean;
@@ -21,6 +23,8 @@ interface CreateLiftProps {
     loading: boolean;
     errorMessage: string | null;
     isEdit?: boolean;
+    fuels: Fuel[];
+    liftCategories: Category[];
 }
 
 export default function CreateLiftModal({
@@ -32,6 +36,7 @@ export default function CreateLiftModal({
     loading,
     errorMessage,
     isEdit = false
+    , fuels, liftCategories
 }: CreateLiftProps) {
 
     return (
@@ -171,8 +176,11 @@ export default function CreateLiftModal({
                                                 onChange={onInputChange}
                                                 value={lift.fuelId}
                                             >
-                                                <option value={1}>El</option>
-                                                <option value={2}>Diesel</option>
+                                                {fuels.map(fuel => (
+                                                    <option key={fuel.id} value={fuel.id}>
+                                                        {fuel.name}
+                                                    </option>
+                                                ))}
                                             </Form.Select>
                                         </Form.Label>
                                     </Form.Group>
@@ -187,9 +195,11 @@ export default function CreateLiftModal({
                                                 onChange={onInputChange}
                                                 value={lift.categoryId}
                                             >
-                                                <option value={1}>Saxlift</option>
-                                                <option value={2}>Bomlift</option>
-                                                <option value={3}>Pelarlift</option>
+                                                {liftCategories.map(category => (
+                                                    <option key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </option>
+                                                ))}
                                             </Form.Select>
                                         </Form.Label>
                                     </Form.Group>
@@ -202,7 +212,7 @@ export default function CreateLiftModal({
                                     <Form.Control
                                         className="modern-input"
                                         as="textarea"
-                                        rows={3}
+                                        rows={1}
                                         onChange={onInputChange}
                                         name="description"
                                         placeholder="Beskrivning av liften"

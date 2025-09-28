@@ -7,9 +7,15 @@ import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import FilterDropdown from "../../../components/FilterDropdown";
 import SearchInput from "../../../components/SearchInput";
+import type Fuel from "../../../interfaces/Fuel";
+import type Category from "../../../interfaces/LiftCategory";
 
 export default function ProductTab() {
-    const { liftDetails } = useLoaderData() as { liftDetails: any[] };
+    const { liftDetails, fuels, liftCategories } = useLoaderData() as {
+        liftDetails: any[];
+        fuels: Fuel[];
+        liftCategories: Category[];
+    };
     const [lift, setLift] = useState({
         name: '',
         brand: '',
@@ -42,7 +48,7 @@ export default function ProductTab() {
         let { name, value }: { name: string, value: string | number | null } =
             event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-        if (['maxHeight', 'maxWeight', 'dailyPrice', 'startFee', 'categoryId', 'fuelId'].includes(name)) {
+        if (['maxHeight', 'maxWeight', 'dailyPrice', 'startFee'].includes(name)) {
             value = isNaN(+value) ? 0 : +value;
         }
 
@@ -96,12 +102,17 @@ export default function ProductTab() {
     };
 
     function matchesView(l: any) {
-        return view === "all" ||
-            (view === "saxlift" && l.categoryName === "Saxlift") ||
-            (view === "bomlift" && l.categoryName === "Bomlift") ||
-            (view === "pelarlift" && l.categoryName === "Pelarlift") ||
-            (view === "el" && l.fuelName === "el") ||
-            (view === "diesel" && l.fuelName === "diesel");
+        if (view === "all") return true;
+
+        const matchesCategory = liftCategories.some(category =>
+            view === category.name.toLowerCase() && l.categoryName === category.name
+        );
+
+        const matchesFuel = fuels.some(fuel =>
+            view === fuel.name.toLowerCase() && l.fuelName.toLowerCase() === fuel.name.toLowerCase()
+        );
+
+        return matchesCategory || matchesFuel;
     }
 
     const matchesFilter = (l: any, filter: string) => {
@@ -121,6 +132,20 @@ export default function ProductTab() {
 
     const liftsToDisplay = liftDetails.filter(l => matchesView(l) && matchesFilter(l, filter));
 
+    const filterOptions = [
+        { label: "Alla", value: "all", variant: "primary" },
+        ...liftCategories.map(category => ({
+            label: `${category.name}ar`,
+            value: category.name.toLowerCase(),
+            variant: "primary"
+        })),
+        ...fuels.map(fuel => ({
+            label: fuel.name,
+            value: fuel.name.toLowerCase(),
+            variant: "primary"
+        }))
+    ];
+
     return (
         <>
 
@@ -130,14 +155,7 @@ export default function ProductTab() {
                         <Row className="g-3">
                             <Col xs={12} md={6} lg="auto">
                                 <FilterDropdown
-                                    options={[
-                                        { label: "Alla", value: "all", variant: "primary" },
-                                        { label: "Saxliftar", value: "saxlift", variant: "primary" },
-                                        { label: "Bomliftar", value: "bomlift", variant: "primary" },
-                                        { label: "Pelarliftar", value: "pelarlift", variant: "primary" },
-                                        { label: "El", value: "el", variant: "success" },
-                                        { label: "Diesel", value: "diesel", variant: "warning" },
-                                    ]}
+                                    options={filterOptions}
                                     selected={view}
                                     setSelected={setView}
                                     placeholder="Kategori"
@@ -204,17 +222,11 @@ export default function ProductTab() {
                                     onClick={() => {
                                         setEditingLiftId(lift.id);
                                         setLift({
-                                            name: lift.name,
-                                            brand: lift.brand,
-                                            maxHeight: lift.maxHeight,
-                                            maxWeight: lift.maxWeight,
-                                            platformSize: lift.platformSize,
-                                            dailyPrice: lift.dailyPrice,
-                                            startFee: lift.startFee,
-                                            description: lift.description,
+                                            ...lift,
                                             categoryId: lift.categoryId,
                                             fuelId: lift.fuelId
                                         });
+
                                         setShowCreateModal(true);
                                     }}
                                 >
@@ -246,6 +258,8 @@ export default function ProductTab() {
                 loading={loading}
                 errorMessage={errorMessage}
                 isEdit={editingLiftId !== null}
+                fuels={fuels}
+                liftCategories={liftCategories}
             />
             <ConfirmationModal
                 show={showDeleteLiftModal}
