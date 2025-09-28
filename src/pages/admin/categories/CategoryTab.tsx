@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import CreateCategoryModal from "./createCategoryModal";
 import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
