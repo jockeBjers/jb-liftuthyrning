@@ -5,15 +5,8 @@ import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import ConfirmationModal from "../../../components/ConfirmationModal";
-
-interface Fuel {
-    id: number;
-    name: string;
-}
-interface Category {
-    id: number;
-    name: string;
-}
+import type Fuel from "../../../interfaces/Fuel";
+import type Category from "../../../interfaces/LiftCategory";
 
 export default function CategoryTab() {
     const { fuels, liftCategories, } = useLoaderData() as {
