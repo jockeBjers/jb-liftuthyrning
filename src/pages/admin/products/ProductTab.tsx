@@ -1,4 +1,4 @@
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import CreateLiftModal from "./createLiftModal";
 import { useState } from "react";
 import { useFetchApi } from "../../../hooks/useFetchApi";
@@ -9,6 +9,7 @@ import FilterDropdown from "../../../components/FilterDropdown";
 import SearchInput from "../../../components/SearchInput";
 import type Fuel from "../../../interfaces/Fuel";
 import type Category from "../../../interfaces/LiftCategory";
+import LiftTable from "./ProductTable";
 
 export default function ProductTab() {
     const { liftDetails, fuels, liftCategories } = useLoaderData() as {
@@ -48,7 +49,7 @@ export default function ProductTab() {
         let { name, value }: { name: string, value: string | number | null } =
             event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-        if (['maxHeight', 'maxWeight', 'dailyPrice', 'startFee'].includes(name)) {
+        if (['maxHeight', 'maxWeight', 'dailyPrice', 'startFee', 'categoryId', 'fuelId'].includes(name)) {
             value = isNaN(+value) ? 0 : +value;
         }
 
@@ -148,7 +149,6 @@ export default function ProductTab() {
 
     return (
         <>
-
             <Container fluid className="my-5">
                 <Row className="align-items-center justify-content-between">
                     <Col xs={12} lg={8} className="mx-0 px-0">
@@ -183,72 +183,30 @@ export default function ProductTab() {
                 </Row>
             </Container>
 
+            <LiftTable
+                lifts={liftsToDisplay}
+                onEdit={(lift) => {
+                    setEditingLiftId(lift.id);
+                    setLift({
+                        name: lift.name,
+                        brand: lift.brand,
+                        maxHeight: lift.maxHeight,
+                        maxWeight: lift.maxWeight,
+                        platformSize: lift.platformSize,
+                        dailyPrice: lift.dailyPrice,
+                        startFee: lift.startFee,
+                        description: lift.description,
+                        categoryId: lift.categoryId,
+                        fuelId: lift.fuelId
+                    });
+                    setShowCreateModal(true);
+                }}
+                onDelete={(lift) => {
+                    setLiftToDelete(lift);
+                    setShowDeleteLiftModal(true);
+                }}
+            />
 
-
-            <Table striped bordered hover responsive>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Namn</th>
-                        <th >Märke</th>
-                        <th >Maxhöjd</th>
-                        <th >Maxvikt</th>
-                        <th >Korgstorlek</th>
-                        <th >Dagspris</th>
-                        <th >Startavgift</th>
-                        <th >Bränsletyp</th>
-                        <th >Kategori</th>
-                        <th className="d-none d-md-table-cell">Beskrivning</th>
-                        <th>Hantera</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {liftsToDisplay.map((lift) => (
-                        <tr key={lift.id}>
-                            <td>{lift.id}</td>
-                            <td>{lift.name}</td>
-                            <td >{lift.brand}</td>
-                            <td >{lift.maxHeight}</td>
-                            <td >{lift.maxWeight}</td>
-                            <td >{lift.platformSize}</td>
-                            <td >{lift.dailyPrice}</td>
-                            <td >{lift.startFee}</td>
-                            <td >{lift.fuelName}</td>
-                            <td >{lift.categoryName}</td>
-                            <td className="d-none d-md-table-cell">{lift.description.length > 40 ? `${lift.description.substring(0, 40)}...` : lift.description}</td>
-                            <td className="d-flex gap-3 justify-content-center">
-                                <button
-                                    className="btn btn-sm border-1 border-white"
-                                    onClick={() => {
-                                        setEditingLiftId(lift.id);
-                                        setLift({
-                                            ...lift,
-                                            categoryId: lift.categoryId,
-                                            fuelId: lift.fuelId
-                                        });
-
-                                        setShowCreateModal(true);
-                                    }}
-                                >
-                                    <i className="bi bi-pencil"></i>
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-danger bg-transparent"
-                                    title="Ta bort"
-                                    onClick={() => {
-                                        setLiftToDelete(lift);
-                                        setShowDeleteLiftModal(true);
-                                    }}
-                                >
-                                    <i className="bi bi-trash text-danger"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-
-
-            </Table>
             <CreateLiftModal
                 show={showCreateModal}
                 onHide={handleCloseModal}
