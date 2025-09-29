@@ -4,12 +4,11 @@ import FilterDropdown from "../../../components/FilterDropdown";
 import SearchInput from "../../../components/SearchInput";
 import OrderPagination from "../../../components/TablePagination";
 import type User from "../../../interfaces/User";
-import { useLoaderData, useRevalidator } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import ConfirmationModal from "../../../components/ConfirmationModal";
-import { useFetchApi } from "../../../hooks/useFetchApi";
-import { calculateRentalCost } from "../../../utils/calculateRentalCost";
 import OrderInfoModal from "./OrderInfoModal";
 import OrderTable from "./OrderTable";
+import { useOrderModals } from "../../../utils/OrderModals";
 
 export default function OrderTab() {
     const { lifts, users, orders, orderItems } = useLoaderData() as {
@@ -21,78 +20,17 @@ export default function OrderTab() {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
     const [filter, setFilter] = useState('');
-    const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
-    const [showModal, setShowModal] = useState(false);
-    const [showDeleteOrderModal, setShowDeleteOrderModal] = useState(false);
-    const [orderToDelete, setOrderToDelete] = useState<any | null>(null);
-    const [orderItemToDelete, setOrderItemToDelete] = useState<any | null>(null);
-    const [showDeleteOrderItemModal, setShowDeleteOrderItemModal] = useState(false);
 
-    const { deleteFetch, putFetch } = useFetchApi();
-    const revalidator = useRevalidator();
-
-    const handleShowModal = (order: any) => {
-        setSelectedOrder(order);
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setSelectedOrder(null);
-        setShowModal(false);
-    };
-
-    const deleteOrder = async (orderId: number) => {
-        try {
-            await deleteFetch(`/api/orders/${orderId}`);
-            setShowDeleteOrderModal(false);
-            setOrderToDelete(null);
-            handleCloseModal();
-            revalidator.revalidate();
-        } catch (error) {
-            console.error("Error deleting order:", error);
-        }
-    };
-
-    const deleteOrderItem = async (orderItemId: number) => {
-        try {
-
-            const orderItem = orderItems.find(item => item.id === orderItemId);
-            if (!orderItem) {
-                console.error("Order item not found");
-                return;
-            }
-
-            const orderId = orderItem.orderId;
-            const order = orders.find(o => o.id === orderId);
-            if (!order) {
-                console.error("Order not found");
-                return;
-            }
-
-            const itemCost = calculateRentalCost(
-                order.orderDate,
-                order.returnDate,
-                orderItem.dailyPrice,
-                orderItem.startFee
-            );
-
-            await deleteFetch(`/api/orderItems/${orderItemId}`);
-            const newTotalPrice = order.totalPrice - itemCost;
-
-            await putFetch(`/api/orders/${orderId}`, {
-                totalPrice: newTotalPrice
-            });
-
-            if (selectedOrder && selectedOrder.id === orderId) {
-                setSelectedOrder({ ...selectedOrder, totalPrice: newTotalPrice });
-            }
-
-            revalidator.revalidate();
-        }
-        catch (error) {
-            console.error("Error deleting order item:", error);
-        }
-    };
+    const {
+        selectedOrder, showModal, handleShowModal, handleCloseModal,
+        showDeleteOrderModal, setShowDeleteOrderModal,
+        showDeleteOrderItemModal, setShowDeleteOrderItemModal,
+        orderToDelete, setOrderToDelete,
+        orderItemToDelete, setOrderItemToDelete,
+        deleteOrder, deleteOrderItem,
+        getOrderItems, getLiftName,
+        deleteMessage
+    } = useOrderModals(orders, orderItems, lifts);
 
     const [view, setView] = useState<"all" | "current" | "coming" | "closed">("all");
     const userOrdersFiltered = orders.filter(order => order.userId !== null);
@@ -126,24 +64,10 @@ export default function OrderTab() {
 
     const totalPages = Math.ceil(ordersToDisplay.length / pageSize);
 
-    const getOrderItems = (orderId: number) =>
-        orderItems.filter(item => item.orderId === orderId);
-
-    const getLiftName = (liftId: number) => {
-        const lift = lifts.find(l => l.id === liftId);
-        return lift ? `${lift.name} (${lift.brand})` : "Okänd lift";
-    };
-
     const getUserById = (id: number) =>
         users.find(u => u.id === id);
 
-    let deleteMessage = "";
-    if (orderItemToDelete) {
-        const isLastItem = getOrderItems(orderItemToDelete.orderId).length === 1;
-        deleteMessage = isLastItem
-            ? `Detta är det sista objektet i order #${orderItemToDelete.orderId}. Att ta bort det kommer också ta bort hela ordern. Är du säker?`
-            : `Är du säker på att du vill ta bort ${getLiftName(orderItemToDelete.liftId)} från order #${orderItemToDelete.orderId}?`;
-    }
+  
 
     return (
         <>
