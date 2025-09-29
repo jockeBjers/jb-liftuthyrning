@@ -6,6 +6,9 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import svLocale from "@fullcalendar/core/locales/sv";
 import type Lift from "../../../interfaces/Lift";
 import type User from "../../../interfaces/User";
+import { useOrderModals } from "../../../utils/OrderModals";
+import ConfirmationModal from "../../../components/ConfirmationModal";
+import OrderInfoModal from "../orders/OrderInfoModal";
 
 export default function AdminDashboard() {
     const { lifts, users, orders, orderItems } = useLoaderData() as {
@@ -14,6 +17,16 @@ export default function AdminDashboard() {
         orders: any[];
         orderItems: any[];
     };
+
+    const {
+        selectedOrder, showModal, handleShowModal, handleCloseModal,
+        showDeleteOrderModal, setShowDeleteOrderModal,
+        showDeleteOrderItemModal, setShowDeleteOrderItemModal,
+        orderToDelete, setOrderToDelete,
+        orderItemToDelete, setOrderItemToDelete,
+        deleteOrder, deleteOrderItem,
+        getOrderItems, getLiftName, deleteMessage
+    } = useOrderModals(orders, orderItems, lifts);
 
     const [currentOrders, setCurrentOrders] = useState<any[]>([]);
     const [events, setEvents] = useState<any[]>([]);
@@ -45,6 +58,9 @@ export default function AdminDashboard() {
                 start: order.orderDate,
                 end: endDate,
                 allDay: true,
+                extendedProps: {
+                    orderId: order.id,
+                },
             };
         });
         return mapped;
@@ -105,8 +121,59 @@ export default function AdminDashboard() {
                     events={events}
                     height="auto"
                     eventClassNames={() => "fc-custom-event"}
+                    eventClick={(info) => {
+                        const orderId = info.event.extendedProps.orderId as number;
+                        const order = orders.find((o) => o.id === orderId);
+                        if (order) {
+                            handleShowModal(order);
+                        }
+                    }}
+
                 />
             </Card>
+
+            <OrderInfoModal
+                showModal={showModal}
+                handleCloseModal={handleCloseModal}
+                selectedOrder={selectedOrder}
+                getOrderItems={getOrderItems}
+                lifts={lifts}
+                getLiftName={getLiftName}
+                setOrderToDelete={setOrderToDelete}
+                setShowDeleteOrderModal={setShowDeleteOrderModal}
+                setOrderItemToDelete={setOrderItemToDelete}
+                setShowDeleteOrderItemModal={setShowDeleteOrderItemModal}
+            />
+
+            <ConfirmationModal
+                show={showDeleteOrderItemModal}
+                setShow={setShowDeleteOrderItemModal}
+                title="Ta bort orderobjekt"
+                message={deleteMessage}
+                onConfirm={async () => {
+                    if (!orderItemToDelete) return;
+
+                    if (getOrderItems(orderItemToDelete.orderId).length === 1) {
+                        await deleteOrder(orderItemToDelete.orderId);
+                    } else {
+                        await deleteOrderItem(orderItemToDelete.id);
+                    }
+
+                    setOrderItemToDelete(null);
+                    setShowDeleteOrderItemModal(false);
+                }}
+            />
+
+            <ConfirmationModal
+                show={showDeleteOrderModal}
+                setShow={setShowDeleteOrderModal}
+                title="Ta bort order"
+                message={`Är du säker på att du vill ta bort order #${orderToDelete?.id}?`}
+                onConfirm={async () => {
+                    if (orderToDelete) await deleteOrder(orderToDelete.id);
+                    setOrderToDelete(null);
+                }}
+            />
 
         </Container>
     );
