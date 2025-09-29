@@ -16,6 +16,9 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.19",
+    "@fullcalendar/daygrid": "^6.1.19",
+    "@fullcalendar/react": "^6.1.19",
     "bcryptjs": "^3.0.2",
     "better-express-store": "^1.0.5",
     "better-sqlite3": "^11.10.0",

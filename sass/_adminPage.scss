@@ -67,3 +67,33 @@ td {
     }
   }
 }
+
+.fc .fc-daygrid-event.fc-custom-event {
+  background-color: bootstrap.$primary;
+  border: none;
+  color: white;
+  font-weight: 500;
+  border-radius: 0px;
+  padding: 2px 4px;
+}
+
+.fc .fc-daygrid-event.fc-custom-event:hover {
+  background-color: #e67e00;
+  cursor: pointer;
+}
+.fc .fc-toolbar-title {
+  color: bootstrap.$primary;
+  font-weight: bold;
+}
+
+.fc .fc-button {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.fc .fc-button:hover {
+  background: bootstrap.$secondary;
+  border: 1px solid white;
+  color: white;
+}
