@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 import type Lift from "../interfaces/Lift";
+
 type CartItem = { lift: Lift };
 
 interface CartContextValue {
@@ -8,11 +9,14 @@ interface CartContextValue {
   addToCart: (lift: Lift) => void;
   removeFromCart: (liftId: number) => void;
   clearCart: () => void;
+  clearCartItems: () => void;
   startDate: Date | null;
   endDate: Date | null;
   setStartDate: (date: Date | null) => void;
   setEndDate: (date: Date | null) => void;
 }
+
+const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -29,19 +33,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCartItems(prev => prev.filter(item => item.lift.id !== liftId));
   };
 
-  const clearCart = () => setCartItems([]);
+  const clearCart = () => {
+    setCartItems([]);
+    setStartDate(null);
+    setEndDate(null);
+  };
+
+  const clearCartItems = () => {
+    setCartItems([]);
+  };
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, clearCart, startDate, endDate, setStartDate, setEndDate }}
+      value={{ cartItems, addToCart, removeFromCart, clearCart, clearCartItems, startDate, endDate, setStartDate, setEndDate }}
     >
       {children}
     </CartContext.Provider>
   );
 }
-const CartContext = createContext<CartContextValue | undefined>(undefined);
 
-export function useCart() { 
+export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
     throw new Error("useCart must be used within a CartProvider");
