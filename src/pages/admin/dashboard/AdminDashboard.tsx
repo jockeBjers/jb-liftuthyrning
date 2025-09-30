@@ -83,7 +83,7 @@ export default function AdminDashboard() {
                     <Card className="text-center h-100 bg-secondary">
                         <Card.Body>
                             <h5 className="text-primary">{orders.length}</h5>
-                            <p className="mb-0">Totala Beställningar</p>
+                            <p className="mb-0">Antal Ordrar</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
                     <Card className="text-center h-100 bg-secondary">
                         <Card.Body>
                             <h5 className="text-info">{lifts.length}</h5>
-                            <p className="mb-0">Totala Liftar</p>
+                            <p className="mb-0">Antal Liftar</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
                     <Card className="text-center h-100 bg-secondary">
                         <Card.Body>
                             <h5 className="text-warning">{users.length}</h5>
-                            <p className="mb-0">Användare</p>
+                            <p className="mb-0">Kunder</p>
                         </Card.Body>
                     </Card>
                 </Col>
