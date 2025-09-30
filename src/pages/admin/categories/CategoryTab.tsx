@@ -1,19 +1,13 @@
 import { useState } from "react";
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import CreateCategoryModal from "./createCategoryModal";
 import { useFetchApi } from "../../../hooks/useFetchApi";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import ConfirmationModal from "../../../components/ConfirmationModal";
-
-interface Fuel {
-    id: number;
-    name: string;
-}
-interface Category {
-    id: number;
-    name: string;
-}
+import type Fuel from "../../../interfaces/Fuel";
+import type Category from "../../../interfaces/LiftCategory";
+import TypeTables from "./TypeTables";
 
 export default function CategoryTab() {
     const { fuels, liftCategories, } = useLoaderData() as {
@@ -115,90 +109,14 @@ export default function CategoryTab() {
                     </Col>
                 </Row>
             </Container>
-            <Row className="m-0 g-4">
-
-
-                <Col xs="12" md="6" className="px-2">
-                    <h2 className="text-white">Bränsletyp</h2>
-                    <Table striped bordered hover responsive>
-                        <thead>
-                            <tr>
-                                <th className="px-2">#</th>
-                                <th className="w-100">Typ</th>
-                                <th>Hantera</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {fuels.map((fuel) => (
-                                <tr key={fuel.id}>
-                                    <td className="px-2">{fuel.id}</td>
-                                    <td >{fuel.name}</td>
-                                    <td className="d-flex gap-3 justify-content-center">
-                                        <button
-                                            className="btn btn-sm border-1 border-white"
-                                            onClick={() => handleEditClick(fuel, "fuel")}
-                                        >
-                                            <i className="bi bi-pencil"></i>
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-danger bg-transparent"
-                                            title="Ta bort"
-                                            onClick={() => {
-                                                setItemToDelete(fuel);
-                                                setNewType("fuel");
-                                                setShowDeleteItemModal(true);
-                                            }}
-                                        >
-                                            <i className="bi bi-trash text-danger"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                            ))}
-                        </tbody>
-                    </Table>
-                </Col>
-
-                <Col xs="12" md="6" className="px-2">
-                    <h2 className="text-white">Liftkategori</h2>
-                    <Table striped bordered hover responsive>
-                        <thead>
-                            <tr>
-                                <th className="px-2">#</th>
-                                <th className="w-100">Kategori</th>
-                                <th>Hantera</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {liftCategories.map((category) => (
-                                <tr key={category.id}>
-                                    <td className="px-2">{category.id}</td>
-                                    <td>{category.name}</td>
-                                    <td className="d-flex gap-3 justify-content-center">
-                                        <button
-                                            className="btn btn-sm border-1 border-white"
-                                            onClick={() => handleEditClick(category, "category")}
-                                        >
-                                            <i className="bi bi-pencil"></i>
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-danger bg-transparent"
-                                            title="Ta bort"
-                                            onClick={() => {
-                                                setItemToDelete(category);
-                                                setNewType("category");
-                                                setShowDeleteItemModal(true);
-                                            }}
-                                        >
-                                            <i className="bi bi-trash text-danger"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>
+            <TypeTables
+                fuels={fuels}
+                liftCategories={liftCategories}
+                handleEditClick={handleEditClick}
+                setItemToDelete={setItemToDelete}
+                setNewType={setNewType}
+                setShowDeleteItemModal={setShowDeleteItemModal}
+            />
 
             <ConfirmationModal
                 show={showDeleteItemModal}

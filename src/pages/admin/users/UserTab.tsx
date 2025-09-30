@@ -1,4 +1,4 @@
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import type User from "../../../interfaces/User";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import { useState } from "react";
@@ -8,9 +8,10 @@ import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import CreateUserModal from "./createUserModal";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import SearchInput from "../../../components/SearchInput";
+import UserTable from "./UserTable";
 
 export default function UserTab() {
-    const { users } = useLoaderData() as { users: User[]; customerWithOrders: any[] };
+    const { users } = useLoaderData() as { users: User[]; };
     const [filter, setFilter] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const { postFetch, putFetch, deleteFetch } = useFetchApi();
@@ -27,7 +28,7 @@ export default function UserTab() {
         lastName: "",
         email: "",
         phone: "",
-        role: "user"
+        role: ""
     });
 
     const { sendForm, loading, errorMessage } = useSubmitForm(
@@ -46,7 +47,6 @@ export default function UserTab() {
 
     async function handleSubmitUser(e: React.FormEvent) {
         const errorMsg = editingUserId ? "kunde inte uppdatera användaren" : "kunde inte skapa användaren";
-
         const success = await sendForm(e, undefined, errorMsg);
         if (success) {
             resetUser();
@@ -61,7 +61,7 @@ export default function UserTab() {
             lastName: "",
             email: "",
             phone: "",
-            role: "user"
+            role: ""
         });
         setEditingUserId(null);
     }
@@ -132,56 +132,27 @@ export default function UserTab() {
             </Row>
         </Container>
 
-        <Table striped bordered hover responsive>
-            <thead >
-                <tr>
-                    <th>#</th>
-                    <th>Namn</th>
-                    <th >E-post</th>
-                    <th>Telefon</th>
-                    <th style={{ width: "120px" }}>Hantera</th>
-                </tr>
-            </thead>
-            <tbody>
-                {usersToDisplay.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-                    .map((user) => (
-                        <tr key={user.id}>
-                            <td>{user.id}</td>
-                            <td>{user.firstName} {user.lastName}</td>
-                            <td>{user.email}</td>
-                            <td>{user.phone || '—'}</td>
-                            <td className="d-flex gap-3 justify-content-center w-100">
-                                <button
-                                    className="btn btn-sm border-1 border-white"
-                                    onClick={() => {
-                                        setEditingUserId(user.id || null);
-                                        setUser({
-                                            firstName: user.firstName,
-                                            lastName: user.lastName,
-                                            email: user.email,
-                                            phone: user.phone || "",
-                                            role: user.role
-                                        });
-                                        setShowCreateModal(true);
-                                    }}
-                                >
-                                    <i className="bi bi-pencil"></i>
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-danger bg-transparent"
-                                    title="Ta bort"
-                                    onClick={() => {
-                                        setUserToDelete(user);
-                                        setShowDeleteModal(true);
-                                    }}
-                                >
-                                    <i className="bi bi-trash text-danger"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-            </tbody>
-        </Table>
+        <UserTable
+            users={usersToDisplay}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onEdit={(user) => {
+                setEditingUserId(user.id || null);
+                setUser({
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    phone: user.phone || "",
+                    role: user.role
+                });
+                setShowCreateModal(true);
+            }}
+            onDelete={(user) => {
+                setUserToDelete(user);
+                setShowDeleteModal(true);
+            }}
+        />
+
         <ConfirmationModal
             show={showDeleteModal}
             setShow={setShowDeleteModal}

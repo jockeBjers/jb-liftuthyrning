@@ -1,4 +1,4 @@
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import CreateLiftModal from "./createLiftModal";
 import { useState } from "react";
 import { useFetchApi } from "../../../hooks/useFetchApi";
@@ -7,9 +7,16 @@ import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import FilterDropdown from "../../../components/FilterDropdown";
 import SearchInput from "../../../components/SearchInput";
+import type Fuel from "../../../interfaces/Fuel";
+import type Category from "../../../interfaces/LiftCategory";
+import LiftTable from "./ProductTable";
 
 export default function ProductTab() {
-    const { liftDetails } = useLoaderData() as { liftDetails: any[] };
+    const { liftDetails, fuels, liftCategories } = useLoaderData() as {
+        liftDetails: any[];
+        fuels: Fuel[];
+        liftCategories: Category[];
+    };
     const [lift, setLift] = useState({
         name: '',
         brand: '',
@@ -96,12 +103,17 @@ export default function ProductTab() {
     };
 
     function matchesView(l: any) {
-        return view === "all" ||
-            (view === "saxlift" && l.categoryName === "Saxlift") ||
-            (view === "bomlift" && l.categoryName === "Bomlift") ||
-            (view === "pelarlift" && l.categoryName === "Pelarlift") ||
-            (view === "el" && l.fuelName === "el") ||
-            (view === "diesel" && l.fuelName === "diesel");
+        if (view === "all") return true;
+
+        const matchesCategory = liftCategories.some(category =>
+            view === category.name.toLowerCase() && l.categoryName === category.name
+        );
+
+        const matchesFuel = fuels.some(fuel =>
+            view === fuel.name.toLowerCase() && l.fuelName.toLowerCase() === fuel.name.toLowerCase()
+        );
+
+        return matchesCategory || matchesFuel;
     }
 
     const matchesFilter = (l: any, filter: string) => {
@@ -121,23 +133,29 @@ export default function ProductTab() {
 
     const liftsToDisplay = liftDetails.filter(l => matchesView(l) && matchesFilter(l, filter));
 
+    const filterOptions = [
+        { label: "Alla", value: "all", variant: "primary" },
+        ...liftCategories.map(category => ({
+            label: `${category.name}ar`,
+            value: category.name.toLowerCase(),
+            variant: "primary"
+        })),
+        ...fuels.map(fuel => ({
+            label: fuel.name,
+            value: fuel.name.toLowerCase(),
+            variant: "primary"
+        }))
+    ];
+
     return (
         <>
-
             <Container fluid className="my-5">
                 <Row className="align-items-center justify-content-between">
                     <Col xs={12} lg={8} className="mx-0 px-0">
                         <Row className="g-3">
                             <Col xs={12} md={6} lg="auto">
                                 <FilterDropdown
-                                    options={[
-                                        { label: "Alla", value: "all", variant: "primary" },
-                                        { label: "Saxliftar", value: "saxlift", variant: "primary" },
-                                        { label: "Bomliftar", value: "bomlift", variant: "primary" },
-                                        { label: "Pelarliftar", value: "pelarlift", variant: "primary" },
-                                        { label: "El", value: "el", variant: "success" },
-                                        { label: "Diesel", value: "diesel", variant: "warning" },
-                                    ]}
+                                    options={filterOptions}
                                     selected={view}
                                     setSelected={setView}
                                     placeholder="Kategori"
@@ -165,78 +183,30 @@ export default function ProductTab() {
                 </Row>
             </Container>
 
+            <LiftTable
+                lifts={liftsToDisplay}
+                onEdit={(lift) => {
+                    setEditingLiftId(lift.id);
+                    setLift({
+                        name: lift.name,
+                        brand: lift.brand,
+                        maxHeight: lift.maxHeight,
+                        maxWeight: lift.maxWeight,
+                        platformSize: lift.platformSize,
+                        dailyPrice: lift.dailyPrice,
+                        startFee: lift.startFee,
+                        description: lift.description,
+                        categoryId: lift.categoryId,
+                        fuelId: lift.fuelId
+                    });
+                    setShowCreateModal(true);
+                }}
+                onDelete={(lift) => {
+                    setLiftToDelete(lift);
+                    setShowDeleteLiftModal(true);
+                }}
+            />
 
-
-            <Table striped bordered hover responsive>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Namn</th>
-                        <th >Märke</th>
-                        <th >Maxhöjd</th>
-                        <th >Maxvikt</th>
-                        <th >Korgstorlek</th>
-                        <th >Dagspris</th>
-                        <th >Startavgift</th>
-                        <th >Bränsletyp</th>
-                        <th >Kategori</th>
-                        <th className="d-none d-md-table-cell">Beskrivning</th>
-                        <th>Hantera</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {liftsToDisplay.map((lift) => (
-                        <tr key={lift.id}>
-                            <td>{lift.id}</td>
-                            <td>{lift.name}</td>
-                            <td >{lift.brand}</td>
-                            <td >{lift.maxHeight}</td>
-                            <td >{lift.maxWeight}</td>
-                            <td >{lift.platformSize}</td>
-                            <td >{lift.dailyPrice}</td>
-                            <td >{lift.startFee}</td>
-                            <td >{lift.fuelName}</td>
-                            <td >{lift.categoryName}</td>
-                            <td className="d-none d-md-table-cell">{lift.description.length > 40 ? `${lift.description.substring(0, 40)}...` : lift.description}</td>
-                            <td className="d-flex gap-3 justify-content-center">
-                                <button
-                                    className="btn btn-sm border-1 border-white"
-                                    onClick={() => {
-                                        setEditingLiftId(lift.id);
-                                        setLift({
-                                            name: lift.name,
-                                            brand: lift.brand,
-                                            maxHeight: lift.maxHeight,
-                                            maxWeight: lift.maxWeight,
-                                            platformSize: lift.platformSize,
-                                            dailyPrice: lift.dailyPrice,
-                                            startFee: lift.startFee,
-                                            description: lift.description,
-                                            categoryId: lift.categoryId,
-                                            fuelId: lift.fuelId
-                                        });
-                                        setShowCreateModal(true);
-                                    }}
-                                >
-                                    <i className="bi bi-pencil"></i>
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-danger bg-transparent"
-                                    title="Ta bort"
-                                    onClick={() => {
-                                        setLiftToDelete(lift);
-                                        setShowDeleteLiftModal(true);
-                                    }}
-                                >
-                                    <i className="bi bi-trash text-danger"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-
-
-            </Table>
             <CreateLiftModal
                 show={showCreateModal}
                 onHide={handleCloseModal}
@@ -246,6 +216,8 @@ export default function ProductTab() {
                 loading={loading}
                 errorMessage={errorMessage}
                 isEdit={editingLiftId !== null}
+                fuels={fuels}
+                liftCategories={liftCategories}
             />
             <ConfirmationModal
                 show={showDeleteLiftModal}

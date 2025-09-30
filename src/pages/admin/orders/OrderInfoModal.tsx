@@ -79,7 +79,7 @@ export default function OrderInfoModal(
                     <p>Ingen order vald.</p>
                 )}
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className="bg-body border-secondary">
                 {selectedOrder && (
                     <Button
                         variant="danger"
