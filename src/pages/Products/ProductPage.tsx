@@ -6,14 +6,22 @@ import { useState } from "react";
 import SearchInput from "../../components/SearchInput";
 import SortSelect from "../../components/SortSelect";
 import FilterSelect from "../../components/FilterSelect";
+import type Fuel from "../../interfaces/Fuel";
+import type Category from "../../interfaces/LiftCategory";
+
 export default function ProductPage() {
-    const initialLifts = useLoaderData() as Lift[];
-    const [lifts] = useState<Lift[]>(initialLifts);
+    const { liftDetails, fuels, liftCategories } = useLoaderData() as {
+        liftDetails: any[];
+        fuels: Fuel[];
+        liftCategories: Category[];
+    };
+
+    const [lifts] = useState<any[]>(liftDetails);
     const [filter, setFilter] = useState('');
     const [sortBy, setSortBy] = useState('');
     const [categoryId, setCategoryId] = useState('');
 
-    function matchesSearch(l: Lift, search: string) {
+    function matchesSearch(l: any, search: string) {
         if (!search) return true;
         const s = search.toLowerCase();
         return (
@@ -23,20 +31,19 @@ export default function ProductPage() {
             l.platformSize?.toLowerCase().includes(s) ||
             l.maxHeight.toString().includes(s) ||
             l.maxWeight.toString().includes(s) ||
+            l.fuelName?.toLowerCase().includes(s) ||
+            l.categoryName?.toLowerCase().includes(s) ||
             l.dailyPrice.toString().includes(s)
         );
     }
 
-    function matchesCategoryFilter(l: Lift, categoryId: string) {
-        if (!categoryId) return true;
+    function matchesCategoryFilter(l: any, filterValue: string) {
+        if (!filterValue) return true;
 
-        if (categoryId === l.categoryId?.toString()) return true;
-
-        if (categoryId.startsWith("fuel-")) {
-            return l.fuelId?.toString() === categoryId.replace("fuel-", "");
-        }
-
-        return false;
+        return (
+            l.categoryName?.toLowerCase() === filterValue ||
+            l.fuelName?.toLowerCase() === filterValue
+        );
     }
 
     function sortLifts(a: Lift, b: Lift, sortBy: string) {
@@ -50,14 +57,13 @@ export default function ProductPage() {
             default: return 0;
         }
     }
- 
+
     const displayedLifts = [...lifts]
         .filter(l => matchesSearch(l, filter) && matchesCategoryFilter(l, categoryId))
         .sort((a, b) => sortLifts(a, b, sortBy));
 
     return (
         <>
-
             <Container>
                 <div className="products-page my-5 text-center"></div>
 
@@ -98,18 +104,17 @@ export default function ProductPage() {
                                     groups={[
                                         {
                                             label: "Kategorier",
-                                            options: [
-                                                { label: "Saxlift", value: "1" },
-                                                { label: "Bomlift", value: "2" },
-                                                { label: "Pelarlift", value: "3" }
-                                            ]
+                                            options: liftCategories.map(category => ({
+                                                label: category.name,
+                                                value: category.name.toLowerCase()
+                                            }))
                                         },
                                         {
                                             label: "Bränsletyper",
-                                            options: [
-                                                { label: "El", value: "fuel-1" },
-                                                { label: "Diesel", value: "fuel-2" }
-                                            ]
+                                            options: fuels.map(fuel => ({
+                                                label: fuel.name,
+                                                value: fuel.name.toLowerCase()
+                                            }))
                                         }
                                     ]}
                                 />

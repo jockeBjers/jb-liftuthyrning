@@ -3,7 +3,7 @@ import StartPage from "./pages/start/StartPage";
 import AboutPage from "./pages/about-us/aboutPage";
 import ProductPage from "./pages/products/ProductPage";
 import ProductDetailsPage from "./pages/products/productDetailsPage/ProductDetailsPage";
-import BookingPage from "./pages/products/BookingPage";
+import BookingPage from "./pages/booking/BookingPage";
 import LoginPage from "./pages/authentication/LoginPage";
 import RegisterPage from "./pages/authentication/RegisterPage";
 import UserPage from "./pages/user/UserPage";
