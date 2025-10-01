@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 import StartPage from "./pages/start/StartPage";
-import AboutPage from "./pages/about-us/aboutPage";
+import AboutPage from "./pages/about-us/AboutPage";
 import ProductPage from "./pages/products/ProductPage";
 import ProductDetailsPage from "./pages/products/productDetailsPage/ProductDetailsPage";
 import BookingPage from "./pages/booking/BookingPage";

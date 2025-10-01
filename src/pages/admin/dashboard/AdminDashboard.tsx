@@ -6,7 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import svLocale from "@fullcalendar/core/locales/sv";
 import type Lift from "../../../interfaces/Lift";
 import type User from "../../../interfaces/User";
-import { useOrderModals } from "../../../utils/OrderModals";
+import { useOrderModalControl } from "../../../hooks/useOrderModalControl";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import OrderInfoModal from "../orders/OrderInfoModal";
 
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
         orderItemToDelete, setOrderItemToDelete,
         deleteOrder, deleteOrderItem,
         getOrderItems, getLiftName, deleteMessage
-    } = useOrderModals(orders, orderItems, lifts);
+    } = useOrderModalControl(orders, orderItems, lifts);
 
     const [currentOrders, setCurrentOrders] = useState<any[]>([]);
     const [events, setEvents] = useState<any[]>([]);

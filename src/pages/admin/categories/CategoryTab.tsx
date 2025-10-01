@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import CreateCategoryModal from "./createCategoryModal";
-import { useFetchApi } from "../../../hooks/useFetchApi";
+import { apiUtil } from "../../../utils/apiUtil";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import type Fuel from "../../../interfaces/Fuel";
 import type Category from "../../../interfaces/LiftCategory";
 import TypeTables from "./TypeTables";
+import CreateCategoryModal from "./CreateCategoryModal";
 
 export default function CategoryTab() {
     const { fuels, liftCategories, } = useLoaderData() as {
@@ -22,7 +22,7 @@ export default function CategoryTab() {
 
     const [itemToDelete, setItemToDelete] = useState<any | null>(null);
     const revalidator = useRevalidator();
-    const { postFetch, deleteFetch, putFetch } = useFetchApi();
+    const { postFetch, deleteFetch, putFetch } = apiUtil();
 
     const { sendForm, loading, errorMessage } = useSubmitForm(() => {
 

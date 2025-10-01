@@ -1,4 +1,4 @@
-export function useFetchApi() {
+export function apiUtil() {
 
     const getFetch = async (url: string) => {
         try {
