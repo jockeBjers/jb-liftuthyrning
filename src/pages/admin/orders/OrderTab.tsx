@@ -8,7 +8,7 @@ import { useLoaderData } from "react-router-dom";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import OrderInfoModal from "./OrderInfoModal";
 import OrderTable from "./OrderTable";
-import { useOrderModals } from "../../../utils/OrderModals";
+import { useOrderModalControl } from "../../../hooks/useOrderModalControl";
 
 export default function OrderTab() {
     const { lifts, users, orders, orderItems } = useLoaderData() as {
@@ -30,7 +30,7 @@ export default function OrderTab() {
         deleteOrder, deleteOrderItem,
         getOrderItems, getLiftName,
         deleteMessage
-    } = useOrderModals(orders, orderItems, lifts);
+    } = useOrderModalControl(orders, orderItems, lifts);
 
     const [view, setView] = useState<"all" | "current" | "coming" | "closed">("all");
     const userOrdersFiltered = orders.filter(order => order.userId !== null);

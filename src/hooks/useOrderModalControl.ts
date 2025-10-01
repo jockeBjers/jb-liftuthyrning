@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useRevalidator } from "react-router-dom";
-import { useFetchApi } from "../hooks/useFetchApi";
-import { calculateRentalCost } from "./calculateRentalCost";
+import { apiUtil } from "../utils/apiUtil";
+import { calculateRentalCost } from "../utils/calculateRentalCost";
 
-export function useOrderModals(orders: any[], orderItems: any[], lifts: any[]) {
-  const { deleteFetch, putFetch } = useFetchApi();
+export function useOrderModalControl(orders: any[], orderItems: any[], lifts: any[]) {
+  const { deleteFetch, putFetch } = apiUtil();
   const revalidator = useRevalidator();
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [showModal, setShowModal] = useState(false);

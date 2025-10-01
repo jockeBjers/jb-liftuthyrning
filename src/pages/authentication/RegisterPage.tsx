@@ -1,13 +1,13 @@
 import { Container, Row, Col, Form, Button, Spinner } from 'react-bootstrap';
 import ReturnButton from '../../components/ReturnButton';
-import { useFetchApi } from '../../hooks/useFetchApi';
+import { apiUtil } from '../../utils/apiUtil';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSubmitForm } from '../../hooks/useSubmitForm';
 
 export default function RegisterPage() {
     const navigate = useNavigate();
-    const { postFetch } = useFetchApi();
+    const { postFetch } = apiUtil();
 
     const [user, setUser] = useState({
         firstName: '',

@@ -1,7 +1,7 @@
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import { useAuth } from "../../context/AuthProvider";
 import { useState } from "react";
-import { useFetchApi } from "../../hooks/useFetchApi";
+import { apiUtil } from "../../utils/apiUtil";
 import { useRevalidator } from "react-router-dom";
 import FilterDropdown from "../../components/FilterDropdown";
 import TablePagination from "../../components/TablePagination";
@@ -19,7 +19,7 @@ export default function UserOrders({
     const { user } = useAuth();
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
-    const { deleteFetch } = useFetchApi();
+    const { deleteFetch } = apiUtil();
     const revalidator = useRevalidator();
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;

@@ -1,27 +1,33 @@
 import { Container, Row, Col, Form, Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReturnButton from "../../components/ReturnButton";
 import { useAuth } from "../../context/AuthProvider";
 import { useSubmitForm } from "../../hooks/useSubmitForm";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { loginUser } = useAuth();
+    const { loginUser, user } = useAuth();
 
-    const [user, setUser] = useState({
+    const [userForm, setUser] = useState({
         email: '',
         password: ''
     });
 
     function setProperty(event: React.ChangeEvent<HTMLInputElement>) {
         let { name, value } = event.target;
-        setUser({ ...user, [name]: value });
+        setUser({ ...userForm, [name]: value });
     }
 
+    useEffect(() => {
+        if (user) {
+            navigate(user.role === 'admin' ? '/admin' : '/profile');
+        }
+    }, [user, navigate]);
+
+
     const { sendForm, loading, errorMessage } = useSubmitForm(
-        () => loginUser(user.email, user.password),
-        '/profile'
+        () => loginUser(userForm.email, userForm.password)
     );
 
     return (
@@ -43,7 +49,7 @@ export default function LoginPage() {
                                     <Form.Control
                                         type="email"
                                         name="email"
-                                        value={user.email}
+                                        value={userForm.email}
                                         onChange={setProperty}
                                         placeholder="E-post"
                                         className="modern-input fs-5 py-3"
@@ -57,7 +63,7 @@ export default function LoginPage() {
                                     <Form.Control
                                         type="password"
                                         name="password"
-                                        value={user.password}
+                                        value={userForm.password}
                                         onChange={setProperty}
                                         placeholder="Lösenord"
                                         className="modern-input fs-5 py-3"

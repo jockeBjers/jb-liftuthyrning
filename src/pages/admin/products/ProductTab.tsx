@@ -1,7 +1,6 @@
 import { Button, Col, Container, Row } from "react-bootstrap";
-import CreateLiftModal from "./createLiftModal";
 import { useState } from "react";
-import { useFetchApi } from "../../../hooks/useFetchApi";
+import { apiUtil } from "../../../utils/apiUtil";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import { useSubmitForm } from "../../../hooks/useSubmitForm";
 import ConfirmationModal from "../../../components/ConfirmationModal";
@@ -10,6 +9,7 @@ import SearchInput from "../../../components/SearchInput";
 import type Fuel from "../../../interfaces/Fuel";
 import type Category from "../../../interfaces/LiftCategory";
 import LiftTable from "./ProductTable";
+import CreateLiftModal from "./CreateLiftModal";
 
 export default function ProductTab() {
     const { liftDetails, fuels, liftCategories } = useLoaderData() as {
@@ -32,7 +32,7 @@ export default function ProductTab() {
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingLiftId, setEditingLiftId] = useState<number | null>(null);
-    const { postFetch, putFetch, deleteFetch } = useFetchApi();
+    const { postFetch, putFetch, deleteFetch } = apiUtil();
     const revalidator = useRevalidator();
     const [showDeleteLiftModal, setShowDeleteLiftModal] = useState(false);
     const [liftToDelete, setLiftToDelete] = useState<any | null>(null);
