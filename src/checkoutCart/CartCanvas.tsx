@@ -1,76 +1,40 @@
-import { Offcanvas, Button, ListGroup, Card } from "react-bootstrap";
+import { Offcanvas, Button, ListGroup, Card, Form } from "react-bootstrap";
 import { useCart } from "../context/CartProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthProvider";
-import { useFetchApi } from "../hooks/useFetchApi";
+import { apiUtil } from "../utils/apiUtil";
 import OrderConfirmationModal from "./OrderConfirmationModal";
-import { calculateRentalCost } from "../utils/calculateRentalCost";
+import type User from "../interfaces/User";
+import { useBooking } from "../hooks/useBooking";
 export default function CartCanvas({ show, onHide }: { show: boolean; onHide: () => void }) {
   const { cartItems, startDate, endDate, clearCart, removeFromCart } = useCart();
-  const [isBooking, setIsBooking] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
-  const { postFetch } = useFetchApi();
+  const { getFetch } = apiUtil();
+  const hasItems = cartItems.length > 0;
 
-  function calculateItemCost(item: { lift: { dailyPrice: number; startFee: number } }): number {
-    if (!startDate || !endDate) return 0;
-    return calculateRentalCost(startDate, endDate, item.lift.dailyPrice, item.lift.startFee);
-  }
+  const { isBooking, bookingSuccess, calculateTotalCost, handleBooking, calculateItemCost } = useBooking();
 
-  const calculateTotalCost = (): number => {
-    return cartItems.reduce((sum, item) => {
-      return sum + calculateItemCost(item);
-    }, 0);
-  };
 
-  const handleBooking = async () => {
-    if (!user) {
-      return;
-    }
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
-    setIsBooking(true);
-    try {
+  useEffect(() => {
+    if (user?.role !== "admin") return;
 
-      const totalPrice = calculateTotalCost();
+    const fetchUsers = async () => {
+      try {
+        const availableUsers = await getFetch("/api/users");
+        setAllUsers(availableUsers);
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      }
+    };
 
-      const formatLocalDate = (date: Date) =>
-        new Intl.DateTimeFormat('sv-SE').format(date);
+    fetchUsers();
+  }, [user?.role]);
 
-      const order = await postFetch("/api/orders", {
-        userId: user.id,
-        orderDate: formatLocalDate(startDate!),
-        returnDate: formatLocalDate(endDate!),
-        totalPrice
-      });
 
-      const orderItemPromises = cartItems.map(item =>
-        postFetch("/api/orderItems", {
-          orderId: order.insertId,
-          liftId: item.lift.id,
-          dailyPrice: item.lift.dailyPrice,
-          startFee: item.lift.startFee
-        })
-      );
-
-      const minSpinnerTime = new Promise(resolve => setTimeout(resolve, 500));
-      await Promise.all([...orderItemPromises, minSpinnerTime]);
-
-      setBookingSuccess(true);
-
-      setTimeout(() => {
-        setBookingSuccess(false);
-        setShowModal(false);
-        clearCart();
-        onHide();
-      }, 3000);
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert("Ett fel uppstod vid checkout.");
-    } finally {
-      setIsBooking(false);
-    }
-  };
 
   return (
     <>
@@ -79,9 +43,28 @@ export default function CartCanvas({ show, onHide }: { show: boolean; onHide: ()
           <Offcanvas.Title>Kundvagn</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
+
+          {user?.role === "admin" && hasItems && (
+            <Form.Group className="mb-3">
+              <Form.Label>Boka åt användare</Form.Label>
+              <Form.Select
+                value={selectedUserId || ""}
+                onChange={(e) => setSelectedUserId(Number(e.target.value))}
+              >
+                <option value="">Välj användare...</option>
+                {allUsers.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.firstName} {u.lastName} ({u.email})
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
+
+
           {cartItems.length === 0 && <p className="text-white-50">Kundvagnen är tom.</p>}
 
-          {cartItems.length > 0 && startDate && endDate && (
+          {hasItems && startDate && endDate && (
             <div className="mb-3 p-2 bg-transparent ">
               <strong className="text-white-50">Bokningsperiod:</strong>
               <div className="text-white">
@@ -130,7 +113,7 @@ export default function CartCanvas({ show, onHide }: { show: boolean; onHide: ()
             })}
           </ListGroup>
 
-          {cartItems.length > 0 && (
+          {hasItems && (
             <>
               <div className="mt-3 fw-bold">
                 Totalt: {calculateTotalCost()} kr
@@ -152,7 +135,7 @@ export default function CartCanvas({ show, onHide }: { show: boolean; onHide: ()
       <OrderConfirmationModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        onConfirm={handleBooking}
+        onConfirm={() => handleBooking(selectedUserId, onHide)}
         totalCost={calculateTotalCost()}
         isBooking={isBooking}
         bookingSuccess={bookingSuccess}
