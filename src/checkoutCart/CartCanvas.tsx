@@ -1,82 +1,40 @@
-import { Offcanvas, Button, ListGroup, Card } from "react-bootstrap";
+import { Offcanvas, Button, ListGroup, Card, Form } from "react-bootstrap";
 import { useCart } from "../context/CartProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthProvider";
-import { useFetchApi } from "../hooks/useFetchApi";
+import { apiUtil } from "../utils/apiUtil";
 import OrderConfirmationModal from "./OrderConfirmationModal";
-
-
+import type User from "../interfaces/User";
+import { useBooking } from "../hooks/useBooking";
 export default function CartCanvas({ show, onHide }: { show: boolean; onHide: () => void }) {
   const { cartItems, startDate, endDate, clearCart, removeFromCart } = useCart();
-
-  const [isBooking, setIsBooking] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
-  const { postFetch } = useFetchApi();
+  const { getFetch } = apiUtil();
+  const hasItems = cartItems.length > 0;
+
+  const { isBooking, bookingSuccess, calculateTotalCost, handleBooking, calculateItemCost } = useBooking();
 
 
-  function calculateItemCost(item: { lift: { dailyPrice: number; startFee: number } }): number {
-    if (!startDate || !endDate) return 0;
-    const fromDate = new Date(startDate).getTime();
-    const toDate = new Date(endDate).getTime();
-    const daysOfRental = Math.ceil((toDate - fromDate) / (1000 * 3600 * 24)) + 1;
-    return (daysOfRental * item.lift.dailyPrice) + item.lift.startFee;
-  }
-  const calculateTotalCost = (): number => {
-    return cartItems.reduce((sum, item) => {
-      return sum + calculateItemCost(item);
-    }, 0);
-  };
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
-  const handleBooking = async () => {
-    if (!user) {
-      alert("Du måste vara inloggad för att slutföra beställningen.");
-      return;
-    }
-    if (cartItems.length === 0) {
-      alert("Kundvagnen är tom!");
-      return;
-    }
+  useEffect(() => {
+    if (user?.role !== "admin") return;
 
-    setIsBooking(true);
-    try {
-      const totalPrice = calculateTotalCost();
+    const fetchUsers = async () => {
+      try {
+        const availableUsers = await getFetch("/api/users");
+        setAllUsers(availableUsers);
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      }
+    };
 
-      const order = await postFetch("/api/orders", {
-        userId: user.id,
-        orderDate: startDate!.toISOString().split("T")[0],
-        returnDate: endDate!.toISOString().split("T")[0],
-        totalPrice
-      });
+    fetchUsers();
+  }, [user?.role]);
 
-      const orderItemPromises = cartItems.map(item =>
-        postFetch("/api/orderItems", {
-          orderId: order.insertId,
-          liftId: item.lift.id,
-          pricePerDay: item.lift.dailyPrice,
-          startFee: item.lift.startFee
-        })
-      );
 
-      const minSpinnerTime = new Promise(resolve => setTimeout(resolve, 500));
-      await Promise.all([...orderItemPromises, minSpinnerTime]);
-
-      setBookingSuccess(true);
-
-      setTimeout(() => {
-        setBookingSuccess(false);
-        setShowModal(false);
-        clearCart();
-        onHide();
-      }, 3000);
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert("Ett fel uppstod vid checkout.");
-    } finally {
-      setIsBooking(false);
-    }
-  };
 
   return (
     <>
@@ -85,47 +43,86 @@ export default function CartCanvas({ show, onHide }: { show: boolean; onHide: ()
           <Offcanvas.Title>Kundvagn</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
+
+          {user?.role === "admin" && hasItems && (
+            <Form.Group className="mb-3">
+              <Form.Label>Boka åt användare</Form.Label>
+              <Form.Select
+                value={selectedUserId || ""}
+                onChange={(e) => setSelectedUserId(Number(e.target.value))}
+              >
+                <option value="">Välj användare...</option>
+                {allUsers.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.firstName} {u.lastName} ({u.email})
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
+
+
           {cartItems.length === 0 && <p className="text-white-50">Kundvagnen är tom.</p>}
 
-          <ListGroup>
-            {cartItems.map(item => (
-              <Card
-                key={item.lift.id}
-                className="mb-3 border-0 bg-transparent shadow-none border-bottom rounded-0 py-2"
-              >
-                <Card.Body className="d-flex justify-content-between align-items-start p-2">
-                  <div>
-                    <Card.Title className="mb-1 fw-bold text-primary">{item.lift.name}</Card.Title>
-                    <Card.Text className="mb-0 text-white">
-                      {item.lift.dailyPrice} kr / dag + startavgift {item.lift.startFee} kr
-                    </Card.Text>
-                    <Card.Text className="fw-bold mt-1 text-white">
-                      Totalt: <span className="text-white-50"> {calculateItemCost(item)} kr</span>
-                    </Card.Text>
-                  </div>
+          {hasItems && startDate && endDate && (
+            <div className="mb-3 p-2 bg-transparent ">
+              <strong className="text-white-50">Bokningsperiod:</strong>
+              <div className="text-white">
+                {startDate.toLocaleDateString('sv-SE')} – {endDate.toLocaleDateString('sv-SE')}
+              </div>
+              <small className="text-white-50">
+                ({Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + 1} dagar)
+              </small>
+            </div>
+          )}
 
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => removeFromCart(item.lift.id)}
-                    className="bg-transparent border-1 text-danger"
-                  >
-                    X
-                  </Button>
-                </Card.Body>
-              </Card>
-            ))}
+          <ListGroup>
+            {cartItems.map(item => {
+              return (
+                <Card
+                  key={item.lift.id}
+                  className={"mb-3 border-0 bg-transparent shadow-none border-bottom rounded-0 py-2"}
+
+                >
+                  <Card.Body className="d-flex justify-content-between align-items-start p-2">
+                    <div>
+                      <Card.Title className={`mb-1 fw-bold text-primary`}>
+                        {item.lift.name}
+
+                      </Card.Title>
+                      <Card.Text className="mb-0 text-white">
+                        {item.lift.dailyPrice} kr / dag + startavgift {item.lift.startFee} kr
+                      </Card.Text>
+                      <Card.Text className="fw-bold mt-1 text-white">
+                        Totalt: <span className="text-white-50"> {calculateItemCost(item)} kr</span>
+                      </Card.Text>
+
+                    </div>
+
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => removeFromCart(item.lift.id)}
+                      className="bg-transparent border-1 text-danger"
+                    >
+                      X
+                    </Button>
+                  </Card.Body>
+                </Card>
+              );
+            })}
           </ListGroup>
 
-          {cartItems.length > 0 && (
+          {hasItems && (
             <>
-              <div className="mb-1 text-white-50">
-                {startDate?.toLocaleDateString()} – {endDate?.toLocaleDateString()}
-              </div>
               <div className="mt-3 fw-bold">
                 Totalt: {calculateTotalCost()} kr
               </div>
-              <Button className="mt-3 w-100" variant="primary" onClick={() => setShowModal(true)}>
+              <Button
+                className="mt-3 w-100"
+                variant="primary"
+                onClick={() => setShowModal(true)}
+              >
                 Slutför bokning
               </Button>
               <Button className="mt-2 w-100" variant="secondary" onClick={clearCart}>
@@ -138,13 +135,12 @@ export default function CartCanvas({ show, onHide }: { show: boolean; onHide: ()
       <OrderConfirmationModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        onConfirm={handleBooking}
+        onConfirm={() => handleBooking(selectedUserId, onHide)}
         totalCost={calculateTotalCost()}
         isBooking={isBooking}
         bookingSuccess={bookingSuccess}
         cartItems={cartItems}
       />
-
     </>
   );
 }

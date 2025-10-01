@@ -19,7 +19,7 @@ export default function SortSelect({
 }: SortSelectProps) {
     return (
             <select
-                className="modern-input form-select cursor-pointer p-2"
+                 className="modern-input form-select cursor-pointer "
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             >
