@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthProvider";
 export default function StartPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   return (
     <>
       <div className="d-flex justify-content-center align-items-center start-page-bg text-center">
@@ -14,18 +14,29 @@ export default function StartPage() {
 
       <Container fluid className="bg-body text-white py-5">
         <Container className="text-center">
-          {user?.role === "user" ? (
+          {user ? (
             <>
               <h2 className="mb-4 text-primary">Hej {user.firstName}!</h2>
-              <p className="mb-5">Gå till din profil för att se dina bokningar</p>
-              <Button variant="primary" onClick={() => navigate(`/profile`)}>
-                Gå till profil
-              </Button>
+              {user.role === 'admin' ? (
+                <>
+                  <p className="mb-5">Gå till adminpanelen för att hantera bokningar och produkter</p>
+                  <Button variant="primary" onClick={() => navigate(`/admin`)}>
+                    Gå till adminpanelen
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <p className="mb-5">Välkommen tillbaka! Gå till din profil för att se dina bokningar</p>
+                  <Button variant="primary" onClick={() => navigate(`/profile`)}>
+                    Gå till profil
+                  </Button>
+                </>
+              )}
             </>
           ) : (
             <>
-              <h2 className="mb-4 text-primary">Har du redan ett konto?</h2>
-              <p className="mb-5">Logga in för att boka liftar direkt och få tillgång till dina tidigare bokningar.</p>
+              <h2 className="mb-4 text-primary">Har du redan ett konto eller vill registrera dig?</h2>
+              <p className="mb-5">Logga in för att boka liftar direkt och få tillgång till din orderhistorik.</p>
               <Button variant="primary" onClick={() => navigate(`/login`)}>
                 Logga in
               </Button>
