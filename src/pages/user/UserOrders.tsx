@@ -6,6 +6,8 @@ import { useRevalidator } from "react-router-dom";
 import FilterDropdown from "../../components/FilterDropdown";
 import TablePagination from "../../components/TablePagination";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import { calculateRentalCost } from "../../utils/calculateRentalCost";
+import { printOrder } from "../../utils/printOrder";
 
 export default function UserOrders({
     orders = [],
@@ -79,13 +81,29 @@ export default function UserOrders({
         currentPage * pageSize
     );
 
+    const handlePrint = (orderId: number) => {
+        const order = orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        const items = getOrderItems(orderId);
+
+        printOrder({
+            orderId,
+            order,
+            items,
+            lifts,
+            user,
+            calculateRentalCost,
+            getLiftName
+        });
+    };
 
     return (
         <Container className="mb-5">
             <FilterDropdown
                 options={[
                     { label: "Alla", value: "all", variant: "primary" },
-                    { label: "Pågående", value: "current", variant: "success"},
+                    { label: "Pågående", value: "current", variant: "success" },
                     { label: "Kommande", value: "coming", variant: "info" },
                     { label: "Avslutade", value: "closed", variant: "danger" },
                 ]}
@@ -110,8 +128,8 @@ export default function UserOrders({
                                 <thead>
                                     <tr>
                                         <th>Produkt</th>
-                                        <th>Pris per dag</th>
-                                        <th>Startavgift</th>
+                                        <th className="d-none d-md-table-cell">Pris per dag</th>
+                                        <th className="d-none d-md-table-cell">Startavgift</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -121,8 +139,8 @@ export default function UserOrders({
                                             return (
                                                 <tr key={item.id}>
                                                     <td className="text-wrap">{getLiftName(item.liftId)}</td>
-                                                    <td>{lift?.dailyPrice} kr</td>
-                                                    <td>{lift?.startFee} kr</td>
+                                                    <td className="d-none d-md-table-cell">{lift?.dailyPrice} kr</td>
+                                                    <td className="d-none d-md-table-cell">{lift?.startFee} kr</td>
                                                 </tr>
                                             );
                                         })
@@ -137,12 +155,21 @@ export default function UserOrders({
                             <Row className="align-items-center mt-3">
                                 <Col xs="12" md>
                                     <p className="mb-2 mb-md-0">
-                                        <strong>Totalt pris för order:</strong> {order.totalPrice} kr
+                                        <strong>Totalt pris:</strong> {order.totalPrice} kr
                                     </p>
                                 </Col>
-                              
-                                {canCancelOrder(order.orderDate) && (
-                                    <Col xs="12" md="auto" className="text-md-end">
+
+                                <Col xs="12" md="auto" className="d-flex flex-column flex-md-row gap-2 justify-content-md-end mt-2 mt-md-0">
+                                    <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        onClick={() => handlePrint(order.id)}
+                                        className="text-nowrap"
+                                    >
+                                        Skriv ut kvitto
+                                    </Button>
+
+                                    {canCancelOrder(order.orderDate) && (
                                         <Button
                                             variant="outline-danger"
                                             size="sm"
@@ -150,12 +177,13 @@ export default function UserOrders({
                                                 setOrderToCancel(order.id);
                                                 setShowCancelModal(true);
                                             }}
-                                            className="w-100 w-md-auto"
+                                            className="text-nowrap"
                                         >
                                             Avbryt beställning
                                         </Button>
-                                    </Col>
-                                )}
+                                    )}
+                                </Col>
+
                             </Row>
                         </div>
                     );
