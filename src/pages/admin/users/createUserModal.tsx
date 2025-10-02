@@ -29,6 +29,10 @@ export default function CreateUserModal({
     errorMessage,
     isEdit = false
 }: CreateUserModalProps) {
+    const isFirstNameValid = /[a-zA-Z]/.test(user.firstName);
+    const isLastNameValid = /[a-zA-Z]/.test(user.lastName);
+    const isEmailValid = /\S+@\S+\.\S+/.test(user.email);
+    const canSubmit = isFirstNameValid && isLastNameValid && isEmailValid;
     return (
         <Modal show={show} onHide={onHide} size="lg" className="text-white">
             <Modal.Header closeButton className="bg-body border-secondary">
@@ -69,7 +73,6 @@ export default function CreateUserModal({
                                         className="modern-input"
                                         autoComplete='off'
                                         maxLength={50}
-
                                         minLength={2}
                                         required
                                     />
@@ -151,7 +154,7 @@ export default function CreateUserModal({
                     <Button
                         variant="primary"
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || !canSubmit}
                     >
                         {loading ? (
                             <>
@@ -164,9 +167,7 @@ export default function CreateUserModal({
 
                         {errorMessage && <div className="text-danger mt-1">{errorMessage}</div>}
 
-
                     </Button>
-
 
                 </Modal.Footer>
             </Form>

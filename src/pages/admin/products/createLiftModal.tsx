@@ -39,6 +39,12 @@ export default function CreateLiftModal({
     , fuels, liftCategories
 }: CreateLiftProps) {
 
+    const isNameValid = /[a-zA-Z]/.test(lift.name);
+    const isBrandValid = /[a-zA-Z]/.test(lift.brand);
+    const isPlatformValid = /[a-zA-Z]/.test(lift.platformSize);
+    const isDescriptionValid = /[a-zA-Z]/.test(lift.description);
+
+    const canSubmit = isNameValid && isBrandValid && isPlatformValid && isDescriptionValid;
     return (
         <Modal show={show} onHide={onHide} size="lg" className="text-white">
             <Modal.Header closeButton className="bg-body border-secondary">
@@ -230,7 +236,7 @@ export default function CreateLiftModal({
                     <Button
                         variant="primary"
                         type="submit"
-                        disabled={loading}>
+                        disabled={loading || !canSubmit}>
                         {loading ? (
                             <>
                                 <Spinner animation="border" size="sm" className="me-2" />
