@@ -33,11 +33,13 @@ export default function AdminDashboard() {
 
     const getCurrentOrders = () => {
         const today = new Date();
-        const activeOrders = orders.filter(
-            (order) =>
-                new Date(order.orderDate) <= today &&
-                new Date(order.returnDate) >= today
-        );
+        const activeOrders = orders.filter((order) => {
+            const orderDate = new Date(order.orderDate);
+            const returnDate = new Date(order.returnDate);
+            returnDate.setDate(returnDate.getDate() + 1);
+
+            return orderDate <= today && today < returnDate;
+        });
 
         return activeOrders;
     };
@@ -69,8 +71,8 @@ export default function AdminDashboard() {
     useEffect(() => {
         const active = getCurrentOrders();
         setCurrentOrders(active);
+        
         const mapped = mapEvents();
-
         setEvents(mapped);
     }, [orders, orderItems, lifts]);
 
