@@ -28,7 +28,7 @@ export default function UserPage() {
                     <ReturnButton />
                 </Col>
 
-                <Col xs="10" md className="text-end mb-3 mb-md-0">
+                <Col xs="12" sm="10" md className="text-end mb-3 mb-md-0">
                     <UserInfoCard user={user} />
                 </Col>
             </Row>
