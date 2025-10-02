@@ -25,6 +25,9 @@ export default function CreateCategoryModal({
     errorMessage,
     isEditing = false,
 }: CreateCategoryModalProps) {
+    const isNameValid = /[a-zA-Z]/.test(newName);
+    const canSubmit = isNameValid;
+
     return (
         <Modal show={show} onHide={onHide} className="text-white">
 
@@ -73,7 +76,7 @@ export default function CreateCategoryModal({
                     <Button
                         type="submit"
                         variant="primary"
-                        disabled={loading}>
+                        disabled={loading || !canSubmit}>
                         {loading ? (
                             <>
                                 <Spinner animation="border" size="sm" className="me-2" />
