@@ -267,8 +267,8 @@ export default function BookingPage() {
                                 <div className="mt-4">
                                     <p className="text-primary text-center">
                                         Om du ändrar datumen töms din kundvagn automatiskt för att undvika bokningskonflikter.
-                                        {!user && <p className="text-white"> Du måste vara inloggad för att boka</p>}
                                     </p>
+                                    {!user && <p className="text-white text-center"> Du måste vara inloggad för att boka</p>}
                                 </div>
                             )}
                         </div>

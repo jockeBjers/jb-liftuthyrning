@@ -20,6 +20,7 @@ export default function DateRangePicker({
         <div className="d-flex flex-column">
           <label className="form-label text-white-50 mb-2">Startdatum</label>
           <DatePicker
+            calendarStartDay={1}
             dateFormat="dd/MM/yyyy"
             selected={startDate}
             onChange={handleStartDateChange}
@@ -36,6 +37,7 @@ export default function DateRangePicker({
         <div className="d-flex flex-column">
           <label className="form-label text-white-50 mb-2">Slutdatum</label>
           <DatePicker
+            calendarStartDay={1}
             dateFormat="dd/MM/yyyy"
             selected={endDate}
             onChange={date => setEndDate(date)}
