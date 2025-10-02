@@ -54,7 +54,7 @@ export default function CartCanvas({ show, onHide }: { show: boolean; onHide: ()
                 <option value="">Välj användare...</option>
                 {allUsers.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {u.firstName} {u.lastName} ({u.email})
+                    {u.firstName} {u.lastName}
                   </option>
                 ))}
               </Form.Select>
@@ -135,12 +135,16 @@ export default function CartCanvas({ show, onHide }: { show: boolean; onHide: ()
       <OrderConfirmationModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        onConfirm={() => handleBooking(selectedUserId, onHide)}
+        onConfirm={() => handleBooking(selectedUserId, () => {
+          setShowModal(false);
+          onHide();
+        })}
         totalCost={calculateTotalCost()}
         isBooking={isBooking}
         bookingSuccess={bookingSuccess}
         cartItems={cartItems}
       />
+
     </>
   );
 }

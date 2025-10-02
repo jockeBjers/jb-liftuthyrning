@@ -1,4 +1,5 @@
 namespace WebApp;
+
 public static class RestApi
 {
     public static void Start()
@@ -67,5 +68,27 @@ public static class RestApi
                 context
             ))
         );
+
+        App.MapDelete("/api/user/orders/{orderId}", (HttpContext context, string orderId) =>
+        {
+            var user = Session.Get(context, "user");
+            if (user == null)
+                return RestResult.Parse(context, new { error = "Not authenticated" });
+
+            var order = SQLQueryOne(
+                "SELECT userId FROM orders WHERE id = $id",
+                Obj(new { id = orderId }),
+                context
+            );
+
+            if ((int)order.userId != (int)user.id)
+                return RestResult.Parse(context, new { error = "Wrong user" });
+
+            SQLQueryOne("DELETE FROM orders WHERE id = $id",
+                Obj(new { id = orderId }),
+                context);
+
+            return RestResult.Parse(context, new { status = $"Order deleted. User ID in order:{order.userId} matches userID:{user.id}" });
+        });
     }
 }

@@ -16,3 +16,13 @@
   background-position: center;
   min-height: 100vh;
 }
+
+.products-section {
+
+  background: linear-gradient(rgba(34, 34, 34, 0.95), rgba(34, 34, 34, 0.95) 95%),
+    url('/images/lift-front.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}

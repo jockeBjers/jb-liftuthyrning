@@ -53,7 +53,7 @@ export default function UserOrders({
 
     const handleRemoveOrder = async (orderId: number) => {
         try {
-            await deleteFetch(`/api/orders/${orderId}`);
+            await deleteFetch(`/api/user/orders/${orderId}`);
             setShowCancelModal(false);
             setOrderToCancel(null);
             revalidator.revalidate();
